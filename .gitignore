@@ -1,0 +1,38 @@
+# Archivos y directorios generados automáticamente
+node_modules/
+dist/
+*.log
+*package-lock.jso*
+.angular/
+
+# Archivos de configuración del sistema
+#.env
+#.env.local
+#.env.production
+
+# Archivos de configuración de IDEs y editores
+/.vscode
+/.idea
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*.sublime*
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de compilación y cache
+*.js.map
+*.css.map
+.cache/
+
+# Directorio de compilación de Angular AOT
+aot/
+ngfactory/
+
+# Archivos de registro de errores
+npm-debug.log*
+yarn-error.log*
