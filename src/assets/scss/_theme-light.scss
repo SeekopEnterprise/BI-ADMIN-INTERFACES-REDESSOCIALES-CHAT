@@ -4,15 +4,15 @@
 
   // Vertical Sidebar - Default Light
 
-  --#{$variable-prefix}sidebar-bg: #ffffff;
-  --#{$variable-prefix}sidebar-menu-item-color: #878a92;
-  --#{$variable-prefix}sidebar-menu-item-active-color: #7269ef;
-  --#{$variable-prefix}sidebar-menu-item-active-bg: #f7f7ff;
+  --#{$variable-prefix}sidebar-bg: #002A7F;
+  --#{$variable-prefix}sidebar-menu-item-color: #8095BF;
+  --#{$variable-prefix}sidebar-menu-item-active-color: #002A7F;
+  --#{$variable-prefix}sidebar-menu-item-active-bg: #023291;
   --#{$variable-prefix}sidebar-sub-bg:  #f5f7fb;
 
-  //chat 
+  //chat
 
-  --#{$variable-prefix}chat-primary-bg: #7269ef;
+  --#{$variable-prefix}chat-primary-bg: #002A7F;
   --#{$variable-prefix}chat-secondary-bg: #f5f7fb;
 
   // body
@@ -23,7 +23,7 @@
   //footer
   --#{$variable-prefix}footer-bg: #{$white};
   --#{$variable-prefix}footer-color: #98a6ad;
-  
+
   // component variable
 
   // theme-color
@@ -105,5 +105,5 @@
 
   // Theme mode icon
   --#{$variable-prefix}theme-mode-icon:       "\eefb";
-  
+
 }

@@ -35,13 +35,13 @@
 
    --#{$variable-prefix}sidebar-bg: #36404a;
    --#{$variable-prefix}sidebar-menu-item-color: #a6b0cf;
-   --#{$variable-prefix}sidebar-menu-item-active-color: #7269ef;
+   --#{$variable-prefix}sidebar-menu-item-active-color: #002A7F;
    --#{$variable-prefix}sidebar-menu-item-active-bg: #3e4a56;
    --#{$variable-prefix}sidebar-sub-bg:  #303841;
 
-     //chat 
+     //chat
 
-    --#{$variable-prefix}chat-primary-bg: #7269ef;
+    --#{$variable-prefix}chat-primary-bg: #002A7F;
     --#{$variable-prefix}chat-secondary-bg: #36404a;
 
   // body
@@ -62,7 +62,7 @@
   // twocolumn menu
   --#{$variable-prefix}twocolumn-menu-iconview-bg: #{$white};
   --#{$variable-prefix}twocolumn-menu-bg:  #{$white};
-    
+
   // two column dark
   --#{$variable-prefix}twocolumn-menu-iconview-bg-dark: var(--#{$variable-prefix}vertical-menu-bg-dark);
   --#{$variable-prefix}twocolumn-menu-bg-dark:  #30363a;
@@ -70,12 +70,12 @@
   --#{$variable-prefix}twocolumn-menu-item-active-color-dark:  #{$white};
   --#{$variable-prefix}twocolumn-menu-item-active-bg-dark:  #{rgba($white, .15)};
 
-  // boxed 
+  // boxed
   --#{$variable-prefix}boxed-body-bg: #{darken($gray-100, 4%)};
 
   // heading-color
   --#{$variable-prefix}heading-color: #{$gray-700};
-  
+
   // component variable
   --#{$variable-prefix}light: #{$gray-300};
   --#{$variable-prefix}light-rgb: #{to-rgb($gray-300)};
