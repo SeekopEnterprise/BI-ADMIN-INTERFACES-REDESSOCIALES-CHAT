@@ -1,8 +1,9 @@
 # Archivos y directorios generados automáticamente
 node_modules/
-dist/
+#dist/
 *.log
 *package-lock.jso*
+*yarn.lock*
 .angular/
 
 # Archivos de configuración del sistema
