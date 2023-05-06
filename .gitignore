@@ -5,6 +5,7 @@ node_modules/
 *package-lock.jso*
 *yarn.lock*
 .angular/
+/dist/
 
 # Archivos de configuración del sistema
 #.env

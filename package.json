@@ -46,6 +46,7 @@
     "@angular/compiler-cli": "^15.0.4",
     "@types/node": "^18.11.17",
     "codelyzer": "^6.0.2",
+    "tslib": "^2.4.1",
     "jasmine-core": "^4.5.0",
     "jasmine-spec-reporter": "^7.0.0",
     "karma-coverage-istanbul-reporter": "^3.0.3",
