@@ -11,24 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checando que todo ok
       uses: actions/checkout@v2
 
-    - name: Setup Node.js
+    - name: Instalando Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 14
 
-    - name: Install Yarn
+    - name: Instalando Yarn
       run: npm install -g yarn
 
-    - name: Install dependencies
+    - name: Instalando todo lo necesario del proyecto Angular
       run: yarn install
 
-    - name: Build Angular
-      run: yarn build --prod --base-href "https://gilgasaseekop.github.io/SeekopEnterprise/BI-ADMIN-INTERFACES-REDESSOCIALES-CHAT/"
+    - name: Construyendo proyecto Angular
+      run: yarn build --configuration production --base-href "https://gilgasaseekop.github.io/SeekopEnterprise/BI-ADMIN-INTERFACES-REDESSOCIALES-CHAT/"
 
-    - name: Deploy to GitHub Pages
+    - name: Deployando en GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.5
       with:
         branch: gh-pages
