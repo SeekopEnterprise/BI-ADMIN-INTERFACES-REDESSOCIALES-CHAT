@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration=production",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "war": "ng build --configuration=production && cd dist/chatvia && jar -cvf ../ANGULAR_SEEKOP_BI_ADMININTERFACES_SOCIALMEDIA_CHAT.war *"
   },
   "private": true,
   "dependencies": {

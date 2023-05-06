@@ -25,7 +25,8 @@ if (environment.defaultauth === 'firebase') {
 }
 
 export function createTranslateLoader(http: HttpClient): any {
-  return new TranslateHttpLoader(http);
+  const baseHref = document.querySelector('base')?.getAttribute('href') || '';
+  return new TranslateHttpLoader(http, `${baseHref}assets/i18n/`, '.json');
 }
 
 @NgModule({

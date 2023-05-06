@@ -21,14 +21,17 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/chatvia",
-            "allowedCommonJsDependencies": ["file-saver"],
+            "allowedCommonJsDependencies": [
+              "file-saver"
+            ],
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/WEB-INF"
             ],
             "styles": [
               "./node_modules/ngx-lightbox/lightbox.css",
@@ -36,6 +39,13 @@
               "node_modules/@ctrl/ngx-emoji-mart/picker.css",
               "src/assets/scss/bootstrap.scss",
               "src/assets/scss/app.scss"
+            ],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "10mb",
+                "maximumError": "10mb"
+              }
             ],
             "scripts": [],
             "vendorChunk": true,
@@ -102,7 +112,8 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/WEB-INF"
             ],
             "styles": [
               "src/styles.scss"
