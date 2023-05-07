@@ -56,12 +56,18 @@
             "namedChunks": true
           },
           "configurations": {
-            "production": {
+            "development": {
+              "index": "src/index.html",
               "fileReplacements": [
                 {
-                  "replace": "src/index.html",
-                  "with": "src/index.prod.html"
-                },
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
+            },
+            "production": {
+              "index": "src/index.prod.html",
+              "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
@@ -86,22 +92,6 @@
                   "maximumError": "10kb"
                 }
               ]
-            },
-            "development": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.ts"
-                }
-              ],
-              "index": "src/index.dev.html",
-              "outputHashing": "media",
-              "sourceMap": true,
-              "namedChunks": true,
-              "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false,
-              "optimization": false
             }
           },
           "defaultConfiguration": "development"
@@ -112,11 +102,11 @@
             "browserTarget": "chatvia:build"
           },
           "configurations": {
-            "production": {
-              "browserTarget": "chatvia:build:production"
-            },
             "development": {
               "browserTarget": "chatvia:build:development"
+            },
+            "production": {
+              "browserTarget": "chatvia:build:production"
             }
           },
           "defaultConfiguration": "development"
@@ -152,17 +142,16 @@
             "devServerTarget": "chatvia:serve"
           },
           "configurations": {
-            "production": {
-              "devServerTarget": "chatvia:serve:production"
-            },
             "development": {
               "devServerTarget": "chatvia:serve:development"
+            },
+            "production": {
+              "devServerTarget": "chatvia:serve:production"
             }
           },
           "defaultConfiguration": "development"
         }
       }
     }
-  },
-  "defaultProject": "chatvia"
+  }
 }
