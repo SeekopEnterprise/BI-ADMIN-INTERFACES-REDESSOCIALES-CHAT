@@ -57,7 +57,7 @@
           },
           "configurations": {
             "development": {
-              "index": "src/index.html",
+              "index": "src/index.dev.html",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -66,7 +66,7 @@
               ]
             },
             "production": {
-              "index": "src/index.prod.html",
+              "index": "src/index.html",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
