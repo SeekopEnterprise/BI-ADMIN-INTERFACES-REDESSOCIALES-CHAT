@@ -1,4 +1,4 @@
-name: Deployar Angular Chat Redes Sociales en Amazon S3
+name: Desplegar Angular Chat Redes Sociales en Amazon S3
 
 on:
   push:
@@ -25,8 +25,8 @@ jobs:
     - name: Instalando todo lo necesario del proyecto Angular
       run: yarn install
 
-    - name: Construyendo proyecto Angular y creando archivo .war
-      run: yarn war
+    - name: Construyendo proyecto Angular
+      run: yarn build
 
     - name: Configurando AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -35,5 +35,5 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Subiendo archivo .war a Amazon S3
-      run: aws s3 cp dist/ANGULAR_SEEKOP_BI_ADMININTERFACES_SOCIALMEDIA_CHAT.war s3://sicop-apps/bi-admin-interfaces-redessociales-chat/ANGULAR_SEEKOP_BI_ADMININTERFACES_SOCIALMEDIA_CHAT.war
+    - name: Subiendo contenido de dist/chatvia a Amazon S3
+      run: aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/
