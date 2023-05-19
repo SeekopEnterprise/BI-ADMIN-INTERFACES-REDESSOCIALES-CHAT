@@ -28,6 +28,12 @@ jobs:
     - name: Construyendo proyecto Angular
       run: yarn build
 
+    - name: Instalando AWS CLI
+      run: |
+        curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+
     - name: Configurando AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -35,5 +41,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Vaciar el bucket
+      run: aws s3 rm s3://skp-socialmedia-chat/ --recursive
+
     - name: Subiendo contenido de dist/chatvia a Amazon S3
-      run: aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/
+      run: aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --debug
