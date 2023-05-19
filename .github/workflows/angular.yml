@@ -39,14 +39,13 @@ jobs:
       run: aws s3 rm s3://skp-socialmedia-chat/ --recursive
 
     - name: Verificar si el bucket está vacío
-      id: check_bucket
       run: |
         IS_BUCKET_EMPTY=$(aws s3 ls s3://skp-socialmedia-chat/ --recursive | wc -l)
-        echo "::set-output name=isEmpty::$IS_BUCKET_EMPTY"
+        echo "IS_BUCKET_EMPTY=$IS_BUCKET_EMPTY" >> $GITHUB_ENV
 
     - name: Subiendo contenido de dist/chatvia a Amazon S3
       run: |
-        if [ "${{ steps.check_bucket.outputs.isEmpty }}" -eq "0" ]; then
+        if [ "${{ env.IS_BUCKET_EMPTY }}" -eq "0" ]; then
           aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --debug
         else
           echo "El bucket no está vacío. Por favor, comprueba manualmente."
