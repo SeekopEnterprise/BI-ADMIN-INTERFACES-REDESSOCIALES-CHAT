@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # incrementa el timeout a 30 minutos
 
     steps:
     - name: Checando que todo ok
@@ -46,7 +47,11 @@ jobs:
     - name: Subiendo contenido de dist/chatvia a Amazon S3
       run: |
         if [ "${{ env.IS_BUCKET_EMPTY }}" -eq "0" ]; then
-          aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --debug
+          until aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --debug
+          do
+            echo "La sincronización falló, reintentando..."
+            sleep 1
+          done
         else
           echo "El bucket no está vacío. Por favor, comprueba manualmente."
           exit 1
