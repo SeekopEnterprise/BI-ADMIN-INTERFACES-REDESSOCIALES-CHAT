@@ -1,5 +1,6 @@
 name: Desplegar Angular Chat Redes Sociales en Amazon S3
 
+# Este workflow se activará cuando se hagan push a las ramas master y dev.
 on:
   push:
     branches:
@@ -8,27 +9,35 @@ on:
 
 jobs:
   build-and-deploy:
+    # Especifica el sistema operativo en el que se ejecutará este trabajo.
     runs-on: ubuntu-latest
-    timeout-minutes: 60  # incrementa el timeout a 30 minutos
+    # Incrementa el timeout a 60 minutos. (Muchos archivos, puede requerir más tiempo).
+    timeout-minutes: 60
 
     steps:
+    # Checa los últimos cambios del repositorio
     - name: Checando que todo ok
       uses: actions/checkout@v2
 
+    # Configura Node.js en la máquina virtual donde se ejecuta el trabajo.
     - name: Instalando Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 14
 
+    # Instala Yarn globalmente.
     - name: Instalando Yarn
       run: npm install -g yarn
 
+    # Instala las dependencias del proyecto.
     - name: Instalando todo lo necesario del proyecto Angular
       run: yarn install
 
+    # Compila el proyecto.
     - name: Construyendo proyecto Angular
       run: yarn build
 
+    # Configura las credenciales de AWS para que las acciones de GitHub puedan interactuar con los recursos de AWS.
     - name: Configurando AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -36,18 +45,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    # Borra todos los archivos existentes en el bucket de S3.
     - name: Vaciar el bucket
       run: aws s3 rm s3://skp-socialmedia-chat/ --recursive
 
+    # Comprueba si el bucket de S3 está vacío.
     - name: Verificar si el bucket está vacío
       run: |
         IS_BUCKET_EMPTY=$(aws s3 ls s3://skp-socialmedia-chat/ --recursive | wc -l)
         echo "IS_BUCKET_EMPTY=$IS_BUCKET_EMPTY" >> $GITHUB_ENV
 
+    # Sube los archivos generados por la compilación a el bucket de S3.
     - name: Subiendo contenido de dist/chatvia a Amazon S3
       run: |
         if [ "${{ env.IS_BUCKET_EMPTY }}" -eq "0" ]; then
-          until aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --exclude "WEB-INF/*"
+          until aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/
           do
             echo "La sincronización falló, reintentando..."
             sleep 1
@@ -56,3 +68,8 @@ jobs:
           echo "El bucket no está vacío. Por favor, comprueba manualmente."
           exit 1
         fi
+
+    # Invalida la caché de CloudFront para que los cambios se reflejen inmediatamente en el sitio.
+    - name: Invalidar la caché de CloudFront
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
