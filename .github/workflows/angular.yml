@@ -59,7 +59,7 @@ jobs:
     - name: Subiendo contenido de dist/chatvia a Amazon S3
       run: |
         if [ "${{ env.IS_BUCKET_EMPTY }}" -eq "0" ]; then
-          until aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/
+          until aws s3 sync dist/chatvia/ s3://skp-socialmedia-chat/ --exclude "WEB-INF/*"
           do
             echo "La sincronización falló, reintentando..."
             sleep 1
