@@ -2,45 +2,58 @@
 <div>
   <div class="p-4">
     <div class="user-chat-nav float-end">
-      <div ngbTooltip="Add Contact">
+      <div ngbTooltip="Agregar Nueva Red Social">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
           data-target="#addContact-exampleModal" (click)="openContactsModal(content)">
-          <i class="ri-user-add-line"></i>
+          <i class="ri-chat-new-fill"></i>
         </button>
       </div>
     </div>
-    <h4 class="mb-4">{{'chat.tabs.contacts.title' | translate}}</h4>
+    <h4 class="mb-4">Redes Sociales</h4>
 
     <!-- Start Add contact Modal -->
     <ng-template #content let-modal>
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title font-size-16" id="addContact-exampleModalLabel">
-            {{'chat.tabs.contacts.modal.title' | translate}}</h5>
+          <h5 class="modal-title font-size-16" id="addContact-exampleModalLabel">Agregar Nueva Red Social</h5>
           <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
           </button>
         </div>
         <div class="modal-body p-4">
           <form>
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">{{'chat.tabs.contacts.modal.form.email.label' | translate}}</label>
+              <label class="form-label" for="addcontactemail-input">Nombre Red Social *</label>
               <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="{{'chat.tabs.contacts.modal.form.email.placeholder' | translate}}">
+                placeholder="Facebook">
             </div>
             <div class="mb-3">
-              <label class="form-label"
-                for="addcontact-invitemessage-input">{{'chat.tabs.contacts.modal.form.message.label' | translate}}</label>
-              <textarea class="form-control" id="addcontact-invitemessage-input" rows="3"
-                placeholder="{{'chat.tabs.contacts.modal.form.message.placeholder' | translate}}"></textarea>
+              <label class="form-label" for="addcontactemail-input">EndpointApi *</label>
+              <input type="email" class="form-control" id="addcontactemail-input"
+                placeholder="https://sicopweb.com">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="addcontactemail-input">ApiKey *</label>
+              <input type="email" class="form-control" id="addcontactemail-input"
+                placeholder="abcA123ABC-.cdeCDE123">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="addcontactemail-input">Secret Key *</label>
+              <input type="email" class="form-control" id="addcontactemail-input"
+                placeholder="abcA123ABC-.cdeCDE123">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="addcontactemail-input">Url Logotipo (opcional)</label>
+              <input type="email" class="form-control" id="addcontactemail-input"
+                placeholder="https://sicopweb.com">
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-link"
-            (click)="modal.dismiss('Cross click')">{{'chat.tabs.contacts.modal.form.button.close' | translate}}</button>
+            (click)="modal.dismiss('Cross click')">Cancelar</button>
           <button type="button"
-            class="btn btn-primary">{{'chat.tabs.contacts.modal.form.button.contact' | translate}}</button>
+            class="btn btn-primary">Agregar</button>
         </div>
       </div>
     </ng-template>
@@ -63,15 +76,15 @@
 
   <!-- Start contact lists -->
   <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar>
-    <div *ngFor="let item of contactsList">
+    <div *ngFor="let item of redesSocialesList">
       <div class="p-3 font-weight-bold text-primary">
         {{item.key}}
       </div>
       <ul class="list-unstyled contact-list">
-        <li *ngFor="let item of item.contacts">
+        <li *ngFor="let item of item.socialRedes">
           <div class="d-flex align-items-center">
             <div class="flex-grow-1">
-              <h5 class="font-size-14 m-0">{{item.name | translate}}</h5>
+              <h5 class="font-size-14 m-0">{{item.nombre | translate}}</h5>
             </div>
 
             <div class="dropdown" ngbDropdown>
