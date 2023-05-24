@@ -1,3 +1,25 @@
+export interface Conversacion {
+  idpregunta: string;
+  mensaje: string;
+  respuesta: string;
+}
+
+export interface ResponseItem {
+  IdPublicacion: string;
+  IdProspecto: string;
+  Nombre: string;
+  Apellido: string;
+  Email: string;
+  urlpublicacion: string;
+  Telefono: string;
+  Conversacion: Conversacion[];
+}
+
+export interface ApiResponse {
+  statusCode: number;
+  body: ResponseItem[];
+}
+
 export interface Chats {
   id: number;
   name: string;

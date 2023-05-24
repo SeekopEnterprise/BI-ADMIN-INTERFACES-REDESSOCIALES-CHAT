@@ -4,9 +4,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 import { chat, groups } from './data';
-import { Chats, Groups } from './chat.model';
+import { Conversacion, ApiResponse, ResponseItem, Groups } from './chat.model';
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -15,7 +16,7 @@ import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
 
 // Date Format
-import {DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-index',
@@ -29,10 +30,11 @@ import {DatePipe} from '@angular/common';
 export class IndexComponent implements OnInit {
 
   activetab = 2;
-  chat: Chats[];
+  apiResponse : ApiResponse[];
+  chat: ResponseItem[];
   groups: Groups[];
   formData!: FormGroup;
-  @ViewChild('scrollRef') scrollRef:any;
+  @ViewChild('scrollRef') scrollRef: any;
   emoji = '';
   isreplyMessage = false;
   isgroupMessage = false;
@@ -51,13 +53,13 @@ export class IndexComponent implements OnInit {
   images: { src: string; thumb: string; caption: string }[] = [];
 
   constructor(private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
-              private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-              public formBuilder: FormBuilder, private datePipe: DatePipe,private lightbox: Lightbox) {}
+    private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
+    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient) { }
 
-   /**
-   * Open lightbox
-   */
-   openImage(index: number,i:number): void {
+  /**
+  * Open lightbox
+  */
+  openImage(index: number, i: number): void {
     // open lightbox
     this.lightbox.open(this.message[index].imageContent, i, {
       showZoom: true
@@ -65,8 +67,8 @@ export class IndexComponent implements OnInit {
 
   }
 
-  senderName:any;
-  senderProfile:any;
+  senderName: any;
+  senderProfile: any;
   ngOnInit(): void {
 
     document.body.setAttribute('data-layout-mode', 'light');
@@ -78,8 +80,8 @@ export class IndexComponent implements OnInit {
 
     const user = window.localStorage.getItem('currentUser');
     this.senderName = JSON.parse(user).username
-    this.senderProfile = 'assets/images/users/'+JSON.parse(user).profile
-    this.chat = chat;
+    this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
+    this.loadRecuperacionMensajes();
     this.groups = groups;
     this.lang = this.translate.currentLang;
     this.onListScroll();
@@ -138,37 +140,37 @@ export class IndexComponent implements OnInit {
    * Show user chat
    */
   // tslint:disable-next-line: typedef
-  userName:any = 'Doris Brown';
-  userStatus:any = 'online';
-  userProfile:any = 'assets/images/users/avatar-4.jpg';
-  message:any;
-  showChat(event:any,id:any) {
+  userName: any = 'Doris Brown';
+  userStatus: any = 'online';
+  userProfile: any = 'assets/images/users/avatar-4.jpg';
+  message: any;
+  showChat(event: any, id: any) {
     var removeClass = document.querySelectorAll('.chat-user-list li');
     removeClass.forEach((element: any) => {
-        element.classList.remove('active');
+      element.classList.remove('active');
     });
-    
+
     document.querySelector('.user-chat').classList.add('user-chat-show')
     document.querySelector('.chat-welcome-section').classList.add('d-none');
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
-    var data = this.chat.filter((chat:any) => {
-      return chat.id === id;
+    var data = this.chat.filter((chat: any) => {
+      return chat.Email === id;
     });
-    this.userName = data[0].name
-    this.userStatus = data[0].status
-    this.userProfile = data[0].profilePicture
-    this.message = data[0].messages
+    this.userName = data[0].Nombre
+    this.userStatus = "online"
+    this.userProfile = data[0].Email
+    this.message = data[0].Conversacion
     this.onListScroll();
   }
 
   // Contact Search
-  ContactSearch(){
-    var input:any, filter:any, ul:any, li:any, a:any | undefined, i:any, txtValue:any;
+  ContactSearch() {
+    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
     input = document.getElementById("searchContact") as HTMLAreaElement;
     filter = input.value.toUpperCase();
     ul = document.querySelectorAll(".chat-user-list");
-    ul.forEach((item:any)=>{
+    ul.forEach((item: any) => {
       li = item.getElementsByTagName("li");
       for (i = 0; i < li.length; i++) {
         a = li[i].getElementsByTagName("h5")[0];
@@ -176,15 +178,15 @@ export class IndexComponent implements OnInit {
         if (txtValue?.toUpperCase().indexOf(filter) > -1) {
           li[i].style.display = "";
         } else {
-            li[i].style.display = "none";
+          li[i].style.display = "none";
         }
       }
     })
   }
 
   // Message Search
-  MessageSearch(){
-    var input:any, filter:any, ul:any, li:any, a:any | undefined, i:any, txtValue:any;
+  MessageSearch() {
+    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
     input = document.getElementById("searchMessage") as HTMLAreaElement;
     filter = input.value.toUpperCase();
     ul = document.getElementById("users-conversation");
@@ -194,9 +196,9 @@ export class IndexComponent implements OnInit {
       txtValue = a?.innerText;
       if (txtValue?.toUpperCase().indexOf(filter) > -1) {
         li[i].style.display = "";
-    } else {
+      } else {
         li[i].style.display = "none";
-    }
+      }
     }
   }
 
@@ -208,27 +210,27 @@ export class IndexComponent implements OnInit {
   /**
    * Returns form
    */
-   get form() {
+  get form() {
     return this.formData.controls;
   }
 
   /**
    * Save the message in chat
    */
-   messageSave() {
+  messageSave() {
     var groupMsg = document.querySelector('.pills-groups-tab.active');
     const message = this.formData.get('message')!.value;
     if (!groupMsg) {
-      document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message: this.img;
+      document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img;
     }
-    var img = this.img ? this.img:'';
-    var status = this.img ? true:'';
-    var dateTime = this.datePipe.transform(new Date(),"h:mm a");
-    var chatReplyUser = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML:'';
-    var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0")as HTMLAreaElement).innerText :'';
+    var img = this.img ? this.img : '';
+    var status = this.img ? true : '';
+    var dateTime = this.datePipe.transform(new Date(), "h:mm a");
+    var chatReplyUser = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : '';
+    var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : '';
     this.message.push({
       id: 1,
-      message: message,
+      texto: message,
       name: this.senderName,
       profile: this.senderProfile,
       time: dateTime,
@@ -250,9 +252,9 @@ export class IndexComponent implements OnInit {
     chatReplyUser = '';
     chatReplyMessage = '';
     document.querySelector('.replyCard')?.classList.remove('show');
-   }
+  }
 
-   onListScroll() {
+  onListScroll() {
     if (this.scrollRef !== undefined) {
       setTimeout(() => {
         this.scrollRef.SimpleBar.getScrollElement().scrollTop = this.scrollRef.SimpleBar.getScrollElement().scrollHeight;
@@ -260,41 +262,41 @@ export class IndexComponent implements OnInit {
     }
   }
 
-   // Emoji Picker
-   showEmojiPicker = false;
-   sets:any = [
-     'native',
-     'google',
-     'twitter',
-     'facebook',
-     'emojione',
-     'apple',
-     'messenger'
-   ]
-   set:any = 'twitter';
-   toggleEmojiPicker() {
-     this.showEmojiPicker = !this.showEmojiPicker;
-   }
+  // Emoji Picker
+  showEmojiPicker = false;
+  sets: any = [
+    'native',
+    'google',
+    'twitter',
+    'facebook',
+    'emojione',
+    'apple',
+    'messenger'
+  ]
+  set: any = 'twitter';
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
 
-   addEmoji(event:any) {
-     const { emoji } = this;
-     const text = `${emoji}${event.emoji.native}`;
-     this.emoji = text;
-     this.showEmojiPicker = false;
-   }
+  addEmoji(event: any) {
+    const { emoji } = this;
+    const text = `${emoji}${event.emoji.native}`;
+    this.emoji = text;
+    this.showEmojiPicker = false;
+  }
 
-   onFocus() {
-     this.showEmojiPicker = false;
-   }
-   onBlur() {
-   }
+  onFocus() {
+    this.showEmojiPicker = false;
+  }
+  onBlur() {
+  }
 
-   closeReplay(){
+  closeReplay() {
     document.querySelector('.replyCard')?.classList.remove('show');
   }
 
-   // Copy Message
-   copyMessage(event:any){
+  // Copy Message
+  copyMessage(event: any) {
     navigator.clipboard.writeText(event.target.closest('.chats').querySelector('.messageText').innerHTML);
     document.getElementById('copyClipBoard')?.classList.add('show');
     setTimeout(() => {
@@ -303,40 +305,40 @@ export class IndexComponent implements OnInit {
   }
 
   // Delete Message
-  deleteMessage(event:any){
+  deleteMessage(event: any) {
     event.target.closest('.chats').remove();
   }
 
   // Delete All Message
-  deleteAllMessage(event:any){
-    var allMsgDelete:any = document.getElementById('users-conversation')?.querySelectorAll('.chats');
-    allMsgDelete.forEach((item:any)=>{
+  deleteAllMessage(event: any) {
+    var allMsgDelete: any = document.getElementById('users-conversation')?.querySelectorAll('.chats');
+    allMsgDelete.forEach((item: any) => {
       item.remove();
     })
   }
 
   // Replay Message
-  replyMessage(event:any,align:any){
+  replyMessage(event: any, align: any) {
     this.isreplyMessage = true;
     document.querySelector('.replyCard')?.classList.add('show');
     var copyText = event.target.closest('.chats').querySelector('.messageText').innerHTML;
     (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerHTML = copyText;
-    var msgOwnerName:any = event.target.closest(".chats").classList.contains("right") == true ? 'You' : document.querySelector('.username')?.innerHTML;
+    var msgOwnerName: any = event.target.closest(".chats").classList.contains("right") == true ? 'You' : document.querySelector('.username')?.innerHTML;
     (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML = msgOwnerName;
   }
 
-   /**
-   * Open center modal
-   * @param centerDataModal center modal data
-   */
-    centerModal(centerDataModal: any) {
-      this.modalService.open(centerDataModal, { centered: true });
-    }
+  /**
+  * Open center modal
+  * @param centerDataModal center modal data
+  */
+  centerModal(centerDataModal: any) {
+    this.modalService.open(centerDataModal, { centered: true });
+  }
 
   // File Upload
   imageURL: string | undefined;
-  img:any;
-  fileChange(event:any) {
+  img: any;
+  fileChange(event: any) {
     let fileList: any = (event.target as HTMLInputElement);
     let file: File = fileList.files[0];
     const reader = new FileReader();
@@ -350,7 +352,7 @@ export class IndexComponent implements OnInit {
   /**
    * Topbar Light-Dark Mode Change
    */
-   changeMode(mode: string) {
+  changeMode(mode: string) {
     this.mode = mode;
     switch (mode) {
       case 'light':
@@ -368,20 +370,20 @@ export class IndexComponent implements OnInit {
   /***
    * ========== Group Msg ============
    */
-    /**
-   * Show user chat
-   */
+  /**
+ * Show user chat
+ */
   // tslint:disable-next-line: typedef
-  showGroupChat(event:any,id:any) {
+  showGroupChat(event: any, id: any) {
     var removeClass = document.querySelectorAll('.chat-list li');
     removeClass.forEach((element: any) => {
-        element.classList.remove('active');
+      element.classList.remove('active');
     });
     document.querySelector('.user-chat').classList.add('user-chat-show')
     document.querySelector('.chat-welcome-section').classList.add('d-none');
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
-    var data = this.groups.filter((group:any) => {
+    var data = this.groups.filter((group: any) => {
       return group.id === id;
     });
     this.userName = data[0].name
@@ -399,12 +401,12 @@ export class IndexComponent implements OnInit {
   }
 
   // Group Search
-  GroupSearch(){
-    var input:any, filter:any, ul:any, li:any, a:any | undefined, i:any, txtValue:any;
+  GroupSearch() {
+    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
     input = document.getElementById("searchGroup") as HTMLAreaElement;
     filter = input.value.toUpperCase();
     ul = document.querySelectorAll(".group-list");
-    ul.forEach((item:any)=>{
+    ul.forEach((item: any) => {
       li = item.getElementsByTagName("li");
       for (i = 0; i < li.length; i++) {
         a = li[i].getElementsByTagName("h5")[0];
@@ -412,12 +414,22 @@ export class IndexComponent implements OnInit {
         if (txtValue?.toUpperCase().indexOf(filter) > -1) {
           li[i].style.display = "";
         } else {
-            li[i].style.display = "none";
+          li[i].style.display = "none";
         }
       }
     })
   }
 
-  
-
+  loadRecuperacionMensajes(): void {
+    this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
+      res => {
+       this.chat = res.body;
+       console.log("este es el chat", this.chat);
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  }
 }
+

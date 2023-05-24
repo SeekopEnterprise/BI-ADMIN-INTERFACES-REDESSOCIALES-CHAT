@@ -220,23 +220,22 @@
 
             <perfect-scrollbar class="chat-message-list">
               <ul class="list-unstyled chat-list chat-user-list">
-                <li *ngFor="let user of chat" [ngClass]="{'typing': user.isTyping}" (click)="showChat($event,user.id)">
+                <li *ngFor="let user of chat" [ngClass]="{'typing': user.isTyping}" (click)="showChat($event,user.Email)">
                   <a href="javascript:void(0);">
                     <div class="d-flex">
-                      <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="{'online': user.status === 'online',
-                  'away': user.status === 'away'}">
+                      <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
                         <img *ngIf="user.profilePicture" src="{{user.profilePicture}}" class="rounded-circle avatar-xs"
                           alt="">
                         <div class="avatar-xs" *ngIf="!user.profilePicture">
                           <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                            {{(user.name | translate).charAt(0)}}
+                            {{(user.Nombre | translate).charAt(0)}}
                           </span>
                         </div>
-                        <span *ngIf="user.status" class="user-status"></span>
+                        <span *ngIf="user" class="user-status"></span>
                       </div>
 
                       <div class="flex-grow-1 overflow-hidden">
-                        <h5 class="text-truncate font-size-15 mb-1">{{user.name | translate}}</h5>
+                        <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
                         <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing<span
                             class="animate-typing">
                             <span class="dot ms-1"></span>
@@ -779,7 +778,7 @@
                           </div>
                         </div>
                         <p class="mb-0 messageText">
-                          {{data.message | translate}}
+                          {{data.texto | translate}}
                           <!-- <span class="animate-typing" *ngIf="data.istyping">
                             <span class="dot ms-1"></span>
                             <span class="dot ms-1"></span>
@@ -949,7 +948,7 @@
               <div class="col">
                 <div>
                   <input type="text" class="form-control form-control-lg bg-light border-light"
-                    placeholder="Enter Message..." formControlName="message" [(ngModel)]="emoji" (blur)="onBlur()"
+                    placeholder="Escribir mensaje..." formControlName="message" [(ngModel)]="emoji" (blur)="onBlur()"
                     (focus)="onFocus()">
                 </div>
               </div>
