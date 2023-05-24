@@ -21,39 +21,32 @@
           </button>
         </div>
         <div class="modal-body p-4">
-          <form>
+          <form #socialForm="ngForm">
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">Nombre Red Social *</label>
-              <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="Facebook">
+              <label class="form-label" for="nombreRedSocial">Nombre Red Social *</label>
+              <input type="text" class="form-control" id="nombreRedSocial" [(ngModel)]="newRedSocial.nombre" name="nombre" placeholder="Facebook">
             </div>
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">EndpointApi *</label>
-              <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="https://sicopweb.com">
+              <label class="form-label" for="endpointApi">EndpointApi *</label>
+              <input type="text" class="form-control" id="endpointApi" [(ngModel)]="newRedSocial.endpointapi" name="endpointapi" placeholder="https://sicopweb.com">
             </div>
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">ApiKey *</label>
-              <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="abcA123ABC-.cdeCDE123">
+              <label class="form-label" for="apiKey">ApiKey *</label>
+              <input type="text" class="form-control" id="apiKey" [(ngModel)]="newRedSocial.apikey" name="apikey" placeholder="abcA123ABC-.cdeCDE123">
             </div>
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">Secret Key *</label>
-              <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="abcA123ABC-.cdeCDE123">
+              <label class="form-label" for="secretKey">Secret Key *</label>
+              <input type="text" class="form-control" id="secretKey" [(ngModel)]="newRedSocial.secretkey" name="secretkey" placeholder="abcA123ABC-.cdeCDE123">
             </div>
             <div class="mb-3">
-              <label class="form-label" for="addcontactemail-input">Url Logotipo (opcional)</label>
-              <input type="email" class="form-control" id="addcontactemail-input"
-                placeholder="https://sicopweb.com">
+              <label class="form-label" for="urlLogotipo">Url Logotipo (opcional)</label>
+              <input type="text" class="form-control" id="urlLogotipo" [(ngModel)]="newRedSocial.urllogotipo" name="urllogotipo" placeholder="https://sicopweb.com">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+              <button type="button" class="btn btn-primary" (click)="addNewSocial()">Agregar</button>
             </div>
           </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-link"
-            (click)="modal.dismiss('Cross click')">Cancelar</button>
-          <button type="button"
-            class="btn btn-primary">Agregar</button>
         </div>
       </div>
     </ng-template>

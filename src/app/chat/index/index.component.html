@@ -128,14 +128,14 @@
         <div>
 
           <div class="px-4 pt-4">
-            <h4 class="mb-4">{{'chat.tabs.chats.title' | translate}}</h4>
+            <h4 class="mb-4">Conversaciones</h4>
             <div class="search-box chat-search-box">
               <div class="input-group mb-3 rounded-3">
                 <span class="input-group-text text-muted bg-light pe-1 ps-3" id="basic-addon1">
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </span>
                 <input type="text" class="form-control bg-light"
-                  placeholder="{{'chat.tabs.chats.search.placeholder' | translate}}"
+                  placeholder="Buscar mensajes"
                   aria-label="Search messages or users" aria-describedby="basic-addon1" (keyup)="ContactSearch()"
                   id="searchContact" autocomplete="off">
               </div>
@@ -216,7 +216,7 @@
 
           <!-- Start chat-message-list -->
           <div class="px-2">
-            <h5 class="mb-3 px-3 font-size-16">{{'chat.tabs.chats.recent.title' | translate}}</h5>
+            <h5 class="mb-3 px-3 font-size-16">Recientes</h5>
 
             <perfect-scrollbar class="chat-message-list">
               <ul class="list-unstyled chat-list chat-user-list">
