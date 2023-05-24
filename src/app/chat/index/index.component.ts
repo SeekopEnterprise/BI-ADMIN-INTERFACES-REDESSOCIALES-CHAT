@@ -157,9 +157,9 @@ export class IndexComponent implements OnInit {
     var data = this.chat.filter((chat: any) => {
       return chat.Email === id;
     });
-    this.userName = data[0].Nombre
+    this.userName = data[0].Nombre + " Mercado Libre- Nissan Satelite"
     this.userStatus = "online"
-    this.userProfile = data[0].Email
+    this.userProfile = 'assets/images/users/avatar-4.jpg';
     this.message = data[0].Conversacion
     this.onListScroll();
   }

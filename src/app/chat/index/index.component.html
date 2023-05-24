@@ -31,12 +31,12 @@
             <i class="ri-wechat-fill"></i>
           </a>
         </li>
-        <li class="nav-item" ngbTooltip="Grupos">
+        <!-- <li class="nav-item" ngbTooltip="Grupos">
           <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="activetab=3" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 3}">
             <i class="ri-group-2-fill"></i>
           </a>
-        </li>
+        </li> -->
         <li class="nav-item" ngbTooltip="Redes Sociales" placement="top">
           <a class="nav-link" id="pills-contacts-tab" (click)="activetab=4" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 4}">
@@ -646,18 +646,23 @@
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
                   <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#audiocallModal"
                     (click)="openCallModal(callContent)">
-                    <i class="ri-phone-line"></i>
+                    <i class="ri-home-line"></i>
                   </button>
                 </li>
                 <ng-template #callContent let-modal>
                   <div class="modal-body">
                     <div class="text-center p-4">
                       <div class="avatar-lg mx-auto mb-4">
-                        <img src="{{userProfile}}" alt="" class="img-thumbnail rounded-circle">
+                        <!-- <img src="{{userProfile}}" alt="" class="img-thumbnail rounded-circle"> -->
+                        <h4>URL Publicación</h4>
+                        <a href="https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f" target="_blank">
+                         Visitar la publicación
+                        </a>
                       </div>
                       <h5 class="text-truncate">{{(userName | translate)}}</h5>
-                      <p class="text-muted">Start Audio Call</p>
-                      <div class="mt-5">
+                      <p class="text-muted">Id Publicación</p>
+                      <img src="../../../assets/images/publicacion.png" class="img-fluid">
+                      <!-- <div class="mt-5">
                         <ul class="list-inline mb-1">
                           <li class="list-inline-item px-2 me-2 ms-0">
                             <button type="button" class="btn btn-danger avatar-sm rounded-circle"
@@ -675,16 +680,16 @@
                             </button>
                           </li>
                         </ul>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </ng-template>
-                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                <!-- <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
                   <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#videocallModal"
                     (click)="openVideoModal(videoContent)">
                     <i class="ri-vidicon-line"></i>
                   </button>
-                </li>
+                </li> -->
                 <ng-template #videoContent let-modal>
                   <div class="modal-body">
                     <div class="text-center p-4">
