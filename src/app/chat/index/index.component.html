@@ -31,12 +31,12 @@
             <i class="ri-wechat-fill"></i>
           </a>
         </li>
-        <!-- <li class="nav-item" ngbTooltip="Grupos">
+        <li class="nav-item" ngbTooltip="Grupos">
           <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="activetab=3" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 3}">
             <i class="ri-group-2-fill"></i>
           </a>
-        </li> -->
+        </li>
         <li class="nav-item" ngbTooltip="Redes Sociales" placement="top">
           <a class="nav-link" id="pills-contacts-tab" (click)="activetab=4" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 4}">
@@ -128,7 +128,7 @@
         <div>
 
           <div class="px-4 pt-4">
-            <h4 class="mb-4">Chats prueba despliegue</h4>
+            <h4 class="mb-4">Conversaciones</h4>
             <div class="search-box chat-search-box">
               <div class="input-group mb-3 rounded-3">
                 <span class="input-group-text text-muted bg-light pe-1 ps-3" id="basic-addon1">
@@ -143,7 +143,7 @@
           </div> <!-- .p-4 -->
 
           <!-- Start user status -->
-          <div class="px-4 pb-4" dir="ltr">
+          <!-- <div class="px-4 pb-4" dir="ltr">
             <owl-carousel-o [options]="customOptions">
               <ng-template carouselSlide>
                 <div class="item">
@@ -210,8 +210,8 @@
 
             </owl-carousel-o>
 
-            <!-- end user status carousel -->
-          </div>
+
+          </div> -->
           <!-- end user status -->
 
           <!-- Start chat-message-list -->
@@ -267,7 +267,7 @@
         <div>
           <div class="p-4">
             <div class="user-chat-nav float-end">
-              <div ngbTooltip="Create group">
+              <div ngbTooltip="Crear grupo">
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0"
                   data-toggle="modal" data-target="#addgroup-exampleModal" (click)="openGroupModal(content)">
@@ -275,14 +275,14 @@
                 </button>
               </div>
             </div>
-            <h4 class="mb-4">{{'chat.tabs.groups.title' | translate}}</h4>
+            <h4 class="mb-4">Grupos de visualización</h4>
 
             <!-- Start add group Modal -->
             <ng-template #content let-modal>
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title font-size-16" id="addgroup-exampleModalLabel">
-                    {{'chat.tabs.groups.modal.title' | translate}}</h5>
+                    Crear nuevo gruo (Sólo para ordenamiento visual)</h5>
                   <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
                     (click)="modal.dismiss('Cross click')">
                   </button>
@@ -290,18 +290,17 @@
                 <div class="modal-body p-4">
                   <form>
                     <div class="mb-4">
-                      <label class="form-label" for="addgroupname-input">{{'chat.tabs.groups.modal.form.name.label' |
-                        translate}}</label>
+                      <label class="form-label" for="addgroupname-input">Nombre del grupo</label>
                       <input type="text" class="form-control" id="addgroupname-input"
                         placeholder="{{'chat.tabs.groups.modal.form.name.placeholder' | translate}}">
                     </div>
                     <div class="mb-4">
-                      <label class="form-label">{{'chat.tabs.groups.modal.form.members.label' | translate}}</label>
+                      <label class="form-label">Redes sociales del grupo</label>
                       <div class="mb-3">
                         <button class="btn btn-light btn-sm" type="button" data-toggle="collapse"
                           (click)="collapse.toggle()" [attr.aria-expanded]="!isCollapsed"
                           aria-controls="collapseExample">
-                          {{'chat.tabs.groups.modal.form.members.button.text' | translate}}
+                          Seleccionar redes sociales
                         </button>
                       </div>
 
@@ -309,7 +308,7 @@
                         [(ngbCollapse)]="isCollapsed">
                         <div class="card border">
                           <div class="card-header">
-                            <h5 class="font-size-15 mb-0">{{'chat.tabs.contacts.title' | translate}}</h5>
+                            <h5 class="font-size-15 mb-0">Redes Sociales</h5>
                           </div>
                           <div class="card-body p-2">
                             <perfect-scrollbar data-simplebar style="height: 150px;">
@@ -524,7 +523,7 @@
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </button>
                 <input type="text" class="form-control bg-light"
-                  placeholder="{{'chat.tabs.groups.search.placeholder' | translate}}" (keyup)="GroupSearch()"
+                  placeholder="Buscar grupos..." (keyup)="GroupSearch()"
                   id="searchGroup" autocomplete="off">
               </div>
             </div>
@@ -540,12 +539,12 @@
                     <div class="chat-user-img me-3 ms-0">
                       <div class="avatar-xs">
                         <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                          {{(item.name | translate).charAt(0)}}
+                          {{(item.nombregrupo | translate).charAt(0)}}
                         </span>
                       </div>
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
-                      <h5 class="text-truncate font-size-14 mb-0">#{{item.name | translate}}
+                      <h5 class="text-truncate font-size-14 mb-0">#{{item.nombregrupo | translate}}
                         <span class="badge badge-soft-danger rounded-pill float-end">{{item.unread}}</span>
                       </h5>
                     </div>

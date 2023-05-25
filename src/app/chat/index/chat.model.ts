@@ -44,21 +44,9 @@ export interface Chats {
   }>;
 }
 
-export interface Groups {
-  id: number;
-  name: string;
-  unread?: string;
-  messages?: Array<{
-    id?: any;
-    message?: string;
-    name?: string;
-    profile?: string;
-    time?: any;
-    align?: string,
-    isimage?:any;
-    imageContent?:any;
-    replayName?:any;
-    replaymsg?:any;
-  }>;
+export interface Grupos {
+  idgrupo: number;
+  nombregrupo: string;
+  descripcion?: string;
 }
 

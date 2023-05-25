@@ -7,7 +7,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 import { chat, groups } from './data';
-import { Conversacion, ApiResponse, ResponseItem, Groups } from './chat.model';
+import { Conversacion, ApiResponse, ResponseItem, Grupos } from './chat.model';
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -32,7 +32,7 @@ export class IndexComponent implements OnInit {
   activetab = 2;
   apiResponse : ApiResponse[];
   chat: ResponseItem[];
-  groups: Groups[];
+  groups: Grupos[];
   formData!: FormGroup;
   @ViewChild('scrollRef') scrollRef: any;
   emoji = '';
@@ -82,7 +82,7 @@ export class IndexComponent implements OnInit {
     this.senderName = JSON.parse(user).username
     this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
     this.loadRecuperacionMensajes();
-    this.groups = groups;
+    this.loadGrupos();
     this.lang = this.translate.currentLang;
     this.onListScroll();
   }
@@ -142,7 +142,7 @@ export class IndexComponent implements OnInit {
   // tslint:disable-next-line: typedef
   userName: any = 'Doris Brown';
   userStatus: any = 'online';
-  userProfile: any = 'assets/images/users/avatar-4.jpg';
+  userProfile: any = '';
   message: any;
   showChat(event: any, id: any) {
     var removeClass = document.querySelectorAll('.chat-user-list li');
@@ -159,7 +159,7 @@ export class IndexComponent implements OnInit {
     });
     this.userName = data[0].Nombre + " Mercado Libre- Nissan Satelite"
     this.userStatus = "online"
-    this.userProfile = 'assets/images/users/avatar-4.jpg';
+    this.userProfile = '';
     this.message = data[0].Conversacion
     this.onListScroll();
   }
@@ -384,11 +384,11 @@ export class IndexComponent implements OnInit {
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
     var data = this.groups.filter((group: any) => {
-      return group.id === id;
+      return group.idgrupo === id;
     });
-    this.userName = data[0].name
+    this.userName = data[0].nombregrupo
     this.userProfile = ''
-    this.message = data[0].messages
+    this.message = ''
   }
 
   /**
@@ -425,6 +425,19 @@ export class IndexComponent implements OnInit {
       res => {
        this.chat = res.body;
        console.log("este es el chat", this.chat);
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  }
+
+
+  loadGrupos(): void {
+    this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
+      res => {
+       this.groups = res;
+       console.log("Estos son los grupos", this.groups);
       },
       error => {
         console.error(error);
