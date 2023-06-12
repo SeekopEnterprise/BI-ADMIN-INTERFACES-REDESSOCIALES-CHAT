@@ -25,7 +25,7 @@
             <i class="ri-profile-line"></i>
           </a>
         </li>
-        <li class="nav-item" ngbTooltip="Conversaciones junta demostración">
+        <li class="nav-item" ngbTooltip="Conversaciones">
           <a class="nav-link active" id="pills-chat-tab" (click)="activetab=2" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 2}">
             <i class="ri-wechat-fill"></i>
@@ -242,11 +242,13 @@
                             <span class="dot ms-1"></span>
                             <span class="dot ms-1"></span>
                           </span></p>
-                        <p class="chat-user-message text-truncate mb-0">{{user.lastMessage | translate}}</p>
+                          <p class="chat-user-message text-truncate mb-0" *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
+                            {{getLastMessage(user.Conversacion)?.texto}}
+                          </p>
                       </div>
                       <div class="font-size-11">{{user.time | translate}}</div>
                       <div class="unread-message">
-                        <span class="badge badge-soft-danger rounded-pill">{{user.unRead}}</span>
+                        <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">{{user.unreadCount}}</span>
                       </div>
                     </div>
                   </a>

@@ -1,7 +1,8 @@
 export interface Conversacion {
-  idpregunta: string;
-  mensaje: string;
-  respuesta: string;
+  id: string;
+  texto: string;
+  align: string;
+  ultimoMensaje: boolean;
 }
 
 export interface ResponseItem {
@@ -13,6 +14,7 @@ export interface ResponseItem {
   urlpublicacion: string;
   Telefono: string;
   Conversacion: Conversacion[];
+  unreadCount?: number;
 }
 
 export interface ApiResponse {

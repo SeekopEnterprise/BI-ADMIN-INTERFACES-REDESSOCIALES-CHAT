@@ -14,6 +14,8 @@ import { Lightbox } from 'ngx-lightbox';
 import { environment } from '../../../environments/environment';
 import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
+import { Subscription } from 'rxjs';
+import { NotificacionesService } from '../../chat/notificaciones/notificaciones.service';
 
 // Date Format
 import { DatePipe } from '@angular/common';
@@ -29,8 +31,10 @@ import { DatePipe } from '@angular/common';
  */
 export class IndexComponent implements OnInit {
 
+  private chatSubscription: Subscription;
+
   activetab = 2;
-  apiResponse : ApiResponse[];
+  apiResponse: ApiResponse[];
   chat: ResponseItem[];
   groups: Grupos[];
   formData!: FormGroup;
@@ -40,6 +44,9 @@ export class IndexComponent implements OnInit {
   isgroupMessage = false;
   mode: string | undefined;
   public isCollapsed = true;
+
+  public nuevoMensaje = false;
+  public datosMensajeNuevo;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -52,7 +59,7 @@ export class IndexComponent implements OnInit {
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
-  constructor(private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
+  constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient) { }
 
@@ -70,6 +77,54 @@ export class IndexComponent implements OnInit {
   senderName: any;
   senderProfile: any;
   ngOnInit(): void {
+
+    this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
+    .subscribe((event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      if (event.type === 'open') {
+        this.notificacionService.send({
+          accion: 'setApp',
+          nombreApp: 'proveedoresDigitales'
+        });
+      } else if (event.type === 'message') {
+        this.notificacionService = data.mensaje;
+
+        // Código para actualizar la conversación en memoria
+        const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === data.idPublicacion);
+        if (chatToUpdate) {
+          const newMessage = {
+            id: data.idMensaje,
+            texto: data.mensaje,
+            unreadCount: 0,
+            align: "left",
+            ultimoMensaje: false, // Cada nuevo mensaje no es el último al inicio
+          };
+          chatToUpdate.Conversacion.push(newMessage);
+
+          // Marcamos todos los mensajes como no últimos
+          chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+
+          // Si el mensaje es el último, lo establecemos como último
+          newMessage.ultimoMensaje = true;
+
+          // Incrementa el contador de mensajes no leídos
+          chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+
+          // Reordena la lista de chats para colocar este chat al inicio
+          this.chat.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+        }
+
+        // Notificar al usuario sobre el nuevo mensaje
+        this.showNewMessageNotification(chatToUpdate);
+        this.onListScroll();
+        /*
+        // Código para recuperar los mensajes desde el servidor
+        this.loadRecuperacionMensajes(data);
+        */
+      }
+    });
+
+
 
     document.body.setAttribute('data-layout-mode', 'light');
 
@@ -89,6 +144,24 @@ export class IndexComponent implements OnInit {
 
   ngAfterViewInit() {
     this.scrollRef.SimpleBar.getScrollElement().scrollTop = 100;
+  }
+
+  ngOnDestroy(): void {
+    this.chatSubscription.unsubscribe();
+    this.notificacionService.close();
+  }
+
+  getLastMessage(conversacion: Conversacion[]): Conversacion {
+    return conversacion.length > 0 ? conversacion[conversacion.length - 1] : null;
+  }
+
+
+  showNewMessageNotification(chat: ResponseItem): void {
+    // Mostrar un aviso de "nuevo mensaje" en la interfaz del usuario.
+    // Aquí puedes agregar el código para mostrar la notificación según cómo hayas implementado tu interfaz.
+    // Por ejemplo, puedes cambiar una variable "newMessage" a true y usarla para mostrar un elemento en tu HTML.
+    // this.nuevoMensaje = true;
+   // this.datosMensajeNuevo = chat.Nombre;  // Guardar el nombre del chat para mostrarlo en la notificación.
   }
 
   /**
@@ -155,8 +228,10 @@ export class IndexComponent implements OnInit {
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
     var data = this.chat.filter((chat: any) => {
+
       return chat.Email === id;
     });
+    data[0].unreadCount=0;
     this.userName = data[0].Nombre + " Mercado Libre- Nissan Satelite"
     this.userStatus = "online"
     this.userProfile = '';
@@ -420,11 +495,25 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  loadRecuperacionMensajes(): void {
+  loadRecuperacionMensajes(socketData = null): void {
     this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
       res => {
        this.chat = res.body;
-       console.log("este es el chat", this.chat);
+
+       // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior
+       if (socketData) {
+         this.chat.sort((a, b) => {
+           if (a.IdPublicacion === socketData.idPublicacion) {
+             return -1;
+           }
+           if (b.IdPublicacion === socketData.idPublicacion) {
+             return 1;
+           }
+           return 0;
+         });
+         // Notificar al usuario sobre el nuevo mensaje
+         this.showNewMessageNotification(this.chat[0]);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
+       }
       },
       error => {
         console.error(error);
@@ -436,8 +525,8 @@ export class IndexComponent implements OnInit {
   loadGrupos(): void {
     this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
       res => {
-       this.groups = res;
-       console.log("Estos son los grupos", this.groups);
+        this.groups = res;
+        console.log("Estos son los grupos", this.groups);
       },
       error => {
         console.error(error);

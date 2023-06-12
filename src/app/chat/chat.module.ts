@@ -21,9 +21,12 @@ import { SimplebarAngularModule } from 'simplebar-angular';
 
 import { IndexComponent } from './index/index.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { NotificacionesComponent } from './notificaciones/notificaciones/notificaciones.component';
+
+import { NotificacionesService } from '../chat/notificaciones/notificaciones.service';
 
 @NgModule({
-  declarations: [IndexComponent],
+  declarations: [IndexComponent, NotificacionesComponent],
   imports: [
     PerfectScrollbarModule,
     LightboxModule,
@@ -42,7 +45,8 @@ import { TranslateModule } from '@ngx-translate/core';
     PickerModule
   ],
   providers: [
-    DatePipe
+    DatePipe,
+    NotificacionesService
   ],
   exports: []
 })
