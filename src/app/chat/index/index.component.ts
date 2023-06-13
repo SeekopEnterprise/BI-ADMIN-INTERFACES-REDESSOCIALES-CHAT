@@ -47,6 +47,13 @@ export class IndexComponent implements OnInit {
 
   public nuevoMensaje = false;
   public datosMensajeNuevo;
+  public selectedChatId: any;
+
+  public Distribuidor: string;
+  public RedSocial: string;
+  public Email: string;
+  public IdPublicacionLead: string;
+  public LinkPublicacion: string;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -79,50 +86,50 @@ export class IndexComponent implements OnInit {
   ngOnInit(): void {
 
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
-    .subscribe((event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-      if (event.type === 'open') {
-        this.notificacionService.send({
-          accion: 'setApp',
-          nombreApp: 'proveedoresDigitales'
-        });
-      } else if (event.type === 'message') {
-        this.notificacionService = data.mensaje;
+      .subscribe((event: MessageEvent) => {
+        const data = JSON.parse(event.data);
+        if (event.type === 'open') {
+          this.notificacionService.send({
+            accion: 'setApp',
+            nombreApp: 'proveedoresDigitales'
+          });
+        } else if (event.type === 'message') {
+          this.notificacionService = data.mensaje;
 
-        // Código para actualizar la conversación en memoria
-        const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === data.idPublicacion);
-        if (chatToUpdate) {
-          const newMessage = {
-            id: data.idMensaje,
-            texto: data.mensaje,
-            unreadCount: 0,
-            align: "left",
-            ultimoMensaje: false, // Cada nuevo mensaje no es el último al inicio
-          };
-          chatToUpdate.Conversacion.push(newMessage);
+          // Código para actualizar la conversación en memoria
+          const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === data.idPublicacion);
+          if (chatToUpdate) {
+            const newMessage = {
+              id: data.idMensaje,
+              texto: data.mensaje,
+              unreadCount: 0,
+              align: "left",
+              ultimoMensaje: false, // Cada nuevo mensaje no es el último al inicio
+            };
+            chatToUpdate.Conversacion.push(newMessage);
 
-          // Marcamos todos los mensajes como no últimos
-          chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+            // Marcamos todos los mensajes como no últimos
+            chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
 
-          // Si el mensaje es el último, lo establecemos como último
-          newMessage.ultimoMensaje = true;
+            // Si el mensaje es el último, lo establecemos como último
+            newMessage.ultimoMensaje = true;
 
-          // Incrementa el contador de mensajes no leídos
-          chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+            // Incrementa el contador de mensajes no leídos
+            chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
 
-          // Reordena la lista de chats para colocar este chat al inicio
-          this.chat.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            // Reordena la lista de chats para colocar este chat al inicio
+            this.chat.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+          }
+
+          // Notificar al usuario sobre el nuevo mensaje
+          this.showNewMessageNotification(chatToUpdate);
+          this.onListScroll();
+          /*
+          // Código para recuperar los mensajes desde el servidor
+          this.loadRecuperacionMensajes(data);
+          */
         }
-
-        // Notificar al usuario sobre el nuevo mensaje
-        this.showNewMessageNotification(chatToUpdate);
-        this.onListScroll();
-        /*
-        // Código para recuperar los mensajes desde el servidor
-        this.loadRecuperacionMensajes(data);
-        */
-      }
-    });
+      });
 
 
 
@@ -161,7 +168,7 @@ export class IndexComponent implements OnInit {
     // Aquí puedes agregar el código para mostrar la notificación según cómo hayas implementado tu interfaz.
     // Por ejemplo, puedes cambiar una variable "newMessage" a true y usarla para mostrar un elemento en tu HTML.
     // this.nuevoMensaje = true;
-   // this.datosMensajeNuevo = chat.Nombre;  // Guardar el nombre del chat para mostrarlo en la notificación.
+    // this.datosMensajeNuevo = chat.Nombre;  // Guardar el nombre del chat para mostrarlo en la notificación.
   }
 
   /**
@@ -231,11 +238,17 @@ export class IndexComponent implements OnInit {
 
       return chat.Email === id;
     });
-    data[0].unreadCount=0;
-    this.userName = data[0].Nombre + " Mercado Libre- Nissan Satelite"
-    this.userStatus = "online"
+    data[0].unreadCount = 0;
+    this.userName = data[0].Nombre;
+    this.Distribuidor ="Nissan Satelite"
+    this.RedSocial = "Mercado Libre"
+    this.Email = data[0].Email;
+    this.IdPublicacionLead = data[0].IdPublicacion;
+    this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
+    this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
+    this.selectedChatId = data[0].IdPublicacion;
     this.onListScroll();
   }
 
@@ -303,18 +316,36 @@ export class IndexComponent implements OnInit {
     var dateTime = this.datePipe.transform(new Date(), "h:mm a");
     var chatReplyUser = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : '';
     var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : '';
-    this.message.push({
+    var newMessage = {
       id: 1,
       texto: message,
       name: this.senderName,
       profile: this.senderProfile,
-      time: dateTime,
+      time: null,
       align: 'right',
       isimage: status,
+      ultimoMensaje: false,
       imageContent: [img],
       replayName: chatReplyUser,
       replaymsg: chatReplyMessage,
-    });
+    };
+
+
+    // Encuentra la conversación a la que pertenece este mensaje
+    const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === this.selectedChatId);
+    if (chatToUpdate) {
+      chatToUpdate.Conversacion.push(newMessage);
+      // Marca todos los mensajes como no últimos
+      chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+      // Marca el nuevo mensaje como el último
+      newMessage.ultimoMensaje = true;
+    }
+
+      // Solo empuja a this.message si no es el mismo que chatToUpdate.Conversacion
+  if (this.message !== chatToUpdate.Conversacion) {
+    this.message.push(newMessage);
+  }
+
     this.onListScroll();
 
     // Set Form Data Reset
@@ -498,22 +529,22 @@ export class IndexComponent implements OnInit {
   loadRecuperacionMensajes(socketData = null): void {
     this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
       res => {
-       this.chat = res.body;
+        this.chat = res.body;
 
-       // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior
-       if (socketData) {
-         this.chat.sort((a, b) => {
-           if (a.IdPublicacion === socketData.idPublicacion) {
-             return -1;
-           }
-           if (b.IdPublicacion === socketData.idPublicacion) {
-             return 1;
-           }
-           return 0;
-         });
-         // Notificar al usuario sobre el nuevo mensaje
-         this.showNewMessageNotification(this.chat[0]);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
-       }
+        // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior
+        if (socketData) {
+          this.chat.sort((a, b) => {
+            if (a.IdPublicacion === socketData.idPublicacion) {
+              return -1;
+            }
+            if (b.IdPublicacion === socketData.idPublicacion) {
+              return 1;
+            }
+            return 0;
+          });
+          // Notificar al usuario sobre el nuevo mensaje
+          this.showNewMessageNotification(this.chat[0]);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
+        }
       },
       error => {
         console.error(error);

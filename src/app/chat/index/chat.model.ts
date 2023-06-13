@@ -1,8 +1,15 @@
 export interface Conversacion {
-  id: string;
+  id: any;
   texto: string;
   align: string;
   ultimoMensaje: boolean;
+  name?: string,
+  profile?: any,
+  time?: any,
+  isimage?: any,
+  imageContent?: any,
+  replayName?: any,
+  replaymsg?: any,
 }
 
 export interface ResponseItem {
@@ -39,10 +46,10 @@ export interface Chats {
     profile?: string;
     time?: any;
     align?: string,
-    isimage?:any;
-    imageContent?:any;
-    replayName?:any;
-    replaymsg?:any;
+    isimage?: any;
+    imageContent?: any;
+    replayName?: any;
+    replaymsg?: any;
   }>;
 }
 

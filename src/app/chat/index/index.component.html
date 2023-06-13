@@ -134,8 +134,7 @@
                 <span class="input-group-text text-muted bg-light pe-1 ps-3" id="basic-addon1">
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </span>
-                <input type="text" class="form-control bg-light"
-                  placeholder="Buscar mensajes"
+                <input type="text" class="form-control bg-light" placeholder="Buscar mensajes"
                   aria-label="Search messages or users" aria-describedby="basic-addon1" (keyup)="ContactSearch()"
                   id="searchContact" autocomplete="off">
               </div>
@@ -220,7 +219,8 @@
 
             <perfect-scrollbar class="chat-message-list">
               <ul class="list-unstyled chat-list chat-user-list">
-                <li *ngFor="let user of chat" [ngClass]="{'typing': user.isTyping}" (click)="showChat($event,user.Email)">
+                <li *ngFor="let user of chat" [ngClass]="{'typing': user.isTyping}"
+                  (click)="showChat($event,user.Email)">
                   <a href="javascript:void(0);">
                     <div class="d-flex">
                       <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
@@ -242,13 +242,15 @@
                             <span class="dot ms-1"></span>
                             <span class="dot ms-1"></span>
                           </span></p>
-                          <p class="chat-user-message text-truncate mb-0" *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
-                            {{getLastMessage(user.Conversacion)?.texto}}
-                          </p>
+                        <p class="chat-user-message text-truncate mb-0"
+                          *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
+                          {{getLastMessage(user.Conversacion)?.texto}}
+                        </p>
                       </div>
                       <div class="font-size-11">{{user.time | translate}}</div>
                       <div class="unread-message">
-                        <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">{{user.unreadCount}}</span>
+                        <span class="badge badge-soft-danger rounded-pill"
+                          *ngIf="user.unreadCount">{{user.unreadCount}}</span>
                       </div>
                     </div>
                   </a>
@@ -524,8 +526,7 @@
                 <button class="input-group-text text-muted bg-light pe-1 ps-3" type="button">
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </button>
-                <input type="text" class="form-control bg-light"
-                  placeholder="Buscar grupos..." (keyup)="GroupSearch()"
+                <input type="text" class="form-control bg-light" placeholder="Buscar grupos..." (keyup)="GroupSearch()"
                   id="searchGroup" autocomplete="off">
               </div>
             </div>
@@ -613,17 +614,20 @@
                   <img *ngIf="userProfile" src="{{userProfile}}" class="rounded-circle avatar-xs" alt="">
                   <div class="avatar-xs" *ngIf="!userProfile">
                     <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                      {{(userName | translate).charAt(0)}}
+                      {{userName.charAt(0)}}
                     </span>
                   </div>
                 </div>
                 <div class="flex-grow-1 overflow-hidden">
                   <h5 class="font-size-16 mb-0 text-truncate">
                     <a href="javascript:void(0);" class="text-reset user-profile-show username"
-                      (click)="onChatInfoClicked(userInfo)">{{userName | translate}}</a>
-                    <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
-                      [ngClass]=" {'text-success': userStatus === 'online','text-warning': userStatus === 'away'}"></i>
+                      (click)="onChatInfoClicked(userInfo)">{{userName}}</a>
+
+
                   </h5>
+                  <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
+                      [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
+                      <strong style="font-size: 14px;">{{Distribuidor + ' - ' + RedSocial}}</strong>
                 </div>
               </div>
             </div>
@@ -631,7 +635,7 @@
               <ul class="list-inline user-chat-nav text-end mb-0">
                 <li class="list-inline-item">
                   <div class="dropdown" ngbDropdown>
-                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown"
+                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown" ngbTooltip="Buscar en conversación"
                       aria-haspopup="true" aria-expanded="false">
                       <i class="ri-search-line"></i>
                     </button>
@@ -645,23 +649,23 @@
                   </div>
                 </li>
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#audiocallModal"
+                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#audiocallModal" ngbTooltip="Ver publicación"
                     (click)="openCallModal(callContent)">
-                    <i class="ri-home-line"></i>
+                    <i class="ri-upload-cloud-2-fill"></i>
                   </button>
                 </li>
                 <ng-template #callContent let-modal>
                   <div class="modal-body">
                     <div class="text-center p-4">
-                      <div class="avatar-lg mx-auto mb-4">
+                      <div class="col-sm-12">
                         <!-- <img src="{{userProfile}}" alt="" class="img-thumbnail rounded-circle"> -->
-                        <h4>URL Publicación</h4>
-                        <a href="https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f" target="_blank">
-                         Visitar la publicación
+                        <h4>{{RedSocial + ' - ' + Distribuidor}}</h4>
+                        <a href="https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f"
+                          target="_blank">
+                          Visitar la publicación
                         </a>
                       </div>
-                      <h5 class="text-truncate">{{(userName | translate)}}</h5>
-                      <p class="text-muted">Id Publicación</p>
+                      <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
                       <img src="../../../assets/images/publicacion.png" class="img-fluid">
                       <!-- <div class="mt-5">
                         <ul class="list-inline mb-1">
@@ -722,8 +726,8 @@
                   </div>
                 </ng-template>
                 <li class="list-inline-item d-none d-lg-inline-block">
-                  <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)">
-                    <i class="ri-user-2-line"></i>
+                  <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)" ngbTooltip="Información del interesado">
+                    <i class="ri-chat-smile-2-line"></i>
                   </button>
                 </li>
                 <li class="list-inline-item">
@@ -870,7 +874,7 @@
                         </div>
 
                         <p class="chat-time mb-0" *ngIf="!data.istyping">
-                          <i class="ri-time-line align-middle"></i>
+                          <i class="ri-time-line align-middle" *ngIf="data.time"></i>
                           <span class="align-middle">{{data.time | translate}}</span>
                         </p>
                       </div>
@@ -1028,19 +1032,21 @@
   <div class="offcanvas-body profile-offcanvas p-0">
     <div class="text-center p-4 border-bottom">
       <div class="mb-4">
-        <img src="{{userProfile}}" class="rounded-circle avatar-lg img-thumbnail" alt="">
+        <img
+          src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
+          class="rounded-circle avatar-lg img-thumbnail" alt="">
       </div>
-      <h5 class="font-size-16 mb-1 text-truncate">{{userName | translate}}</h5>
+      <h5 class="font-size-16 mb-1 text-truncate">{{RedSocial + ' - ' +Distribuidor}}</h5>
       <p class="text-muted text-truncate mb-1"><i class="ri-record-circle-fill font-size-10 me-1"
-          [ngClass]=" {'text-success': userStatus === 'online','text-warning': userStatus === 'away'}"></i>
-        {{userStatus | translate}}</p>
+          [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
+        {{userStatu}}</p>
     </div>
     <!-- End profile user -->
 
     <!-- Start user-profile-desc -->
     <perfect-scrollbar class="p-4 user-profile-desc">
       <div class="text-muted">
-        <p class="mb-4"> {{'chat.rightpanel.message' | translate}}</p>
+        <p class="mb-4"> Información del interesado</p>
       </div>
 
       <div id="profile-user-accordion" class="custom-accordion">
@@ -1048,41 +1054,54 @@
           <ngb-panel cardClass="card shadow-none border mb-2" id="about">
             <ng-template ngbPanelTitle>
               <h5 class="font-size-14 m-0">
-                <i class="ri-user-2-line me-2 align-middle d-inline-block"></i>
-                {{'chat.rightpanel.about.text' | translate}}
+                <i class="ri-chat-smile-2-line me-2 align-middle d-inline-block"></i>
+                Detalles del potencial cliente
               </h5>
             </ng-template>
             <ng-template ngbPanelContent>
+
               <div>
-                <p class="text-muted mb-1">{{'chat.rightpanel.about.name.text' | translate}}</p>
+                <p class="text-muted mb-1">Nombre</p>
                 <h5 class="font-size-14">{{userName | translate}}</h5>
               </div>
 
               <div class="mt-4">
-                <p class="text-muted mb-1">{{'chat.rightpanel.about.email.text' | translate}}</p>
-                <h5 class="font-size-14">{{'chat.rightpanel.about.email.value' | translate}}</h5>
+                <p class="text-muted mb-1">Email</p>
+                <h5 class="font-size-14">{{Email}}</h5>
               </div>
 
-              <div class="mt-4">
-                <p class="text-muted mb-1">{{'chat.rightpanel.about.time.text' | translate}}</p>
-                <h5 class="font-size-14">{{'chat.rightpanel.about.time.value' | translate}}</h5>
-              </div>
 
-              <div class="mt-4">
-                <p class="text-muted mb-1">{{'chat.rightpanel.about.location.text' | translate}}</p>
-                <h5 class="font-size-14 mb-0">{{'chat.rightpanel.about.location.value' | translate}}</h5>
-              </div>
             </ng-template>
           </ngb-panel>
           <ngb-panel cardClass="card shadow-none border mb-2" id="file">
             <ng-template ngbPanelTitle>
               <h5 class="font-size-14 m-0">
-                <i class="ri-attachment-line me-2 align-middle d-inline-block"></i>{{'chat.rightpanel.attachedfile.text'
-                | translate}}
+                <i class="ri-upload-cloud-2-fill me-2 align-middle d-inline-block"></i>Detalles de la publicación
               </h5>
             </ng-template>
             <ng-template ngbPanelContent>
-              <div class="card p-2 border mb-2">
+              <div>
+                <p class="text-muted mb-1">Red Social</p>
+                <h5 class="font-size-14">Mercado Libre</h5>
+              </div>
+
+              <div class="mt-4">
+                <p class="text-muted mb-1">Distribuidor</p>
+                <h5 class="font-size-14">{{Distribuidor}}</h5>
+              </div>
+
+              <div class="mt-4">
+                <p class="text-muted mb-1">Id Publicación</p>
+                <h5 class="font-size-14 mb-0">{{IdPublicacionLead}}</h5>
+              </div>
+
+              <div class="mt-4">
+                <p class="text-muted mb-1">Publicación</p>
+                <h5 class="font-size-14 mb-0">
+                  <a href="{{LinkPublicacion}}" target="_blank">{{LinkPublicacion}}</a>
+                </h5>
+              </div>
+              <!--               <div class="card p-2 border mb-2">
                 <div class="d-flex align-items-center">
                   <div class="avatar-sm me-3 ms-0">
                     <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
@@ -1126,7 +1145,7 @@
                   </div>
                 </div>
               </div>
-              <!-- end card -->
+
 
               <div class="card p-2 border mb-2">
                 <div class="d-flex align-items-center">
@@ -1172,7 +1191,7 @@
                   </div>
                 </div>
               </div>
-              <!-- end card -->
+
 
               <div class="card p-2 border mb-2">
                 <div class="d-flex align-items-center">
@@ -1218,7 +1237,7 @@
                   </div>
                 </div>
               </div>
-              <!-- end card -->
+
 
               <div class="card p-2 border mb-2">
                 <div class="d-flex align-items-center">
@@ -1263,8 +1282,8 @@
                     </ul>
                   </div>
                 </div>
-              </div>
-              <!-- end card -->
+              </div> -->
+
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
