@@ -31,10 +31,10 @@
             <i class="ri-wechat-fill"></i>
           </a>
         </li>
-        <li class="nav-item" ngbTooltip="Grupos">
+        <li class="nav-item" ngbTooltip="Distribuidores">
           <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="activetab=3" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 3}">
-            <i class="ri-group-2-fill"></i>
+            <i class="ri-shield-flash-fill"></i>
           </a>
         </li>
         <li class="nav-item" ngbTooltip="Redes Sociales" placement="top">
@@ -43,12 +43,12 @@
             <i class="ri-chat-heart-line"></i>
           </a>
         </li>
-        <li class="nav-item" ngbTooltip="Configuraciones">
+        <!-- <li class="nav-item" ngbTooltip="Configuraciones">
           <a class="nav-link" id="pills-setting-tab" (click)="activetab=5" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 5}">
             <i class="ri-settings-2-line"></i>
           </a>
-        </li>
+        </li> -->
 
 
         <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none" ngbDropdown placement="top">
@@ -219,44 +219,51 @@
 
             <perfect-scrollbar class="chat-message-list">
               <ul class="list-unstyled chat-list chat-user-list">
-                <li *ngFor="let user of chat" [ngClass]="{'typing': user.isTyping}"
-                  (click)="showChat($event,user.Email)">
-                  <a href="javascript:void(0);">
-                    <div class="d-flex">
-                      <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
-                        <img *ngIf="user.profilePicture" src="{{user.profilePicture}}" class="rounded-circle avatar-xs"
-                          alt="">
-                        <div class="avatar-xs" *ngIf="!user.profilePicture">
-                          <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                            {{(user.Nombre | translate).charAt(0)}}
-                          </span>
+                <ng-container *ngFor="let group of chat">
+                  <div class="p-3 font-weight-bold text-primary">
+                    <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ group.key }}
+                  </div>
+                  <!-- <li class="group-name">{{ group.key }}</li> -->
+                  <li *ngFor="let user of group.prospects" [ngClass]="{'typing': user.isTyping}"
+                    (click)="showChat($event,user.Email)">
+                    <a href="javascript:void(0);">
+                      <div class="d-flex">
+                        <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
+                          <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
+                            class="rounded-circle avatar-xs" alt="">
+                          <div class="avatar-xs" *ngIf="!user.profilePicture">
+                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                              {{(user.Nombre | translate).charAt(0)}}
+                            </span>
+                          </div>
+                          <span *ngIf="user" class="user-status"></span>
                         </div>
-                        <span *ngIf="user" class="user-status"></span>
-                      </div>
 
-                      <div class="flex-grow-1 overflow-hidden">
-                        <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
-                        <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing<span
-                            class="animate-typing">
-                            <span class="dot ms-1"></span>
-                            <span class="dot ms-1"></span>
-                            <span class="dot ms-1"></span>
-                          </span></p>
-                        <p class="chat-user-message text-truncate mb-0"
-                          *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
-                          {{getLastMessage(user.Conversacion)?.texto}}
-                        </p>
+                        <div class="flex-grow-1 overflow-hidden">
+                          <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
+                          <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing<span
+                              class="animate-typing">
+                              <span class="dot ms-1"></span>
+                              <span class="dot ms-1"></span>
+                              <span class="dot ms-1"></span>
+                            </span></p>
+                          <p class="chat-user-message text-truncate mb-0"
+                            *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
+                            {{getLastMessage(user.Conversacion)?.texto}}
+                          </p>
+                        </div>
+                        <div class="font-size-11">{{user.time | translate}}</div>
+                        <div class="unread-message">
+                          <span class="badge badge-soft-danger rounded-pill"
+                            *ngIf="user.unreadCount">{{user.unreadCount}}</span>
+                        </div>
                       </div>
-                      <div class="font-size-11">{{user.time | translate}}</div>
-                      <div class="unread-message">
-                        <span class="badge badge-soft-danger rounded-pill"
-                          *ngIf="user.unreadCount">{{user.unreadCount}}</span>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+                    </a>
+                  </li>
+                </ng-container>
               </ul>
             </perfect-scrollbar>
+
 
           </div>
           <!-- End chat-message-list -->
@@ -271,22 +278,22 @@
         <div>
           <div class="p-4">
             <div class="user-chat-nav float-end">
-              <div ngbTooltip="Crear grupo">
-                <!-- Button trigger modal -->
+              <!-- <div ngbTooltip="Crear grupo">
+
                 <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0"
                   data-toggle="modal" data-target="#addgroup-exampleModal" (click)="openGroupModal(content)">
                   <i class="ri-group-line me-1"></i>
                 </button>
-              </div>
+              </div> -->
             </div>
-            <h4 class="mb-4">Grupos de visualización</h4>
+            <h4 class="mb-4">Distribuidores</h4>
 
             <!-- Start add group Modal -->
             <ng-template #content let-modal>
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title font-size-16" id="addgroup-exampleModalLabel">
-                    Crear nuevo gruo (Sólo para ordenamiento visual)</h5>
+                    Asociar nuevo distribuidor</h5>
                   <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
                     (click)="modal.dismiss('Cross click')">
                   </button>
@@ -526,8 +533,8 @@
                 <button class="input-group-text text-muted bg-light pe-1 ps-3" type="button">
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </button>
-                <input type="text" class="form-control bg-light" placeholder="Buscar grupos..." (keyup)="GroupSearch()"
-                  id="searchGroup" autocomplete="off">
+                <input type="text" class="form-control bg-light" placeholder="Buscar distribuidores..."
+                  (keyup)="GroupSearch()" id="searchGroup" autocomplete="off">
               </div>
             </div>
             <!-- end search-box -->
@@ -626,8 +633,8 @@
 
                   </h5>
                   <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
-                      [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
-                      <strong style="font-size: 14px;">{{Distribuidor + ' - ' + RedSocial}}</strong>
+                    [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
+                  <strong style="font-size: 14px;">{{Distribuidor + ' - ' + RedSocial}}</strong>
                 </div>
               </div>
             </div>
@@ -635,8 +642,8 @@
               <ul class="list-inline user-chat-nav text-end mb-0">
                 <li class="list-inline-item">
                   <div class="dropdown" ngbDropdown>
-                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown" ngbTooltip="Buscar en conversación"
-                      aria-haspopup="true" aria-expanded="false">
+                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown"
+                      ngbTooltip="Buscar en conversación" aria-haspopup="true" aria-expanded="false">
                       <i class="ri-search-line"></i>
                     </button>
                     <div class="dropdown-menu p-0 dropdown-menu-right dropdown-menu-md" ngbDropdownMenu>
@@ -649,8 +656,8 @@
                   </div>
                 </li>
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#audiocallModal" ngbTooltip="Ver publicación"
-                    (click)="openCallModal(callContent)">
+                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#audiocallModal"
+                    ngbTooltip="Ver publicación" (click)="openCallModal(callContent)">
                     <i class="ri-upload-cloud-2-fill"></i>
                   </button>
                 </li>
@@ -726,8 +733,9 @@
                   </div>
                 </ng-template>
                 <li class="list-inline-item d-none d-lg-inline-block">
-                  <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)" ngbTooltip="Información del interesado">
-                    <i class="ri-chat-smile-2-line"></i>
+                  <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)"
+                    ngbTooltip="Información del interesado">
+                    <i class="ri-account-pin-circle-line"></i>
                   </button>
                 </li>
                 <li class="list-inline-item">

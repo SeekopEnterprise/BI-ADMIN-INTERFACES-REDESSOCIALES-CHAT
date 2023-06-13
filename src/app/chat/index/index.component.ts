@@ -7,7 +7,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 import { chat, groups } from './data';
-import { Conversacion, ApiResponse, ResponseItem, Grupos } from './chat.model';
+import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem } from './chat.model';
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -35,7 +35,8 @@ export class IndexComponent implements OnInit {
 
   activetab = 2;
   apiResponse: ApiResponse[];
-  chat: ResponseItem[];
+  //chat: ResponseItem[];
+  public chat: GroupedResponseItem[] = [];
   groups: Grupos[];
   formData!: FormGroup;
   @ViewChild('scrollRef') scrollRef: any;
@@ -68,7 +69,11 @@ export class IndexComponent implements OnInit {
 
   constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient) { }
+    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient) {
+      this.formData = this.formBuilder.group({
+        message: ['', [Validators.required]],
+      });
+     }
 
   /**
   * Open lightbox
@@ -83,7 +88,14 @@ export class IndexComponent implements OnInit {
 
   senderName: any;
   senderProfile: any;
-  ngOnInit(): void {
+  async ngOnInit() {
+    try {
+      await this.loadGrupos();
+      await this.loadRecuperacionMensajes();
+    } catch (error) {
+      console.error('Error cargando grupos o recuperando mensajes:', error);
+      return;
+    }
 
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
@@ -97,7 +109,12 @@ export class IndexComponent implements OnInit {
           this.notificacionService = data.mensaje;
 
           // Código para actualizar la conversación en memoria
-          const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === data.idPublicacion);
+          //const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === data.idPublicacion);
+          const chatToUpdate = this.chat
+            .map(group => group.prospects)
+            .reduce((a, b) => a.concat(b), [])
+            .find(prospect => prospect.IdPublicacion === data.idPublicacion);
+
           if (chatToUpdate) {
             const newMessage = {
               id: data.idMensaje,
@@ -117,34 +134,34 @@ export class IndexComponent implements OnInit {
             // Incrementa el contador de mensajes no leídos
             chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
 
-            // Reordena la lista de chats para colocar este chat al inicio
-            this.chat.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            // Reordena la lista de grupos para colocar el grupo con el chat actualizado al inicio
+            this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
+
+            // Reordena la lista de prospectos dentro del grupo correcto para colocar el chat actualizado al inicio
+            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
+            if (groupToUpdate) {
+              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            }
           }
 
           // Notificar al usuario sobre el nuevo mensaje
           this.showNewMessageNotification(chatToUpdate);
           this.onListScroll();
-          /*
-          // Código para recuperar los mensajes desde el servidor
-          this.loadRecuperacionMensajes(data);
-          */
         }
       });
+
 
 
 
     document.body.setAttribute('data-layout-mode', 'light');
 
     // Validation
-    this.formData = this.formBuilder.group({
-      message: ['', [Validators.required]],
-    });
+
 
     const user = window.localStorage.getItem('currentUser');
     this.senderName = JSON.parse(user).username
     this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
-    this.loadRecuperacionMensajes();
-    this.loadGrupos();
+
     this.lang = this.translate.currentLang;
     this.onListScroll();
   }
@@ -221,7 +238,7 @@ export class IndexComponent implements OnInit {
    */
   // tslint:disable-next-line: typedef
   userName: any = 'Doris Brown';
-  userStatus: any = 'online';
+  userStatus: any = 'En línea';
   userProfile: any = '';
   message: any;
   showChat(event: any, id: any) {
@@ -234,13 +251,19 @@ export class IndexComponent implements OnInit {
     document.querySelector('.chat-welcome-section').classList.add('d-none');
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
-    var data = this.chat.filter((chat: any) => {
+    /*  var data = this.chat.flatMap(group => group.prospects).filter((prospect: any) => {
+       return prospect.Email === id;
+     }); */
+    var data = this.chat
+      .map(group => group.prospects)
+      .reduce((a, b) => a.concat(b), [])
+      .filter((prospect: any) => {
+        return prospect.Email === id;
+      });
 
-      return chat.Email === id;
-    });
     data[0].unreadCount = 0;
     this.userName = data[0].Nombre;
-    this.Distribuidor ="Nissan Satelite"
+    this.Distribuidor = data[0].NombreGrupo;
     this.RedSocial = "Mercado Libre"
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
@@ -330,9 +353,14 @@ export class IndexComponent implements OnInit {
       replaymsg: chatReplyMessage,
     };
 
-
     // Encuentra la conversación a la que pertenece este mensaje
-    const chatToUpdate = this.chat.find(chat => chat.IdPublicacion === this.selectedChatId);
+    // const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === this.selectedChatId);
+    const chatToUpdate = this.chat
+      .map(group => group.prospects)
+      .reduce((a, b) => a.concat(b), [])
+      .find(prospect => prospect.IdPublicacion === this.selectedChatId);
+
+
     if (chatToUpdate) {
       chatToUpdate.Conversacion.push(newMessage);
       // Marca todos los mensajes como no últimos
@@ -341,10 +369,10 @@ export class IndexComponent implements OnInit {
       newMessage.ultimoMensaje = true;
     }
 
-      // Solo empuja a this.message si no es el mismo que chatToUpdate.Conversacion
-  if (this.message !== chatToUpdate.Conversacion) {
-    this.message.push(newMessage);
-  }
+    // Solo empuja a this.message si no es el mismo que chatToUpdate.Conversacion
+    if (chatToUpdate && this.message !== chatToUpdate.Conversacion) {
+      this.message.push(newMessage);
+    }
 
     this.onListScroll();
 
@@ -526,43 +554,65 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  loadRecuperacionMensajes(socketData = null): void {
-    this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
-      res => {
-        this.chat = res.body;
+  loadRecuperacionMensajes(socketData = null): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
+        res => {
+          let prospects = res.body;
 
-        // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior
-        if (socketData) {
-          this.chat.sort((a, b) => {
-            if (a.IdPublicacion === socketData.idPublicacion) {
-              return -1;
+          // Agrupar prospectos por distribuidor
+          const grouped = prospects.reduce((groups, prospect) => {
+            const grupo = this.groups.find(group => group.idgrupo == prospect.IdDistribuidor)?.nombregrupo || 'Grupo Desconocido';
+            groups[grupo] = groups[grupo] || [];
+            groups[grupo].push(prospect);
+
+            return groups;
+          }, {});
+
+          this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
+
+          // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior de su grupo
+          if (socketData) {
+            //const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === socketData.idPublicacion);
+            const chatToUpdate = this.chat
+              .map(group => group.prospects)
+              .reduce((a, b) => a.concat(b), [])
+              .find(prospect => prospect.IdPublicacion === socketData.idPublicacion);
+
+            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
+
+            if (groupToUpdate) {
+              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
             }
-            if (b.IdPublicacion === socketData.idPublicacion) {
-              return 1;
-            }
-            return 0;
-          });
-          // Notificar al usuario sobre el nuevo mensaje
-          this.showNewMessageNotification(this.chat[0]);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
+            // Notificar al usuario sobre el nuevo mensaje
+            this.showNewMessageNotification(chatToUpdate);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
+          }
+          resolve();
+        },
+        error => {
+          console.error(error);
+          reject(error);
         }
-      },
-      error => {
-        console.error(error);
-      }
-    );
+      );
+    });
   }
 
 
-  loadGrupos(): void {
-    this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
-      res => {
-        this.groups = res;
-        console.log("Estos son los grupos", this.groups);
-      },
-      error => {
-        console.error(error);
-      }
-    );
+  loadGrupos(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
+        res => {
+          this.groups = res;
+          console.log("Estos son los grupos", this.groups);
+          resolve();
+        },
+        error => {
+          console.error(error);
+          reject(error);
+        }
+      );
+    });
   }
+
 }
 

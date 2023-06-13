@@ -12,8 +12,17 @@ export interface Conversacion {
   replaymsg?: any,
 }
 
+export interface GroupedResponseItem {
+  key: string;
+  prospects: ResponseItem[];
+}
+
 export interface ResponseItem {
   IdPublicacion: string;
+  IdDistribuidor: string;
+  NombreGrupo: string;
+  idRed: string;
+  redSocial: string;
   IdProspecto: string;
   Nombre: string;
   Apellido: string;
@@ -54,7 +63,7 @@ export interface Chats {
 }
 
 export interface Grupos {
-  idgrupo: number;
+  idgrupo: string;
   nombregrupo: string;
   descripcion?: string;
 }

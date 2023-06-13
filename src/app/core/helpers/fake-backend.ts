@@ -11,7 +11,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // array in local storage for registered users
         // tslint:disable-next-line: max-line-length
-        const users: any[] = JSON.parse(localStorage.getItem('users')) || [{ username: 'admin', email: 'chatvia@themesbrand.com', password: '123456', profile: 'avatar-1.jpg' }];
+        const users: any[] = JSON.parse(localStorage.getItem('users')) || [{ username: 'Seekop', email: 'chatvia@themesbrand.com', password: '123456', profile: 'avatar-1.jpg' }];
 
         // wrap in delayed observable to simulate server api call
         return of(null).pipe(mergeMap(() => {
