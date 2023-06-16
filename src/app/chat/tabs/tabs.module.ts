@@ -12,13 +12,15 @@ import { RedesSocialesComponent } from './redessociales/redessociales.component'
 import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { RedessocialesusuariosComponent } from './redessocialesusuarios/redessocialesusuarios.component';
+import { MetodosComponent } from './metodos/metodos.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
 
 @NgModule({
-  declarations: [ProfileComponent, RedesSocialesComponent, SettingsComponent],
+  declarations: [ProfileComponent, RedesSocialesComponent, SettingsComponent, RedessocialesusuariosComponent, MetodosComponent],
   imports: [
     CarouselModule,
     CommonModule,
@@ -29,9 +31,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModalModule,
     NgbCollapseModule,
     TranslateModule,
-    FormsModule
+    ReactiveFormsModule,
+    NgbModule
+    
   ],
-  exports: [ProfileComponent, RedesSocialesComponent, SettingsComponent],
+  exports: [ProfileComponent, RedesSocialesComponent, SettingsComponent,RedessocialesusuariosComponent,MetodosComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,

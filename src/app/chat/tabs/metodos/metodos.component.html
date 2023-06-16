@@ -1,0 +1,354 @@
+<!-- Start Contact content -->
+<div>
+    <div class="p-4">
+      <div class="user-chat-nav float-end">
+        <div ngbTooltip="Agregar Nueva Red Social">
+
+          <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
+            data-target="#addMetodos-exampleModal" (click)="openMetodosModal(content)">
+            <i class="ri-chat-new-fill"></i>
+          </button> 
+        </div>
+      </div>
+      <h4 class="mb-4">Métodos</h4>
+  
+      <ng-template #content let-modal>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title font-size-16" id="addMetodos-exampleModalLabel">Agregar Nuevo Método</h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+            </button>
+          </div>
+          <div class="modal-body p-4"> 
+
+            <!-- (change)="changeRedSocial($event)" -->
+            <!-- [ngClass]="{ 'is-invalid': submitted && getRedSocial.nombreRedSocial.errors }" -->
+            <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
+              <div class="mb-3">
+                <label for="nombreRedSocial">Red social*</label>
+
+                <select 
+                name="nombreRedSocial" required
+                 [ngClass]="{ 'is-invalid': submitted && f['nombreRedSocial'].errors }"
+                 (change)="changeRedSocial($event)"
+                 class="form-control" >
+                  <option [value]="">Seleccione...</option> 
+                  <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                  {{newMetodo.idred?.idred}} 
+                </select>
+
+                
+                <div *ngIf="submitted && f.nombreRedSocial.errors" class="invalid-feedback">
+                  <div *ngIf="f.nombreRedSocial.errors.required">Este campo es obligatorio!</div>
+                </div>
+                
+              </div> 
+            
+              <div class="mb-3">
+                <label for="tipo_metodo">Tipo de método*</label>
+                <select #tipometodo="ngModel" formGroupName="tipometodo" name="tipometodo" class="form-control" (change)="changeTipoMetodo($event)"
+                [(ngModel)]="newMetodo.tipometodo">
+                    <option value="" disabled='' selected=''>Seleccione...</option>
+                    <option value="POST">POST</option>
+                    <option value="GET">GET</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <div *ngIf="submitted && getTipoMetodo.errors?.required" class="invalid-feedback">
+                  El campo es requerido!
+                </div> 
+
+              </div> 
+
+              
+              <div class="mb-3">
+                <label for="tipoSolicitud">Tipo acción*</label>
+                <select #tipoSolicitud="ngModel" formGroupName="tipoSolicitud" name="tipoSolicitud" class="form-control" (change)="changeTipoSolicitud($event)"
+                 [(ngModel)]="newMetodo.idsolicitud">
+                    
+                    <option value="">Seleccione...</option>
+                    <option *ngFor="let title of tipoSolicitudSelect" [value]="title.tipoaccion">{{title.nombre}}</option>
+                    {{newMetodo.idsolicitud?.idsolicitud}} 
+                </select>
+                <div *ngIf="submitted && getTipoSolicitud.errors?.required" class="invalid-feedback">
+                  El campo es requerido!
+                </div> 
+              </div> 
+              
+              <div class="mb-3" >
+                <label for="rama">Rama*</label>
+                <input #rama="ngModel" formGroupName="rama" name="rama" type="text" class="form-control" 
+                [ngClass]="{'is-invalid': f.submitted && rama.errors }" required
+                 placeholder="rama/rama1" [(ngModel)]="newMetodo.rama">
+                 
+                <div *ngIf="f.submitted && rama.errors" class="invalid-feedback">
+                  <div *ngIf="rama.errors['required']">El campo es requerido!</div>
+                </div> 
+
+              </div> 
+
+              
+              <div class="mb-3">
+                <label for="resultado">Resultado *</label>
+                
+                <select #resultado="ngModel" formGroupName="resultado" name="resultado" class="form-control" (change)="changeResultado($event)"
+                 [(ngModel)]="newMetodo.resultado">
+                    <option value="">Seleccione...</option>
+                    <option value="1">Json</option>
+                    <option value="2">XML</option>
+                </select> 
+                
+                <div *ngIf="submitted && getResultado.errors?.required" class="invalid-feedback">
+                  El campo es requerido!
+                </div> 
+
+              </div>
+
+              
+              <div class="mb-3">
+                <label for="etiquetavalor">Etiqueta *</label>
+                <input #etiquetavalor="ngModel" formGroupName="etiquetavalor" name="etiquetavalor" type="text" class="form-control" 
+                [ngClass]="{'is-invalid': f.submitted && etiquetavalor.errors }" required [(ngModel)]="newMetodo.etiquetavalor">
+                
+                <div *ngIf="f.submitted && etiquetavalor.errors" class="invalid-feedback">
+                  <div *ngIf="etiquetavalor.errors['required']">El campo es requerido!</div>
+                </div>
+
+              </div>  
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                <button type="submit" class="btn btn-primary" >Agregar</button>
+              </div>
+            </form> 
+
+            <!--
+            <p>Form value: {{ metodoForm.value | json }}</p>
+            <p>Form status: {{ metodoForm.status | json }}</p> -->
+
+          </div>
+        </div>
+      </ng-template>
+      <!-- End Add contact Modal -->
+  
+      <div class="search-box chat-search-box">
+        <div class="input-group bg-light input-group-lg rounded-3">
+          <div class="input-group-prepend">
+            <button class="btn btn-link text-decoration-none text-muted pr-1" type="button">
+              <i class="ri-search-line search-icon font-size-18"></i>
+            </button>
+          </div><!--
+          <input type="text" class="form-control bg-light"
+            placeholder="{{'chat.tabs.contacts.search.placeholder' | translate}}"> -->
+        </div>
+      </div>
+      <!-- End search-box -->
+    </div>
+    <!-- end p-4 -->
+  
+
+    
+        <!-- Start Add contact Modal -->
+        <ng-template #content_edit let-modal>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title font-size-16" id="editMetodos-exampleModalLabel">Editar Método</h5>
+              <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+              </button>
+            </div>
+            <div class="modal-body p-4"> 
+              <form #metodoEditForm="ngForm" [formGroup]="metodoEditForm">
+                <div class="mb-3">
+                  <label for="nombreRedSocial_edit">Red social*</label>
+                  
+                  <select id="nombreRedSocial_edit" name="nombreRedSocial_edit" class="form-control" 
+                  [(ngModel)]="editMet.idred"> <!--
+                  <option value="-1" disabled='' selected="selected">Seleccione...</option> -->
+                  <option *ngFor="let option of redesSelect" [value]="option.idred" 
+                  [selected]="option.idred===editMet.idred">{{option.nombre}}</option> 
+                  <!--
+                  <select ng-options="item.nombre for item in redesSelect,idred track by item.idred" ng-model="editMet.idred"></select>
+                  -->   
+                    
+                    <!--
+                      <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                      {{editMet.idred?.idred}} -->
+
+                      {{editMet.idred?.idred}}
+                  </select>
+  
+                </div>
+              
+                <div class="mb-3">
+                  <label for="tipo_metodo_edit">Tipo de método*</label>
+                  <select id="tipo_metodo_edit" name="tipo_metodo_edit" class="form-control" [(ngModel)]="editMet.tipometodo">
+                      <option value="-1" disabled='' selected>Seleccione...</option>
+                      <option value="POST">POST</option>
+                      <option value="GET">GET</option>
+                      <option value="PUT">PUT</option>
+                      <option value="DELETE">DELETE</option>
+                  </select>
+                </div>
+  
+                <div class="mb-3">
+                  <label for="tipoSolicitud_edit">Tipo acción*</label>
+                  <select id="tipoSolicitud_edit" name="tipoSolicitud_edit" class="form-control" [(ngModel)]="editMet.idsolicitud">
+                      
+                      <option *ngFor="let title of tipoSolicitudSelect" [value]="title.tipoaccion">{{title.nombre}}</option>
+                      {{editMet.idsolicitud?.idsolicitud}} 
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="rama_edit">Rama *</label>
+                  <input id="rama_edit" name="rama_edit" type="text" class="form-control" placeholder="rama/rama1" [(ngModel)]="editMet.rama">
+                </div>
+  
+                
+                <div class="mb-3">
+                  <label for="resultado_edit">Resultado *</label>
+                  <select id="resultado_edit" name="resultado_edit" class="form-control" [(ngModel)]="editMet.resultado">
+                      <option value="-1" disabled='' selected=''>Seleccione...</option>
+                      <option value="1">Json</option>
+                      <option value="2">XML</option>
+                  </select>
+                </div>
+  
+                
+                <div class="mb-3">
+                  <label for="etiquetavalor_edit">Etiqueta *</label>
+                  <input id="etiquetavalor_edit" name="etiquetavalor_edit" type="text" class="form-control" placeholder="etiqueta prueba" [(ngModel)]="editMet.etiquetavalor">
+                </div>  
+  
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                  <button type="button" class="btn btn-primary" (click)="editMetodo()">Guardar</button>
+                </div>
+              </form> 
+            </div>
+          </div>
+        </ng-template>
+        <!-- End Add contact Modal -->
+    
+
+
+
+
+    <!-- Start contact lists -->
+    <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar> 
+    <!-- <div *ngFor="let item of MetodosList">
+        <div class="p-3 font-weight-bold text-primary">
+          {{item.nombrered}} 
+        </div> --> <!--
+        <div class="table-responsive">
+        <table class="table table-bordered" style="overflow-x:scroll">
+            <thead>
+                <tr>
+                    <th>Red social</th>
+                    <th>Solicitud</th>
+                    <th>Rama</th>
+                    <th>Tipo de método</th>
+                    <th>Resultado</th>
+                    <th>Etiqueta</th> 
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of MetodosList">
+                    <td>{{item.nombrered}}</td>
+                    <td>{{item.nombresolicitud}}</td>
+                    <td>{{item.rama}}</td> 
+                    <td>{{item.tipometodo}}</td> 
+                    <td>{{item.resultado}}</td>
+                    <td>{{item.etiquetavalor}}</td> 
+                </tr>
+            </tbody>
+        </table>  
+        </div> -->
+
+        <ul class="list-unstyled metodos-list">
+
+        
+          <li>
+            
+            <div class="d-flex flex-row p-6">
+
+                <table class="table table-bordered table-hover" style="overflow-x:scroll">
+                    <thead>
+                        <tr>
+                            <th>Red social</th>
+                            <th>Solicitud</th> 
+                            <th>Tipo de método</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of MetodosList">
+                            <td>{{item.nombrered}}</td>
+                            <td>{{item.nombresolicitud}}</td>
+                            <td>{{item.tipometodo}}</td> 
+                            
+                            <div class="dropdown" ngbDropdown>
+                                <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
+                                  aria-haspopup="true" aria-expanded="false">
+                                  <i class="ri-more-2-fill"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+                                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
+                                      class="ri-share-line float-end text-muted"></i></a>
+                                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
+                                      class="ri-forbid-line float-end text-muted"></i></a>
+                                  <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMetodo($event,item.idmetodo)">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                                      class="ri-delete-bin-line float-end text-muted"></i></a>
+                                  
+                                 <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"
+                                 data-target="#editMetodos-exampleModal" (click)="openMetodosModalEdit(content_edit,item.idmetodo,
+                                 item.idred,item.nombrered,item.tipometodo,item.idsolicitud,item.nombresolicitud,item.tipoaccion,item.rama,item.resultado,item.etiquetavalor)">Editar <i
+                                        class="ri-edit-2-fill float-end text-muted"></i></a>
+                                </div>
+                              </div>
+                            
+                        </tr>
+                    </tbody>
+                </table> 
+            
+               <!-- 
+              <div class="d-flex flex-grow-2 align-items-center" style="width: 200px;">
+                <label class="font-size-14 m-0">{{item.nombrered | translate}}</label>
+              </div>
+
+              <div class="d-flex flex-grow-2 align-items-center" style="width: 100px;">
+                <label class="font-size-14 m-0">{{item.nombresolicitud | translate}}</label>
+              </div>
+
+              <div class="d-flex flex-grow-0 align-items-center" style="width: 100px;">
+                <label class="font-size-14 m-0">{{item.tipometodo | translate}}</label>
+              </div> 
+  
+              <div class="dropdown" ngbDropdown>
+                <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+                  <i class="ri-more-2-fill"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
+                      class="ri-share-line float-end text-muted"></i></a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
+                      class="ri-forbid-line float-end text-muted"></i></a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                      class="ri-delete-bin-line float-end text-muted"></i></a>
+                </div>
+              </div> -->
+
+            </div>
+          </li>
+        </ul> 
+        <!--
+      </div> -->
+      <!-- end contact list A -->
+  
+    </perfect-scrollbar>
+    <!-- end contact lists -->
+  </div>
+  <!-- Start Contact content -->
+  

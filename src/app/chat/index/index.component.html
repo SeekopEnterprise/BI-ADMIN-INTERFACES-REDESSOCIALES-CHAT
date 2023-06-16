@@ -43,6 +43,21 @@
             <i class="ri-chat-heart-line"></i>
           </a>
         </li>
+
+        <li class="nav-item" ngbTooltip="Usuarios redes sociales" placement="top">
+          <a class="nav-link" id="pills-redessocialesusuarios-tab" (click)="activetab=6" href="javascript: void(0);"
+            [ngClass]="{'active': activetab === 6}">
+            <i class="ri-user-2-fill"></i>
+          </a>
+        </li>
+
+        <li class="nav-item" ngbTooltip="Métodos" placement="top">
+          <a class="nav-link" id="pills-contacts-tab" (click)="activetab=7" href="javascript: void(0);"
+            [ngClass]="{'active': activetab === 7}">
+            <i class="ri-tools-fill"></i>
+          </a>
+        </li>
+        
         <!-- <li class="nav-item" ngbTooltip="Configuraciones">
           <a class="nav-link" id="pills-setting-tab" (click)="activetab=5" href="javascript: void(0);"
             [ngClass]="{'active': activetab === 5}">
@@ -574,6 +589,14 @@
         <app-redessociales></app-redessociales>
       </div>
       <!-- End contacts tab-pane -->
+
+      <div id="pills-contacts" role="tabpanel" aria-labelledby="pills-contacts-tab" *ngIf="activetab === 6">
+        <app-redessocialesusuarios></app-redessocialesusuarios>
+      </div>
+
+      <div id="pills-contacts" role="tabpanel" aria-labelledby="pills-contacts-tab" *ngIf="activetab === 7">
+        <app-metodos></app-metodos>
+      </div>
 
       <!-- Start settings tab-pane -->
       <div id="pills-setting" role="tabpanel" aria-labelledby="pills-setting-tab" *ngIf="activetab === 5">
