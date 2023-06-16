@@ -31,9 +31,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModalModule,
     NgbCollapseModule,
     TranslateModule,
+    FormsModule,
     ReactiveFormsModule,
     NgbModule
-    
+
   ],
   exports: [ProfileComponent, RedesSocialesComponent, SettingsComponent,RedessocialesusuariosComponent,MetodosComponent],
   providers: [
