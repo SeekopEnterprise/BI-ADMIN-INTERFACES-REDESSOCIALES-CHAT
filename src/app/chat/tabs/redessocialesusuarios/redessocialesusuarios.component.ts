@@ -23,7 +23,7 @@ export class RedessocialesusuariosComponent implements OnInit {
     idred: '',
     iddistribuidor: '',
     idcliente: '',
-    identificadorplataforma: '',
+    identificadorplataforma: '-',
     nombrepagina: '',
     token: '',
     fechacreacion: new Date("2000-01-01"),
@@ -33,7 +33,18 @@ export class RedessocialesusuariosComponent implements OnInit {
   modal: any;
 
   constructor(private modalService: NgbModal, private http: HttpClient,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) {
+/*
+      this.redesusuariosForm= this.fb.group({
+        idred: [0, [Validators.required]],
+        usuario: ['', [Validators.required]],
+        noCliente: ['', [Validators.required]],
+        pagina: ['', [Validators.required]],
+        token: ['', [Validators.required]],
+        fechavencimimiento: ['', [Validators.required]]
+      }); */
+
+    }
 
   ngOnInit(): void {
     this.loadRedesSocialesUsuarios();
