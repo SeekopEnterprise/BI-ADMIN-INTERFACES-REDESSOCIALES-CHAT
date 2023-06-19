@@ -196,6 +196,32 @@ export class IndexComponent implements OnInit {
     document.getElementById('profile-detail').style.display = 'block';
   }
 
+  showTabMetodos(tab:string){
+
+    // alert(tab);
+    if(tab=='1'){
+      // document.getElementById('tabMetodos').style.display = 'none';
+      // document.getElementById('chat-welcome-section').style.display = 'block';
+      
+    }
+
+    if(tab=='2'){
+      document.getElementById('tabMetodos').style.display = 'none';
+      document.getElementById('chat-welcome-section').style.display = 'block';
+      
+    }
+    
+    else if(tab=='7'){ 
+      
+      document.getElementById('chat-welcome-section').style.display = 'none';
+      document.getElementById('tabMetodos').style.display = 'block';
+    }
+    else{
+
+    }
+    
+  }
+
   /**
    * Close user chat
    */

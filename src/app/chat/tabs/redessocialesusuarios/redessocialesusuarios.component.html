@@ -29,70 +29,92 @@
                   [(ngModel)]="newRedesUsuarios.idred"
                   class="form-control"
                   formControlName="nombreRedSocial"
-                  [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors }"
-                  (change)="changeRedSocial($event)" required>
-                  <option [value]="" selected>Seleccione...</option>
-                  <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                  [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors }" required
+                  >
+                  <option [ngValue]="0" selected>Seleccione...</option>
+                  <option *ngFor="let title of redesSelect" [ngValue]="title.idred">{{title.nombre}}</option>
                 </select>
 
-
-                <div class="invalid-feedback" *ngIf="submitted && f.nombreRedSocial.errors">
-                  <div *ngIf="f.nombreRedSocial.errors.required">
-                    Access Name is required
-                  </div>
-                </div>
-                <p>Form value: {{newRedesUsuarios.idred | json}}</p>
+                <div *ngIf="submitted && f.nombreRedSocial.errors" class="invalid-feedback">
+                  <div *ngIf="f.nombreRedSocial.errors.required">El campo es obligatorio!</div>
+                </div> <!--
+                <p>Form value: {{newRedesUsuarios.idred | json}}</p> -->
               </div>
-
 
 
               <div class="mb-3">
                 <label for="usuario">Usuario autorizado*</label>
                 <select
-                [(ngModel)]="newRedesUsuarios.idusuario"
-                name="usuario"
+                [(ngModel)]="newRedesUsuarios.idusuario"                
                 class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.usuario.errors }" 
                 formControlName="usuario" required>
-                  <option [value]="">Seleccione...</option>
-                  <option *ngFor="let listuser of usuariosSelect" [value]="listuser.idusuario">{{listuser.user}}</option>
+                  <option [ngValue]="">Seleccione...</option>
+                  <option *ngFor="let listuser of usuariosSelect" [ngValue]="listuser.idusuario">{{listuser.user}}</option>
                   {{newRedesUsuarios.idusuario?.idusuario}}
                 </select>
 
-              </div>
+                <div *ngIf="submitted && f.usuario.errors" class="invalid-feedback">
+                  <div *ngIf="f.usuario.errors.required">El campo es obligatorio!</div>
+                </div>
 
+              </div>
+              
+              
               <div class="mb-3">
                 <label for="noCliente">No. de Cliente/Usuario*</label>
-                <input [(ngModel)]="newRedesUsuarios.idcliente" formControlName="noCliente" name="nocliente" type="text" class="form-control"
+                <input 
+                [(ngModel)]="newRedesUsuarios.idcliente" 
+                [ngClass]="{ 'is-invalid': submitted && f.noCliente.errors }" 
+                formControlName="noCliente" name="nocliente" type="text" class="form-control"
                  required
-                 placeholder="" [(ngModel)]="newRedesUsuarios.idcliente">
+                 placeholder="">
+
+                 <div *ngIf="submitted && f.noCliente.errors" class="invalid-feedback">
+                  <div *ngIf="f.noCliente.errors.required">El campo es obligatorio!</div>
+                </div>
 
               </div>
 
-
+              
               <div class="mb-3">
                 <label for="pagina">Pagina (Nombre)*</label>
-                <input [(ngModel)]="newRedesUsuarios.nombrepagina" formControlName="pagina" name="pagina" type="text" class="form-control"
-                required placeholder="" [(ngModel)]="newRedesUsuarios.nombrepagina">
+                <input [(ngModel)]="newRedesUsuarios.nombrepagina" 
+                [ngClass]="{ 'is-invalid': submitted && f.pagina.errors }" 
+                formControlName="pagina" name="pagina" type="text" class="form-control"
+                required placeholder="">
 
+                <div *ngIf="submitted && f.pagina.errors" class="invalid-feedback">
+                  <div *ngIf="f.pagina.errors.required">El campo es obligatorio!</div>
+                </div>
               </div>
 
-
+              
               <div class="mb-3">
                 <label for="token">Token*</label>
-                <input [(ngModel)]="newRedesUsuarios.token" formControlName="token" name="token" type="text" class="form-control"
-                required
-                 placeholder="" [(ngModel)]="newRedesUsuarios.token">
+                <input [(ngModel)]="newRedesUsuarios.token" 
+                [ngClass]="{ 'is-invalid': submitted && f.token.errors }" 
+                formControlName="token" type="text" class="form-control" required
+                 placeholder="">
 
+                 <div *ngIf="submitted && f.token.errors" class="invalid-feedback">
+                  <div *ngIf="f.token.errors.required">El campo es obligatorio!</div>
+                </div>
               </div>
 
-
+            
               <div class="mb-3">
                 <label for="fechavencimimiento">Fecha vencimiento*</label>
-                <input [(ngModel)]="newRedesUsuarios.fechavencimimiento" formControlName="fechavencimimiento" name="fechavencimimiento" type="date" class="form-control"
-                 required
-                 placeholder="" [(ngModel)]="newRedesUsuarios.fechavencimimiento">
+                <input 
+                [ngClass]="{ 'is-invalid': submitted && f.fechavencimimiento.errors }" 
+                formControlName="fechavencimimiento" 
+                type="date" class="form-control" required
+                 placeholder="">
 
-              </div>
+                 <div *ngIf="submitted && f.fechavencimimiento.errors" class="invalid-feedback">
+                  <div *ngIf="f.fechavencimimiento.errors.required">El campo es obligatorio!</div>
+                </div>
+              </div> 
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn_redesusuarios" >Probar conexión</button>

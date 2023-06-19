@@ -15,7 +15,7 @@
       <ng-template #content let-modal>
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title font-size-16" id="addMetodos-exampleModalLabel">Agregar Nuevo Método</h5>
+            <h5 class="modal-title font-size-16" id="addMetodos-exampleModal">Agregar Nuevo Método</h5>
             <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
             </button>
           </div>
@@ -23,7 +23,7 @@
 
             <!-- (change)="changeRedSocial($event)" -->
             <!-- [ngClass]="{ 'is-invalid': submitted && getRedSocial.nombreRedSocial.errors }" -->
-            <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
+            <!-- <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
               <div class="mb-3">
                 <label for="nombreRedSocial">Red social*</label>
 
@@ -120,7 +120,7 @@
                 <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
                 <button type="submit" class="btn btn-primary" >Agregar</button>
               </div>
-            </form> 
+            </form> -->
 
             <!--
             <p>Form value: {{ metodoForm.value | json }}</p>
@@ -157,57 +157,73 @@
               </button>
             </div>
             <div class="modal-body p-4"> 
-              <form #metodoEditForm="ngForm" [formGroup]="metodoEditForm">
+              <form [formGroup]="metodoEditForm" (ngSubmit)="validateEditForm($event)">
                 <div class="mb-3">
                   <label for="nombreRedSocial_edit">Red social*</label>
                   
-                  <select id="nombreRedSocial_edit" name="nombreRedSocial_edit" class="form-control" 
-                  [(ngModel)]="editMet.idred"> <!--
-                  <option value="-1" disabled='' selected="selected">Seleccione...</option> -->
-                  <option *ngFor="let option of redesSelect" [value]="option.idred" 
+                  <select
+                  [(ngModel)]="editMet.idred"
+                  formControlName="nombreRedSocial_edit" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && fe.nombreRedSocial_edit.errors }" required> 
+                  <option *ngFor="let option of redesSelect" [ngValue]="option.idred" 
                   [selected]="option.idred===editMet.idred">{{option.nombre}}</option> 
-                  <!--
-                  <select ng-options="item.nombre for item in redesSelect,idred track by item.idred" ng-model="editMet.idred"></select>
-                  -->   
-                    
-                    <!--
-                      <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
-                      {{editMet.idred?.idred}} -->
 
                       {{editMet.idred?.idred}}
                   </select>
-  
-                </div>
+                  
+                  <div *ngIf="submitted && fe.nombreRedSocial_edit.errors" class="invalid-feedback">
+                    <div *ngIf="fe.nombreRedSocial_edit.errors.required">El campo es obligatorio!</div>
+                  </div>
+
+                </div> 
               
                 <div class="mb-3">
                   <label for="tipo_metodo_edit">Tipo de método*</label>
-                  <select id="tipo_metodo_edit" name="tipo_metodo_edit" class="form-control" [(ngModel)]="editMet.tipometodo">
+                  <select id="tipo_metodo_edit" 
+                  formControlName="tipo_metodo_edit" 
+                  class="form-control" 
+                  [(ngModel)]="editMet.tipometodo"
+                  [ngClass]="{ 'is-invalid': submitted && fe.tipo_metodo_edit.errors }" required>
                       <option value="-1" disabled='' selected>Seleccione...</option>
                       <option value="POST">POST</option>
                       <option value="GET">GET</option>
                       <option value="PUT">PUT</option>
                       <option value="DELETE">DELETE</option>
                   </select>
+
+                  <div *ngIf="submitted && fe.tipo_metodo_edit.errors" class="invalid-feedback">
+                    <div *ngIf="fe.tipo_metodo_edit.errors.required">El campo es obligatorio!</div>
+                  </div>
                 </div>
-  
+                
+                
                 <div class="mb-3">
                   <label for="tipoSolicitud_edit">Tipo acción*</label>
-                  <select id="tipoSolicitud_edit" name="tipoSolicitud_edit" class="form-control" [(ngModel)]="editMet.idsolicitud">
-                      
-                      <option *ngFor="let title of tipoSolicitudSelect" [value]="title.tipoaccion">{{title.nombre}}</option>
+                  <select id="tipoSolicitud_edit" 
+                  formControlName="tipoSolicitud_edit" 
+                  class="form-control" 
+                  [(ngModel)]="editMet.idsolicitud"
+                  [ngClass]="{ 'is-invalid': submitted && fe.tipoSolicitud_edit.errors }" required>
+                  <option [ngValue]="-1" disabled='' selected>Seleccione...</option>
+                      <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.tipoaccion">{{title.nombre}}</option>
                       {{editMet.idsolicitud?.idsolicitud}} 
                   </select>
+                  <div *ngIf="submitted && fe.tipoSolicitud_edit.errors" class="invalid-feedback">
+                    <div *ngIf="fe.tipoSolicitud_edit.errors.required">El campo es obligatorio!</div>
+                  </div>
+
                 </div>
+                
                 
                 <div class="mb-3">
                   <label for="rama_edit">Rama *</label>
-                  <input id="rama_edit" name="rama_edit" type="text" class="form-control" placeholder="rama/rama1" [(ngModel)]="editMet.rama">
+                  <input id="rama_edit" formControlName="rama_edit" type="text" class="form-control" placeholder="rama/rama1" [(ngModel)]="editMet.rama">
                 </div>
-  
+                
                 
                 <div class="mb-3">
                   <label for="resultado_edit">Resultado *</label>
-                  <select id="resultado_edit" name="resultado_edit" class="form-control" [(ngModel)]="editMet.resultado">
+                  <select id="resultado_edit" formControlName="resultado_edit" class="form-control" [(ngModel)]="editMet.resultado">
                       <option value="-1" disabled='' selected=''>Seleccione...</option>
                       <option value="1">Json</option>
                       <option value="2">XML</option>
@@ -217,12 +233,12 @@
                 
                 <div class="mb-3">
                   <label for="etiquetavalor_edit">Etiqueta *</label>
-                  <input id="etiquetavalor_edit" name="etiquetavalor_edit" type="text" class="form-control" placeholder="etiqueta prueba" [(ngModel)]="editMet.etiquetavalor">
-                </div>  
+                  <input id="etiquetavalor_edit" formControlName="etiquetavalor_edit" type="text" class="form-control" placeholder="etiqueta prueba" [(ngModel)]="editMet.etiquetavalor">
+                </div>   
   
                 <div class="modal-footer">
                   <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
-                  <button type="button" class="btn btn-primary" (click)="editMetodo()">Guardar</button>
+                  <button type="submit" class="btn btn-primary" >Guardar</button>
                 </div>
               </form> 
             </div>
@@ -231,6 +247,30 @@
         <!-- End Add contact Modal -->
     
 
+        <!-- Modal Delete Metodos-->
+        <ng-template #content_eliminar let-modal>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title font-size-16" id="eliminarMetodos-exampleModalLabel">Eliminar Método</h5>
+              <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+              </button>
+            </div>
+            <div class="modal-body p-4"> 
+              
+                <div class="mb-3">
+                  <label for="nombreRedSocial_edit">Desea eliminar el método?</label>
+                
+                </div>
+              
+                <div class="modal-footer" >
+                  <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                  <button type="button" class="btn btn-primary" (click)="deleteMetodo($event,{idMetodo})">Eliminar</button>
+                </div>
+              
+            </div>
+          </div>
+        </ng-template>
+        <!-- Fin modal delete -->
 
 
 
@@ -273,6 +313,7 @@
             
             <div class="d-flex flex-row p-6">
 
+              <!--
                 <table class="table table-bordered table-hover" style="overflow-x:scroll">
                     <thead>
                         <tr>
@@ -310,7 +351,7 @@
                             
                         </tr>
                     </tbody>
-                </table> 
+                </table> -->
             
                <!-- 
               <div class="d-flex flex-grow-2 align-items-center" style="width: 200px;">

@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { RedesUsuarios } from './redesusuarios.model';
 import { RedSocial } from '../redessociales/redsocial.model';
 import Swal from 'sweetalert2';
-import {FormBuilder,Validators,FormGroup,AbstractControl} from '@angular/forms' 
+import {FormBuilder,Validators,FormGroup} from '@angular/forms' 
 
 @Component({
   selector: 'app-redessocialesusuarios',
@@ -24,7 +24,7 @@ export class RedessocialesusuariosComponent implements OnInit{
     idred:0,
     idusuario:'',
     idcliente: '',
-    identificadorplataforma: '',
+    identificadorplataforma: '-',
     nombrepagina: '',
     token: '',
     fechacreacion: new Date("2000-01-01"),
@@ -32,7 +32,18 @@ export class RedessocialesusuariosComponent implements OnInit{
   };
 
   constructor(private modalService: NgbModal, private http: HttpClient,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) { 
+/*
+      this.redesusuariosForm= this.fb.group({
+        idred: [0, [Validators.required]],
+        usuario: ['', [Validators.required]], 
+        noCliente: ['', [Validators.required]], 
+        pagina: ['', [Validators.required]],
+        token: ['', [Validators.required]],
+        fechavencimimiento: ['', [Validators.required]] 
+      }); */
+
+    }
 
   ngOnInit(): void {
     this.loadRedesSocialesUsuarios();
@@ -60,29 +71,31 @@ if (month >= 1 && month <= 9) {
 
 const fechacreacion = `${year}-${conca_month}-${conca_day}`;
 this.newRedesUsuarios={
-  idred:0,
+  idred: 0,
   idusuario:'',
   idcliente: '',
-  identificadorplataforma: '',
+  identificadorplataforma: '-',
   nombrepagina: '',
   token: '',
   fechacreacion: new Date(fechacreacion),
   fechavencimimiento: new Date("2000-01-01")
   }
 
+  this.redesusuariosForm= this.fb.group({
+    nombreRedSocial: [0, [Validators.required]],
+    usuario: ['', [Validators.required]], 
+    noCliente: ['', [Validators.required]], 
+    pagina: ['', [Validators.required]],
+    token: ['', [Validators.required]],
+    fechavencimimiento: ['', [Validators.required]] 
+  });
+
   /*
   this.redesusuariosForm =new FormGroup({
     nombreRedSocial: new FormControl('', Validators.required),
   }); */
 
-  this.redesusuariosForm= this.fb.group({
-    nombreRedSocial: ['', [Validators.required]],
-    usuario: ['', [Validators.required]],
-    noCliente: ['', [Validators.required]],
-    pagina: ['', [Validators.required]],
-    token: ['', [Validators.required]],
-    fechavencimimiento: ['', [Validators.required]]
-  }); 
+
 
   /*
   this.redesusuariosForm = new FormGroup({
@@ -121,19 +134,29 @@ this.newRedesUsuarios={
   get f() {
     return this.redesusuariosForm.controls;
   }
-/*
-  public handleError = (controlName: string, errorName: string) => {
-    return this.redesusuariosForm.controls[controlName].hasError(errorName);
-  }; */
 
   validateForm(){
     
     this.submitted = true;
-    console.log(this.redesusuariosForm.value);
+    // console.log(this.redesusuariosForm.value);
     
     if (this.redesusuariosForm.valid) {
-      this.submitted = true;
-      console.log("form valid: "+this.redesusuariosForm.value)
+      // this.submitted = true;
+      
+      /*
+      this.newRedesUsuarios={
+        idred:this.redesusuariosForm.value.nombreRedSocial,
+        idusuario:this.redesusuariosForm.value.idusuario,
+        idcliente: this.redesusuariosForm.value.idcliente,
+        identificadorplataforma: '-',
+        nombrepagina: this.redesusuariosForm.value.pagina,
+        token: this.redesusuariosForm.value.token,
+        fechacreacion: new Date("2000-01-01"),
+        fechavencimimiento: new Date(this.redesusuariosForm.value.fechavencimimiento)
+        } */
+      
+        console.log("form valid: "+this.redesusuariosForm.value);
+        this.addNewUsuarioRedesSociales();
     }
     else{
     } 
@@ -156,7 +179,7 @@ this.newRedesUsuarios={
           idred:0,
           idusuario:'',
           idcliente: '',
-          identificadorplataforma: '',
+          identificadorplataforma: '-',
           nombrepagina: '',
           token: '',
           fechacreacion: new Date("2000-01-01"),
@@ -169,7 +192,7 @@ this.newRedesUsuarios={
         Swal.fire({
           icon: 'success',
           title: '¡Éxito!',
-          text: 'El método ha sido agregado correctamente.',
+          text: 'El usuario se registró correctamente.',
           confirmButtonText: 'Ok'
         });
         this.modalService.dismissAll();
@@ -184,7 +207,7 @@ this.newRedesUsuarios={
           confirmButtonText: 'Entendido'
         });
       }
-    );
+    ); 
   }
 
 
