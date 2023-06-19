@@ -301,7 +301,7 @@
                 </button>
               </div> -->
             </div>
-            <h4 class="mb-4">Distribuidores</h4>
+            <h4 class="mb-4">Distribuidores Asignados</h4>
 
             <!-- Start add group Modal -->
             <ng-template #content let-modal>
@@ -564,12 +564,12 @@
                     <div class="chat-user-img me-3 ms-0">
                       <div class="avatar-xs">
                         <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                          {{(item.nombregrupo | translate).charAt(0)}}
+                          {{item.nombredistribuidor.charAt(0)}}
                         </span>
                       </div>
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
-                      <h5 class="text-truncate font-size-14 mb-0">#{{item.nombregrupo | translate}}
+                      <h5 class="text-truncate font-size-14 mb-0">#{{item.nombredistribuidor}}
                         <span class="badge badge-soft-danger rounded-pill float-end">{{item.unread}}</span>
                       </h5>
                     </div>

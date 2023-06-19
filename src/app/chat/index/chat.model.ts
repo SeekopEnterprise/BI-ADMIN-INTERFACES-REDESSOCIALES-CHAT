@@ -63,8 +63,8 @@ export interface Chats {
 }
 
 export interface Grupos {
-  idgrupo: string;
-  nombregrupo: string;
+  iddistribuidor: string;
+  nombredistribuidor: string;
   descripcion?: string;
 }
 

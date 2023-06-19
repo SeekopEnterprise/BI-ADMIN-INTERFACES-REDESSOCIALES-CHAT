@@ -98,58 +98,52 @@ export class IndexComponent implements OnInit {
     }
 
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
-      .subscribe((event: MessageEvent) => {
-        const data = JSON.parse(event.data);
-        if (event.type === 'open') {
-          this.notificacionService.send({
-            accion: 'setApp',
-            nombreApp: 'proveedoresDigitales'
-          });
-        } else if (event.type === 'message') {
-          this.notificacionService = data.mensaje;
+    .subscribe((event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      if (event.type === 'open') {
+        this.notificacionService.send({
+          accion: 'setApp',
+          nombreApp: 'proveedoresDigitales'
+        });
+      } else if (event.type === 'message') {
+        this.notificacionService = data.mensaje;
 
-          // Código para actualizar la conversación en memoria
-          //const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === data.idPublicacion);
-          const chatToUpdate = this.chat
-            .map(group => group.prospects)
-            .reduce((a, b) => a.concat(b), [])
-            .find(prospect => prospect.IdPublicacion === data.idPublicacion);
+        const chatToUpdate = this.chat
+          .map(group => group.prospects)
+          .reduce((a, b) => a.concat(b), [])
+          .find(prospect => prospect.IdPublicacion === data.idPublicacion);
 
-          if (chatToUpdate) {
-            const newMessage = {
-              id: data.idMensaje,
-              texto: data.mensaje,
-              unreadCount: 0,
-              align: "left",
-              ultimoMensaje: false, // Cada nuevo mensaje no es el último al inicio
-            };
-            chatToUpdate.Conversacion.push(newMessage);
+        if (chatToUpdate) {
+          const newMessage = {
+            id: data.idMensaje,
+            texto: data.mensaje,
+            unreadCount: 0,
+            align: "left",
+            ultimoMensaje: true, // El nuevo mensaje es el último
+          };
+          chatToUpdate.Conversacion.push(newMessage);
 
-            // Marcamos todos los mensajes como no últimos
-            chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+          // Marcamos todos los mensajes como no últimos
+          chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
 
-            // Si el mensaje es el último, lo establecemos como último
-            newMessage.ultimoMensaje = true;
+          // El nuevo mensaje es el último
+          newMessage.ultimoMensaje = true;
 
-            // Incrementa el contador de mensajes no leídos
-            chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+          // Incrementa el contador de mensajes no leídos
+          chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
 
-            // Reordena la lista de grupos para colocar el grupo con el chat actualizado al inicio
-            this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
+          this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
 
-            // Reordena la lista de prospectos dentro del grupo correcto para colocar el chat actualizado al inicio
-            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
-            if (groupToUpdate) {
-              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
-            }
+          const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
+          if (groupToUpdate) {
+            groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
           }
-
-          // Notificar al usuario sobre el nuevo mensaje
-          this.showNewMessageNotification(chatToUpdate);
-          this.onListScroll();
         }
-      });
 
+        this.showNewMessageNotification(chatToUpdate);
+        this.onListScroll();
+      }
+    });
 
 
 
@@ -520,7 +514,7 @@ export class IndexComponent implements OnInit {
     var data = this.groups.filter((group: any) => {
       return group.idgrupo === id;
     });
-    this.userName = data[0].nombregrupo
+    this.userName = data[0].nombredistribuidor
     this.userProfile = ''
     this.message = ''
   }
@@ -560,9 +554,22 @@ export class IndexComponent implements OnInit {
         res => {
           let prospects = res.body;
 
+          prospects.forEach(prospect => {
+            prospect.unreadCount = 0;  // Añadimos un contador de mensajes no leídos
+            if (prospect.Conversacion && prospect.Conversacion.length > 0) {
+              // Aseguramos que todos los mensajes tengan la propiedad 'ultimoMensaje'
+              prospect.Conversacion.forEach(message => {
+                message.ultimoMensaje = false;
+              });
+
+              // Marcamos el último mensaje como tal
+              prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
+            }
+          });
+
           // Agrupar prospectos por distribuidor
           const grouped = prospects.reduce((groups, prospect) => {
-            const grupo = this.groups.find(group => group.idgrupo == prospect.IdDistribuidor)?.nombregrupo || 'Grupo Desconocido';
+            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
             groups[grupo] = groups[grupo] || [];
             groups[grupo].push(prospect);
 
@@ -571,9 +578,7 @@ export class IndexComponent implements OnInit {
 
           this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
 
-          // Si se nos proporcionó datos del socket, ordenamos la lista para que el chat correspondiente esté en la parte superior de su grupo
           if (socketData) {
-            //const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === socketData.idPublicacion);
             const chatToUpdate = this.chat
               .map(group => group.prospects)
               .reduce((a, b) => a.concat(b), [])
@@ -584,8 +589,8 @@ export class IndexComponent implements OnInit {
             if (groupToUpdate) {
               groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
             }
-            // Notificar al usuario sobre el nuevo mensaje
-            this.showNewMessageNotification(chatToUpdate);  // Asumiendo que el chat con la notificación más reciente está ahora en la parte superior
+
+            this.showNewMessageNotification(chatToUpdate);
           }
           resolve();
         },

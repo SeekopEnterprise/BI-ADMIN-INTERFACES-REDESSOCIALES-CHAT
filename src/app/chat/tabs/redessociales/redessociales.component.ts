@@ -75,7 +75,7 @@ export class RedesSocialesComponent implements OnInit {
         const sorted = redesSociales.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
 
         const grouped = sorted.reduce((groups, redSocial) => {
-          const grupo = redSocial.nombregrupo ? redSocial.nombregrupo : 'Nissan Satelite';
+          const grupo = redSocial.nombredistribuidor ? redSocial.nombredistribuidor : 'Sin Distribuidor Asignado';
           groups[grupo] = groups[grupo] || [];
           groups[grupo].push(redSocial);
 

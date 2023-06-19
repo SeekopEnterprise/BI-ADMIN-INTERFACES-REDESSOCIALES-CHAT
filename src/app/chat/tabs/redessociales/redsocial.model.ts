@@ -6,5 +6,5 @@ export interface RedSocial {
   secretkey: string,
   urllogotipo: string,
   idgrupo: number,
-  nombregrupo: string
+  nombredistribuidor: string
 }
