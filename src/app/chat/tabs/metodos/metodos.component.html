@@ -10,7 +10,7 @@
           </button> 
         </div>
       </div>
-      <h4 class="mb-4">Métodos</h4>
+      <h4 class="mb-4 title">Métodos</h4>
   
       <ng-template #content let-modal>
         <div class="modal-content">
@@ -23,38 +23,46 @@
 
             <!-- (change)="changeRedSocial($event)" -->
             <!-- [ngClass]="{ 'is-invalid': submitted && getRedSocial.nombreRedSocial.errors }" -->
-            <!-- <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
+            
+            <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
+              
               <div class="mb-3">
                 <label for="nombreRedSocial">Red social*</label>
-
                 <select 
-                name="nombreRedSocial" required
-                 [ngClass]="{ 'is-invalid': submitted && f['nombreRedSocial'].errors }"
+                formControlName="nombreRedSocial" required
+                 [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors }"
                  (change)="changeRedSocial($event)"
                  class="form-control" >
-                  <option [value]="">Seleccione...</option> 
-                  <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                  <option [ngValue]="">Seleccione...</option> 
+                  <option *ngFor="let title of redesSelect" [ngValue]="title.idred">{{title.nombre}}</option>
                   {{newMetodo.idred?.idred}} 
                 </select>
 
                 
-                <div *ngIf="submitted && f.nombreRedSocial.errors" class="invalid-feedback">
-                  <div *ngIf="f.nombreRedSocial.errors.required">Este campo es obligatorio!</div>
+                <div *ngIf="submitted && f.nombreRedSocial.errors?.required" class="invalid-feedback">
+                  Este campo es obligatorio!
+                  <!-- <div *ngIf="f.nombreRedSocial.errors.required">Este campo es obligatorio!</div> -->
                 </div>
-                
-              </div> 
+
+              </div>
             
+              
               <div class="mb-3">
-                <label for="tipo_metodo">Tipo de método*</label>
-                <select #tipometodo="ngModel" formGroupName="tipometodo" name="tipometodo" class="form-control" (change)="changeTipoMetodo($event)"
+                <label for="tipometodo">Tipo de método*</label>
+                <select 
+                formControlName="tipometodo" 
+                class="form-control" 
+                [ngClass]="{ 'is-invalid': submitted && f.tipometodo.errors }"
+                (change)="changeTipoMetodo($event)"
                 [(ngModel)]="newMetodo.tipometodo">
-                    <option value="" disabled='' selected=''>Seleccione...</option>
-                    <option value="POST">POST</option>
-                    <option value="GET">GET</option>
-                    <option value="PUT">PUT</option>
-                    <option value="DELETE">DELETE</option>
+                    <option [ngValue]="" selected=''>Seleccione...</option>
+                    <option [ngValue]="POST">POST</option>
+                    <option [ngValue]="GET">GET</option>
+                    <option [ngValue]="PUT">PUT</option>
+                    <option [ngValue]="DELETE">DELETE</option>
                 </select>
-                <div *ngIf="submitted && getTipoMetodo.errors?.required" class="invalid-feedback">
+
+                <div *ngIf="submitted && f.tipometodo.errors?.required" class="invalid-feedback">
                   El campo es requerido!
                 </div> 
 
@@ -63,26 +71,32 @@
               
               <div class="mb-3">
                 <label for="tipoSolicitud">Tipo acción*</label>
-                <select #tipoSolicitud="ngModel" formGroupName="tipoSolicitud" name="tipoSolicitud" class="form-control" (change)="changeTipoSolicitud($event)"
-                 [(ngModel)]="newMetodo.idsolicitud">
-                    
-                    <option value="">Seleccione...</option>
-                    <option *ngFor="let title of tipoSolicitudSelect" [value]="title.tipoaccion">{{title.nombre}}</option>
+                <select  
+                formControlName="tipoSolicitud"
+                class="form-control" 
+                [ngClass]="{ 'is-invalid': submitted && f.tipoSolicitud.errors }"
+                [(ngModel)]="newMetodo.idsolicitud">
+                    <option [ngValue]="">Seleccione...</option>
+                    <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.tipoaccion">{{title.nombre}}</option>
                     {{newMetodo.idsolicitud?.idsolicitud}} 
                 </select>
-                <div *ngIf="submitted && getTipoSolicitud.errors?.required" class="invalid-feedback">
+                <div *ngIf="submitted && f.tipoSolicitud.errors?.required" class="invalid-feedback">
                   El campo es requerido!
                 </div> 
               </div> 
               
+              
               <div class="mb-3" >
                 <label for="rama">Rama*</label>
-                <input #rama="ngModel" formGroupName="rama" name="rama" type="text" class="form-control" 
-                [ngClass]="{'is-invalid': f.submitted && rama.errors }" required
-                 placeholder="rama/rama1" [(ngModel)]="newMetodo.rama">
+                <input  
+                formControlName="rama"
+                class="form-control"  
+                [ngClass]="{'is-invalid': submitted && f.rama.errors }"
+                type="text" placeholder="rama/rama1" 
+                [(ngModel)]="newMetodo.rama" required>
                  
-                <div *ngIf="f.submitted && rama.errors" class="invalid-feedback">
-                  <div *ngIf="rama.errors['required']">El campo es requerido!</div>
+                <div *ngIf="submitted && f.rama.errors?.required" class="invalid-feedback">
+                  El campo es requerido!
                 </div> 
 
               </div> 
@@ -90,37 +104,41 @@
               
               <div class="mb-3">
                 <label for="resultado">Resultado *</label>
-                
-                <select #resultado="ngModel" formGroupName="resultado" name="resultado" class="form-control" (change)="changeResultado($event)"
-                 [(ngModel)]="newMetodo.resultado">
-                    <option value="">Seleccione...</option>
-                    <option value="1">Json</option>
-                    <option value="2">XML</option>
+                <select  
+                formControlName="resultado" 
+                class="form-control"
+                [ngClass]="{'is-invalid': submitted && f.resultado.errors }"
+                [(ngModel)]="newMetodo.resultado">
+                    <option [ngValue]="">Seleccione...</option>
+                    <option [ngValue]="1">Json</option>
+                    <option [ngValue]="2">XML</option>
                 </select> 
                 
-                <div *ngIf="submitted && getResultado.errors?.required" class="invalid-feedback">
+                <div *ngIf="submitted && f.resultado.errors?.required" class="invalid-feedback">
                   El campo es requerido!
                 </div> 
-
               </div>
 
-              
+            
               <div class="mb-3">
                 <label for="etiquetavalor">Etiqueta *</label>
-                <input #etiquetavalor="ngModel" formGroupName="etiquetavalor" name="etiquetavalor" type="text" class="form-control" 
-                [ngClass]="{'is-invalid': f.submitted && etiquetavalor.errors }" required [(ngModel)]="newMetodo.etiquetavalor">
+                <input  
+                formControlName="etiquetavalor" 
+                type="text" class="form-control" 
+                [ngClass]="{'is-invalid': submitted && f.etiquetavalor.errors }" required 
+                [(ngModel)]="newMetodo.etiquetavalor">
                 
-                <div *ngIf="f.submitted && etiquetavalor.errors" class="invalid-feedback">
-                  <div *ngIf="etiquetavalor.errors['required']">El campo es requerido!</div>
+                <div *ngIf="submitted && f.etiquetavalor.errors?.required" class="invalid-feedback">
+                  El campo es requerido!
                 </div>
 
-              </div>  
+              </div>   
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
                 <button type="submit" class="btn btn-primary" >Agregar</button>
               </div>
-            </form> -->
+            </form> 
 
             <!--
             <p>Form value: {{ metodoForm.value | json }}</p>
@@ -157,7 +175,7 @@
               </button>
             </div>
             <div class="modal-body p-4"> 
-              <form [formGroup]="metodoEditForm" (ngSubmit)="validateEditForm($event)">
+              <form [formGroup]="metodoEditForm" (ngSubmit)="validateUpdateForm($event)">
                 <div class="mb-3">
                   <label for="nombreRedSocial_edit">Red social*</label>
                   
@@ -165,9 +183,10 @@
                   [(ngModel)]="editMet.idred"
                   formControlName="nombreRedSocial_edit" class="form-control"
                   [ngClass]="{ 'is-invalid': submitted && fe.nombreRedSocial_edit.errors }" required> 
-                  <option *ngFor="let option of redesSelect" [ngValue]="option.idred" 
-                  [selected]="option.idred===editMet.idred">{{option.nombre}}</option> 
-
+                  <option *ngFor="let option of redesSelect" [ngValue]="option.idred">
+                    {{option.nombre}}
+                  </option> 
+                  <!-- [selected]="option.idred===editMet.idred" -->
                       {{editMet.idred?.idred}}
                   </select>
                   
@@ -204,8 +223,9 @@
                   class="form-control" 
                   [(ngModel)]="editMet.idsolicitud"
                   [ngClass]="{ 'is-invalid': submitted && fe.tipoSolicitud_edit.errors }" required>
+                  
                   <option [ngValue]="-1" disabled='' selected>Seleccione...</option>
-                      <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.tipoaccion">{{title.nombre}}</option>
+                      <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.idsolicitud">{{title.nombre}}</option>
                       {{editMet.idsolicitud?.idsolicitud}} 
                   </select>
                   <div *ngIf="submitted && fe.tipoSolicitud_edit.errors" class="invalid-feedback">

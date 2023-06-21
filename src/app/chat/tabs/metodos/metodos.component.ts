@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild,ElementRef } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient,HttpHeaders  } from '@angular/common/http';
 import { Metodos } from './metodos.model';
 import { RedSocial } from '../redessociales/redsocial.model';
@@ -26,7 +26,16 @@ export class MetodosComponent implements OnInit{
   // metodoForm: FormControl;
 
   idMetodo;
-  metodoForm: FormGroup; 
+  metodoForm: FormGroup = new FormGroup({
+    nombreRedSocial: new FormControl(''), 
+    tipometodo: new FormControl(''),
+    tipoSolicitud: new FormControl(''),
+    rama: new FormControl(''),
+    resultado: new FormControl(''),
+    etiquetavalor: new FormControl(''), 
+  });
+
+
   metodoEditForm: FormGroup= new FormGroup({
     nombreRedSocial_edit: new FormControl(''), 
     tipo_metodo_edit: new FormControl(''),
@@ -36,14 +45,7 @@ export class MetodosComponent implements OnInit{
     etiquetavalor_edit: new FormControl(''),
   });
   
-  /* = new FormGroup({
-    nombreRedSocial: new FormControl('') /*, 
-    tipometodo: new FormControl(''),
-    tipoSolicitud: new FormControl(''),
-    rama: new FormControl(''),
-    resultado: new FormControl(''),
-    etiquetavalor: new FormControl(''), 
-  }); */
+ 
 
   submitted= false;
   list="";
@@ -55,27 +57,12 @@ export class MetodosComponent implements OnInit{
   newMetodo: Partial<Metodos> = {
     
     idred: 0,
-    idsolicitud: 0,
+    // idsolicitud: 0,
     tipometodo: '' ,
     rama: '',
-    resultado: 0,
+    // resultado: 0,
     etiquetavalor: '',
   };
-
-/*
-  form: Partial<Metodos> = {
-    etiquetavalor: '',
-    idmetodo: 0, 
-    idred: 0,
-    idsolicitud: 0,
-    nombrered: '',
-    nombresolicitud: '',
-    rama: '',
-    resultado: 0,
-    tipoaccion: 0,
-    tipometodo: '' 
-  }; */
-
 
   IdMetodo: Partial<Metodos> = {
     idmetodo:0
@@ -97,32 +84,16 @@ export class MetodosComponent implements OnInit{
     }),
   };
 
-  /*
-  "idred":select_redsocial,
-  "idsolicitud":select_tiposolicitud,
-  "tipometodo":select_metodo,
-  "rama":rama,
-  "resultado":select_resultado,
-  "etiquetavalor":etiqueta
-  */ 
-  
-  constructor(private modalService: NgbModal, private http: HttpClient,private fb: FormBuilder) { 
 
-      /*
-      this.metodoForm = new FormGroup({
-        nombreRedSocial : new FormControl('', [
-          Validators.required
-        ])
-      }); */
-      
+  constructor(private modalService: NgbModal, private http: HttpClient,private fb: FormBuilder) { 
       
       this.metodoForm= this.fb.group({
-        nombreRedSocial: ['', [Validators.required]], /*
+        nombreRedSocial: ['', [Validators.required]], 
         tipometodo: ['', [Validators.required]],
-        resultado: ['', [Validators.required]],
-        tipoSolicitud: ['', [Validators.required]],
+        tipoSolicitud: ['', [Validators.required]], 
         rama: ['', [Validators.required]],
-        etiquetavalor: ['', [Validators.required]]  */
+        resultado: ['', [Validators.required]],
+        etiquetavalor: ['', [Validators.required]]  
       }); 
 
       this.metodoEditForm= this.fb.group({
@@ -134,18 +105,15 @@ export class MetodosComponent implements OnInit{
         etiquetavalor_edit: ['', [Validators.required]],
       }); 
 
-      /*
-      this.metodoForm = new FormGroup({
-        nombreRedSocial: new FormControl('', Validators.required)
-      }); */
+      
 
     }
 
   ngOnInit(): void {
+    
     this.loadMetodos();
     this.loadRedesSociales();
     this.loadTipoSolicitud();
-    // this.validateForm();
   }
 
   
@@ -213,15 +181,13 @@ get fe()  {
 
   validateForm(): void{
     this.submitted = true;
-    const var_inv= document.getElementsByClassName('ng-invalid')
-    // console.log("value: "+JSON.stringify(this.metodoForm.value, null, 4));
-    // console.log(" -> "+JSON.stringify(this.metodoForm.value, null, 4));
-    console.log("datos: "+this.metodoForm.valid);
-    // console.log(JSON.stringify(this.metodoForm, null, 2));
+    const var_inv= document.getElementsByClassName('ng-invalid');
+    // console.log("datos: "+this.metodoForm.valid);
+
     if (this.metodoForm.valid) {
-      alert("ok");
+      // alert("ok");
       this.submitted = true;
-      console.log("datos: "+this.newMetodo);
+      console.log("datos validos: "+this.newMetodo);
       // this.addNewMetodo();
       // return true;
 		} else {
@@ -230,28 +196,18 @@ get fe()  {
     
   }
 
-  validateEditForm(): void{
+  validateUpdateForm(): void{
     this.submitted = true;
-    // const var_inv= document.getElementsByClassName('ng-invalid')
-    // console.log("value: "+JSON.stringify(this.metodoForm.value, null, 4));
-    // console.log(" -> "+JSON.stringify(this.metodoForm.value, null, 4));
-    console.log("form: "+this.metodoEditForm.valid);
-    // console.log(JSON.stringify(this.metodoForm, null, 2));
+    // console.log("form: "+this.metodoEditForm.valid);
     if (this.metodoEditForm.valid) {
-      alert("ok");
       this.submitted = true;
-      console.log("datos: "+this.editMet);
+      this.updateMetodo();
 
 		} else {
       return console.log(this.metodoEditForm.value);
 		} 
     
   }
-  /*
-  onReset() {
-    this.submitted = false;
-    this.metodoForm.reset();
-  } */ 
 
   openMetodosModal(content) {
     this.modalService.open(content, { centered: true });
@@ -270,17 +226,46 @@ get fe()  {
 
     this.modalService.open(this.modalRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
 			(result) => {
-				this.closeResult = `Closed with: ${result}`;
+				// this.closeResult = `Closed with: ${result}`;
+        const dismissReason = this.getDismissReason(result);
 			},
 			(reason) => {
-				this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+				// this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        const dismissReason = this.getDismissReason(reason);
 			},
 		);
   }
 
-  openMetodosModalEdit(content_edit,idmetodo:any,
-    idred:any,nombrered:any,tipometodo:any,idsolicitud:any,nombresolicitud:any,tipoaccion:any,rama:any,resultado:any,etiquetavalor:any) {
-    
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC key';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  openMetodosModalEdit(content_edit,
+    idmetodo:any,
+    idred:any,
+    nombrered:any,
+    tipometodo:any,
+    idsolicitud:any,
+    nombresolicitud:any,
+    tipoaccion:any,
+    rama:any,
+    resultado:any,
+    etiquetavalor:any){
+    /*
+      this.editMet = {
+
+        rama: '',
+        tipometodo: '' ,
+        resultado: 0,
+        etiquetavalor: '',
+      };*/
+
     this.editMet = {
       // idmetodo:idmetodo,
       idred:idred,
@@ -288,11 +273,11 @@ get fe()  {
       rama: rama,
       tipometodo: tipometodo,
       resultado: resultado,
-      etiquetavalor: etiquetavalor,
+      etiquetavalor: etiquetavalor
     };
 
     this.IdMetodo=idmetodo;
-    console.log("idsolicitud editar: "+this.idsolicitud);
+    console.log("idsolicitud editar: "+idsolicitud);
     // this.modalService.open(content_edit, { centered: true });
     this.modalService.open(this.modalEditRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
 			(result) => {
@@ -356,7 +341,25 @@ get fe()  {
           
       } 
 
+      document.getElementById('bodyMetodos').innerHTML="";
+      // document.getElementById('etiquetavalor_edit').innerText="";
+      
+
       const tbody = document.getElementById('bodyMetodos');
+
+      /*
+      this.metodoEditForm= {
+        nombreRedSocial_edit: '', 
+        tipo_metodo_edit: '',
+        tipoSolicitud_edit: '',
+        rama_edit: '',
+        resultado_edit: '',
+        etiquetavalor_edit: '',
+      }; */
+
+      // this.metodoEditForm.controls['etiquetavalor_edit'].reset();
+      // this.etiquetavalor_p=""; 
+
       for(let obj in arrayValue) {
 
         const 
@@ -371,6 +374,7 @@ get fe()  {
         resultado_p="",
         etiquetavalor_p=""; 
         
+        
         this.idmetodo_p= arrayValue[obj].idmetodo.toString();
         this.idred_p= arrayValue[obj].idred.toString();
         this.nombrered_p= arrayValue[obj].nombrered.toString();
@@ -380,33 +384,38 @@ get fe()  {
         this.tipoaccion_p= arrayValue[obj].tipoaccion.toString();
         this.rama_p= arrayValue[obj].rama.toString();
         this.resultado_p= arrayValue[obj].resultado.toString();
-        this.etiquetavalor_p= arrayValue[obj].etiquetavalor.toString();
-        
+        this.etiquetavalor_p= arrayValue[obj].etiquetavalor.toString(); 
 
         const fila = document.createElement('tr');
   
         const nombrered = document.createElement('td');
+        nombrered.className="text";
         nombrered.textContent = arrayValue[obj].nombrered.toString();
         fila.appendChild(nombrered);
         
         const nombresolicitud = document.createElement('td');
         nombresolicitud.textContent = arrayValue[obj].nombresolicitud.toString();
+        nombresolicitud.className="text";
         fila.appendChild(nombresolicitud);
 
         const rama = document.createElement('td');
         rama.textContent = arrayValue[obj].rama.toString();
+        rama.className="text";
         fila.appendChild(rama);
 
         const tipometodo = document.createElement('td');
         tipometodo.textContent = arrayValue[obj].tipometodo.toString();
+        tipometodo.className="text";
         fila.appendChild(tipometodo);
 
         const resultado = document.createElement('td');
         resultado.textContent = arrayValue[obj].resultado.toString();
+        resultado.className="number";
         fila.appendChild(resultado);
 
         const etiquetavalor = document.createElement('td');
         etiquetavalor.textContent = arrayValue[obj].etiquetavalor.toString();
+        etiquetavalor.className="text";
         fila.appendChild(etiquetavalor);
 
         const tdbtn = document.createElement('td');
@@ -425,20 +434,24 @@ get fe()  {
         btneditar.setAttribute('data-target','#editMetodos-exampleModalLabel');
         // btneditar.addEventListener("click", this.openModalDelete);
         btneditar.addEventListener('click', () => {
-            this.openMetodosModalEdit(
+
+          // arrayValue[obj].idmetodo.toString()
+          this.openMetodosModalEdit(
                                       this.content_edit,
-                                      this.idmetodo_p,
-                                      this.idred_p,
-                                      this.nombrered_p,
-                                      this.tipometodo_p,
-                                      this.idsolicitud_p,
-                                      this.nombresolicitud_p,
-                                      this.tipoaccion_p,
-                                      this.rama_p,
-                                      this.resultado_p,
-                                      this.etiquetavalor_p);
-            // this.idMetodo=arrayValue[obj].idmetodo.toString();
-            // console.log("idMetodo: "+this.idMetodo);
+                                      arrayValue[obj].idmetodo,
+                                      arrayValue[obj].idred,
+                                      arrayValue[obj].nombrered,
+                                      arrayValue[obj].tipometodo,
+                                      arrayValue[obj].idsolicitud,
+                                      arrayValue[obj].nombresolicitud,
+                                      arrayValue[obj].tipoaccion,
+                                      arrayValue[obj].rama,
+                                      arrayValue[obj].resultado,
+                                      arrayValue[obj].etiquetavalor
+            ); 
+
+            // console.log("etiquetavalor_p:"+arrayValue[obj].etiquetavalor.toString(), event);
+            
         });
 
 
@@ -550,15 +563,14 @@ get fe()  {
       tiposolicitud => {
         
         const sorted = tiposolicitud.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
-        //console.log(sorted);
         const arrayValue=[];
         for (const { index, value } of sorted.map((value, index) => ({ index, value }))) {
           // console.log("index"+value.idred); // 9, 2, 5
           arrayValue.push(value);
       } 
 
-      this.tipoSolicitudSelect=arrayValue;
-      // console.log(arrayValue);
+        this.tipoSolicitudSelect=arrayValue;
+        // console.log("......... "+arrayValue);
       },
       error => {
         console.error(error);
@@ -599,52 +611,67 @@ get fe()  {
    
   }
 
-  editMetodo(){
-    // console.log("valor idmetodo:"+this.IdMetodo);
-    this.http.put('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos/'+this.IdMetodo+'.json',this.editMet)
-    .subscribe(data => {
-      // console.log(data);
+  updateMetodo(){
+    // console.log("idmetodo: "+this.IdMetodo);
 
-      this.loadMetodos();
+    const data={
+      "idred":this.editMet.idred,
+      "idsolicitud":this.editMet.idsolicitud,
+      "rama":this.editMet.rama,
+      "tipometodo":this.editMet.tipometodo,
+      "resultado":this.editMet.resultado,
+      "etiquetavalor":this.editMet.etiquetavalor
+    };
 
-        // Muestra una alerta de éxito y cierra el modal
+    /*
+    console.log(data);
+    console.log(
+    // " idmetodo: "+this.editMet.idmetodo
+    " idred: "+this.editMet.idred
+    +" tipometodo: "+this.editMet.tipometodo
+    +" idsolicitud: "+this.editMet.idsolicitud
+    +" rama: "+this.editMet.rama
+    +" resultado: "+this.editMet.resultado
+    +" etiquetavalor: "+this.editMet.etiquetavalor); */
+
+    
+    const url = 'https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos/' + this.IdMetodo + '.json';
+    
+    this.http.put(url, data)
+    .subscribe(
+      () => {
+
+        
+        this.editMet = {
+          rama: '',
+          tipometodo: '' ,
+          resultado: 0,
+          etiquetavalor: '',
+        }; 
+        
+        this.loadMetodos();
+
         Swal.fire({
           icon: 'success',
           title: '¡Éxito!',
           text: 'Se actualizó correctamente!',
           confirmButtonText: 'Ok'
         });
-        this.modalService.dismissAll();
-    },
 
-    error => {
-      console.error(error);
-      // Muestra una alerta de error
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un error en la actualización. Por favor, inténtalo más tarde.',
-        confirmButtonText: 'Entendido'
-      });
-    }
-    );     
+        this.modalService.dismissAll();
+      },
+      error => {
+        console.error(error);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error en la actualización. Por favor, inténtalo más tarde.',
+          confirmButtonText: 'Entendido'
+        });
+      }
+      ); 
    
   }
-
-  /*
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      // Get client-side error
-      errorMessage = error.error.message;
-    } else {
-      // Get server-side error
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    window.alert(errorMessage);
-    return throwError(() => {
-      return errorMessage;
-    });
-  }*/ 
 
 }
