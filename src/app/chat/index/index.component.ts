@@ -16,7 +16,7 @@ import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
 import { Subscription } from 'rxjs';
 import { NotificacionesService } from '../../chat/notificaciones/notificaciones.service';
-
+import Swal from 'sweetalert2';
 // Date Format
 import { DatePipe } from '@angular/common';
 
@@ -55,6 +55,7 @@ export class IndexComponent implements OnInit {
   public Email: string;
   public IdPublicacionLead: string;
   public LinkPublicacion: string;
+  public modalDatos: any;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -196,24 +197,24 @@ export class IndexComponent implements OnInit {
     if(tab=='1'){
       // document.getElementById('tabMetodos').style.display = 'none';
       // document.getElementById('chat-welcome-section').style.display = 'block';
-      
+
     }
 
     if(tab=='2'){
       document.getElementById('tabMetodos').style.display = 'none';
       document.getElementById('chat-welcome-section').style.display = 'block';
-      
+
     }
-    
-    else if(tab=='7'){ 
-      
+
+    else if(tab=='7'){
+
       document.getElementById('chat-welcome-section').style.display = 'none';
       document.getElementById('tabMetodos').style.display = 'block';
     }
     else{
 
     }
-    
+
   }
 
   /**
@@ -250,7 +251,7 @@ export class IndexComponent implements OnInit {
   }
 
   openVideoModal(videoContent) {
-    this.modalService.open(videoContent, { centered: true });
+    this.modalDatos = this.modalService.open(videoContent, { centered: true });
   }
 
   /**
@@ -644,6 +645,20 @@ export class IndexComponent implements OnInit {
       );
     });
   }
+
+  confirmSend() {
+    Swal.fire({
+        title: '¿Seguro que deseas enviarlos?',
+        showDenyButton: true,
+        confirmButtonText: `Enviar`,
+        denyButtonText: `Cancelar`,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('Los datos se enviaron correctamente', '', 'success');
+            this.modalDatos.close('Close click');
+        }
+    })
+}
 
 }
 

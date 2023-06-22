@@ -20,14 +20,14 @@
     <div class="flex-lg-column my-auto">
       <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
         <li class="nav-item" ngbTooltip="Perfil">
-          <a class="nav-link" id="pills-user-tab" (click)="showTabMetodos('1')" (click)="activetab=1" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 1}">
+          <a class="nav-link" id="pills-user-tab" (click)="showTabMetodos('1')" (click)="activetab=1"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 1}">
             <i class="ri-profile-line"></i>
           </a>
         </li>
         <li class="nav-item" ngbTooltip="Conversaciones">
-          <a class="nav-link active" id="pills-chat-tab" (click)="showTabMetodos('2')" (click)="activetab=2" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 2}">
+          <a class="nav-link active" id="pills-chat-tab" (click)="showTabMetodos('2')" (click)="activetab=2"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 2}">
             <i class="ri-wechat-fill"></i>
           </a>
         </li>
@@ -51,9 +51,9 @@
           </a>
         </li>
 
-        <li class="nav-item" ngbTooltip="Métodos"  placement="top">
-          <a class="nav-link" id="pills-contacts-tab" (click)="showTabMetodos('7')" (click)="activetab=7" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 7}">
+        <li class="nav-item" ngbTooltip="Métodos" placement="top">
+          <a class="nav-link" id="pills-contacts-tab" (click)="showTabMetodos('7')" (click)="activetab=7"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 7}">
             <i class="ri-tools-fill"></i>
           </a>
         </li>
@@ -635,27 +635,27 @@
 
           <h4 class=""> Métodos</h4>
           <hr>
-          <div class="" id="list_tablemetodos"> 
+          <div class="" id="list_tablemetodos">
             <table class="table table-hover">
               <thead>
-                  <tr>
-                      <th>Red sociales</th>
-                      <th>Solicitud</th> 
-                      <th>Rama</th>
-                      <th>Tipo de métodos</th>
-                      <th>Resultado</th>
-                      <th>Etiqueta</th>
-                      <th>Acciones</th>
-                      
-                  </tr>
+                <tr>
+                  <th>Red sociales</th>
+                  <th>Solicitud</th>
+                  <th>Rama</th>
+                  <th>Tipo de métodos</th>
+                  <th>Resultado</th>
+                  <th>Etiqueta</th>
+                  <th>Acciones</th>
+
+                </tr>
               </thead>
               <tbody id="bodyMetodos">
                 <!--
                   <tr *ngFor="let item of MetodosList">
                       <td>{{item.nombrered}}</td>
                       <td>{{item.nombresolicitud}}</td>
-                      <td>{{item.tipometodo}}</td> 
-                      
+                      <td>{{item.tipometodo}}</td>
+
                       <div class="dropdown" ngbDropdown>
                           <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
@@ -668,17 +668,17 @@
                                 class="ri-forbid-line float-end text-muted"></i></a>
                             <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMetodo($event,item.idmetodo)">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
                                 class="ri-delete-bin-line float-end text-muted"></i></a>
-                            
+
                            <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"
                            data-target="#editMetodos-exampleModal" (click)="openMetodosModalEdit(content_edit,item.idmetodo,
                            item.idred,item.nombrered,item.tipometodo,item.idsolicitud,item.nombresolicitud,item.tipoaccion,item.rama,item.resultado,item.etiquetavalor)">Editar <i
                                   class="ri-edit-2-fill float-end text-muted"></i></a>
                           </div>
-                        </div> 
-                      
+                        </div>
+
                   </tr> -->
               </tbody>
-          </table>
+            </table>
           </div>
 
 
@@ -687,7 +687,7 @@
     </div>
   </div>
 
-  
+
 
   <!-- Start User chat -->
   <div class="user-chat w-100 d-none" id="chat-room">
@@ -781,9 +781,9 @@
                     </div>
                   </div>
                 </ng-template>
-               <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
-                    (click)="openVideoModal(videoContent)">
+                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                  <button type="button" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#videocallModal"
+                    ngbTooltip="Enviar a Seekop" (click)="openVideoModal(videoContent)">
                     <i class="ri-send-plane-fill"></i>
                   </button>
                 </li>
@@ -791,28 +791,32 @@
                   <div class="modal-body">
                     <div class="text-center p-4">
                       <div class="avatar-lg mx-auto">
-                        <img src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png" alt="Seekop" class="img-thumbnail rounded-circle">
+                        <img src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png" alt="Seekop"
+                          class="img-thumbnail rounded-circle">
                       </div>
                       <p class="text-center"> Nombre: {{userName}}</p>
                       <p class="text-center"> Red Social: {{RedSocial}}</p>
                       <p class="text-center"> Email: {{Email}}</p>
                       <p class="text-center"> IdPublicacion: {{IdPublicacionLead}}</p>
                       <p class="text-center"> Distribuidor: {{Distribuidor}}</p>
-                      <p class="text-muted mb-0">Los datos del interesado se enviaron correctamente al distribuidor: {{Distribuidor}}</p>
+                      <p class="text-center">Los datos del interesado se enviarán correctamente al distribuidor:
+                        {{Distribuidor}} </p>
+                      <p class="text-center">¿Desea continuar?</p>
                       <div class="mt-5">
                         <ul class="list-inline mb-1">
-                          <!-- <li class="list-inline-item px-2 me-2 ms-0">
+                          <li class="list-inline-item px-2 me-2 ms-0">
                             <button type="button" class="btn btn-danger avatar-sm rounded-circle"
-                              data-bs-dismiss="modal" (click)="modal.close('Close click')">
+                              (click)="modal.minimize()">
                               <span class="avatar-title bg-transparent font-size-20">
-                                <i class="ri-close-fill"></i>
+                                <i class="ri-thumb-down-fill"></i>
                               </span>
                             </button>
-                          </li> -->
+                          </li>
                           <li class="list-inline-item px-2">
-                            <button type="button" class="btn btn-success avatar-sm rounded-circle" (click)="modal.close('Close click')">
+                            <button type="button" class="btn btn-success avatar-sm rounded-circle"
+                              (click)="confirmSend()">
                               <span class="avatar-title bg-transparent font-size-20">
-                                <i class="ri-fire-fill"></i>
+                                <i class="ri-thumb-up-fill"></i>
                               </span>
                             </button>
                           </li>
