@@ -32,9 +32,10 @@
                 formControlName="nombreRedSocial" required
                  [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors }"
                  (change)="changeRedSocial($event)"
-                 class="form-control" >
-                  <option [ngValue]="">Seleccione...</option> 
-                  <option *ngFor="let title of redesSelect" [ngValue]="title.idred">{{title.nombre}}</option>
+                 class="form-control" 
+                 [(ngModel)]="newMetodo.idred">
+                  <option [value]="" selected>Seleccione...</option> 
+                  <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
                   {{newMetodo.idred?.idred}} 
                 </select>
 
@@ -55,11 +56,11 @@
                 [ngClass]="{ 'is-invalid': submitted && f.tipometodo.errors }"
                 (change)="changeTipoMetodo($event)"
                 [(ngModel)]="newMetodo.tipometodo">
-                    <option [ngValue]="" selected=''>Seleccione...</option>
-                    <option [ngValue]="POST">POST</option>
-                    <option [ngValue]="GET">GET</option>
-                    <option [ngValue]="PUT">PUT</option>
-                    <option [ngValue]="DELETE">DELETE</option>
+                    <option value="" selected=''>Seleccione...</option>
+                    <option value="POST">POST</option>
+                    <option value="GET">GET</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
                 </select>
 
                 <div *ngIf="submitted && f.tipometodo.errors?.required" class="invalid-feedback">

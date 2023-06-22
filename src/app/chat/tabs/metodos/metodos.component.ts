@@ -56,7 +56,7 @@ export class MetodosComponent implements OnInit{
   metodo: Metodos[];
   newMetodo: Partial<Metodos> = {
     
-    idred: 0,
+    // idred: 0,
     // idsolicitud: 0,
     tipometodo: '' ,
     rama: '',
@@ -135,10 +135,12 @@ export class MetodosComponent implements OnInit{
   } 
 
   changeRedSocial(e) {
-    console.log("datos: "+this.metodoForm.valid);
+    console.log("datos changed: "+this.metodoForm.valid);
+    // const selectedValue = e.target.value;
+
     this.getRedSocial.setValue(e.target.value, {
       onlySelf: true
-    })
+    }) 
   }
 
   changeEtiqueta(e) {
@@ -182,13 +184,13 @@ get fe()  {
   validateForm(): void{
     this.submitted = true;
     const var_inv= document.getElementsByClassName('ng-invalid');
-    // console.log("datos: "+this.metodoForm.valid);
+    // console.log("datos form: "+this.newMetodo.tipometodo);
 
     if (this.metodoForm.valid) {
-      // alert("ok");
+      
       this.submitted = true;
-      console.log("datos validos: "+this.newMetodo);
-      // this.addNewMetodo();
+      // console.log("datos validos: "+this.metodoForm.value);
+      this.addNewMetodo();
       // return true;
 		} else {
       return console.log(this.metodoForm.value);
@@ -291,7 +293,26 @@ get fe()  {
 
   addNewMetodo() { 
     // console.log(this.newMetodo);  
-    this.http.post<Metodos>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos', this.newMetodo).subscribe(
+    const data={
+      "idred":this.newMetodo.idred,
+      "idsolicitud":this.newMetodo.idsolicitud,
+      "rama":this.newMetodo.rama,
+      "tipometodo":this.newMetodo.tipometodo,
+      "resultado":this.newMetodo.resultado,
+      "etiquetavalor":this.newMetodo.etiquetavalor
+    };
+
+    console.log(
+      "id red: "+data.idred
+      +" idsolicitud: "+data.idsolicitud
+      +" rama: "+data.rama
+      +" tipo metodo: "+data.tipometodo
+      +" resultado: "+data.resultado
+      +" etiqueta"+data.etiquetavalor);
+    const url = 'https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos';
+    
+    
+    this.http.post<Metodos>(url, data).subscribe(
       response => {
         // Limpia el formulario y recarga la lista de redes sociales
         /*
@@ -324,7 +345,7 @@ get fe()  {
           confirmButtonText: 'Entendido'
         });
       }
-    );
+    ); 
   }
 
   loadMetodos(): void {
