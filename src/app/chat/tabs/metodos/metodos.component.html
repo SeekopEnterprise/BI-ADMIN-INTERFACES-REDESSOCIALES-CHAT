@@ -30,17 +30,17 @@
                 <label for="nombreRedSocial">Red social*</label>
                 <select 
                 formControlName="nombreRedSocial" required
-                 [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors }"
+                 [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors || f.nombreRedSocial.value==='null'}"
                  (change)="changeRedSocial($event)"
-                 class="form-control" 
+                 class="form-select" 
                  [(ngModel)]="newMetodo.idred">
-                  <option [value]="" selected>Seleccione...</option> 
+                  <option [value]="null" >Seleccione...</option> 
                   <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
                   {{newMetodo.idred?.idred}} 
                 </select>
 
                 
-                <div *ngIf="submitted && f.nombreRedSocial.errors?.required" class="invalid-feedback">
+                <div *ngIf="submitted && f.nombreRedSocial.errors?.required || f.nombreRedSocial.value==='null'" class="invalid-feedback">
                   Este campo es obligatorio!
                   <!-- <div *ngIf="f.nombreRedSocial.errors.required">Este campo es obligatorio!</div> -->
                 </div>
@@ -52,18 +52,18 @@
                 <label for="tipometodo">Tipo de método*</label>
                 <select 
                 formControlName="tipometodo" 
-                class="form-control" 
-                [ngClass]="{ 'is-invalid': submitted && f.tipometodo.errors }"
+                class="form-select" 
+                [ngClass]="{ 'is-invalid': submitted && f.tipometodo.errors || f.tipometodo.value==='null'}"
                 (change)="changeTipoMetodo($event)"
                 [(ngModel)]="newMetodo.tipometodo">
-                    <option value="" selected=''>Seleccione...</option>
+                    <option value="null">Seleccione...</option>
                     <option value="POST">POST</option>
                     <option value="GET">GET</option>
                     <option value="PUT">PUT</option>
                     <option value="DELETE">DELETE</option>
                 </select>
 
-                <div *ngIf="submitted && f.tipometodo.errors?.required" class="invalid-feedback">
+                <div *ngIf="submitted && f.tipometodo.errors?.required || f.tipometodo.value==='null'" class="invalid-feedback">
                   El campo es requerido!
                 </div> 
 
@@ -74,10 +74,10 @@
                 <label for="tipoSolicitud">Tipo acción*</label>
                 <select  
                 formControlName="tipoSolicitud"
-                class="form-control" 
+                class="form-select" 
                 [ngClass]="{ 'is-invalid': submitted && f.tipoSolicitud.errors }"
                 [(ngModel)]="newMetodo.idsolicitud">
-                    <option [ngValue]="">Seleccione...</option>
+                    <option [ngValue]="null" selected>Seleccione...</option>
                     <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.tipoaccion">{{title.nombre}}</option>
                     {{newMetodo.idsolicitud?.idsolicitud}} 
                 </select>
@@ -96,8 +96,14 @@
                 type="text" placeholder="rama/rama1" 
                 [(ngModel)]="newMetodo.rama" required>
                  
-                <div *ngIf="submitted && f.rama.errors?.required" class="invalid-feedback">
-                  El campo es requerido!
+                <div *ngIf="submitted && f.rama.errors" class="invalid-feedback">
+  
+                  <div *ngIf="f.rama.errors.required">
+                    EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.rama.errors.maxlength">
+                        Ingresa un valor con una longitud menor a 255 caracteres!
+                  </div>
                 </div> 
 
               </div> 
@@ -107,17 +113,18 @@
                 <label for="resultado">Resultado *</label>
                 <select  
                 formControlName="resultado" 
-                class="form-control"
-                [ngClass]="{'is-invalid': submitted && f.resultado.errors }"
+                class="form-select"
+                [ngClass]="{'is-invalid': submitted && f.resultado.errors}"
                 [(ngModel)]="newMetodo.resultado">
-                    <option [ngValue]="">Seleccione...</option>
+                    <option [ngValue]="null">Seleccione...</option>
                     <option [ngValue]="1">Json</option>
                     <option [ngValue]="2">XML</option>
                 </select> 
                 
                 <div *ngIf="submitted && f.resultado.errors?.required" class="invalid-feedback">
-                  El campo es requerido!
-                </div> 
+                    El campo es requerido! 
+                </div>
+
               </div>
 
             
@@ -129,10 +136,23 @@
                 [ngClass]="{'is-invalid': submitted && f.etiquetavalor.errors }" required 
                 [(ngModel)]="newMetodo.etiquetavalor">
                 
-                <div *ngIf="submitted && f.etiquetavalor.errors?.required" class="invalid-feedback">
-                  El campo es requerido!
-                </div>
+                <!-- submitted && f.etiquetavalor.errors?.required -->
+                <div *ngIf="submitted && f.etiquetavalor.errors" class="invalid-feedback">
+                  
+                  <div *ngIf="f.etiquetavalor.errors.required">
+                        EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.etiquetavalor.errors.maxlength">
+                        Ingresa un valor con una longitud menor a 50 caracteres!
+                  </div>
 
+                </div>
+                
+                <!--
+                <div *ngIf="submitted && f.etiquetavalor.errors?.['maxlength']" class="invalid-feedback">
+                  Ingresa un valor con una longitud menor a 50 caracteres!
+                </div> -->
+                
               </div>   
 
               <div class="modal-footer">
@@ -204,7 +224,7 @@
                   class="form-control" 
                   [(ngModel)]="editMet.tipometodo"
                   [ngClass]="{ 'is-invalid': submitted && fe.tipo_metodo_edit.errors }" required>
-                      <option value="-1" disabled='' selected>Seleccione...</option>
+                    <!-- <option value="-1" disabled='' selected>Seleccione...</option> -->
                       <option value="POST">POST</option>
                       <option value="GET">GET</option>
                       <option value="PUT">PUT</option>
@@ -225,7 +245,7 @@
                   [(ngModel)]="editMet.idsolicitud"
                   [ngClass]="{ 'is-invalid': submitted && fe.tipoSolicitud_edit.errors }" required>
                   
-                  <option [ngValue]="-1" disabled='' selected>Seleccione...</option>
+                      <!-- <option [ngValue]="-1" disabled='' selected>Seleccione...</option> -->
                       <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.idsolicitud">{{title.nombre}}</option>
                       {{editMet.idsolicitud?.idsolicitud}} 
                   </select>
@@ -238,14 +258,28 @@
                 
                 <div class="mb-3">
                   <label for="rama_edit">Rama *</label>
-                  <input id="rama_edit" formControlName="rama_edit" type="text" class="form-control" placeholder="rama/rama1" [(ngModel)]="editMet.rama">
+                  <input id="rama_edit" 
+                  [ngClass]="{'is-invalid': submitted && fe.rama_edit.errors }"
+                  formControlName="rama_edit" type="text" class="form-control" 
+                  placeholder="rama/rama1" [(ngModel)]="editMet.rama">
+                  
+                  <div *ngIf="submitted && fe.rama_edit.errors" class="invalid-feedback">
+                    <!-- El campo es requerido! -->
+                    <div *ngIf="fe.rama_edit.errors.required">
+                      EL campo es requerido!
+                    </div>
+                    <div *ngIf="fe.rama_edit.errors.maxlength">
+                          Ingresa un valor con una longitud menor a 255 caracteres!
+                    </div>
+
+                  </div> 
                 </div>
                 
                 
                 <div class="mb-3">
                   <label for="resultado_edit">Resultado *</label>
                   <select id="resultado_edit" formControlName="resultado_edit" class="form-control" [(ngModel)]="editMet.resultado">
-                      <option value="-1" disabled='' selected=''>Seleccione...</option>
+                    <!-- <option value="-1" disabled='' selected=''>Seleccione...</option> -->
                       <option value="1">Json</option>
                       <option value="2">XML</option>
                   </select>
@@ -254,7 +288,20 @@
                 
                 <div class="mb-3">
                   <label for="etiquetavalor_edit">Etiqueta *</label>
-                  <input id="etiquetavalor_edit" formControlName="etiquetavalor_edit" type="text" class="form-control" placeholder="etiqueta prueba" [(ngModel)]="editMet.etiquetavalor">
+                  <input id="etiquetavalor_edit" 
+                  [ngClass]="{'is-invalid': submitted && fe.etiquetavalor_edit.errors }"
+                  formControlName="etiquetavalor_edit" type="text" 
+                  class="form-control" placeholder="etiqueta prueba" 
+                  [(ngModel)]="editMet.etiquetavalor">
+
+                  <div *ngIf="submitted && fe.etiquetavalor_edit.errors" class="invalid-feedback">
+                    <div *ngIf="fe.etiquetavalor_edit.errors.required">
+                      EL campo es requerido!
+                    </div>
+                    <div *ngIf="fe.etiquetavalor_edit.errors.maxlength">
+                          Ingresa un valor con una longitud menor a 50 caracteres!
+                    </div>
+                  </div> 
                 </div>   
   
                 <div class="modal-footer">

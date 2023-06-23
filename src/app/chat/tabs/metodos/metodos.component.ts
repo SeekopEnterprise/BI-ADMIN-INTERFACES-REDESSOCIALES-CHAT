@@ -56,11 +56,11 @@ export class MetodosComponent implements OnInit{
   metodo: Metodos[];
   newMetodo: Partial<Metodos> = {
     
-    // idred: 0,
-    // idsolicitud: 0,
-    tipometodo: '' ,
+    idred: null,
+    idsolicitud: null,
+    tipometodo: null ,
     rama: '',
-    // resultado: 0,
+    resultado: null,
     etiquetavalor: '',
   };
 
@@ -91,18 +91,18 @@ export class MetodosComponent implements OnInit{
         nombreRedSocial: ['', [Validators.required]], 
         tipometodo: ['', [Validators.required]],
         tipoSolicitud: ['', [Validators.required]], 
-        rama: ['', [Validators.required]],
+        rama: ['', [Validators.required,Validators.maxLength(255)]],
         resultado: ['', [Validators.required]],
-        etiquetavalor: ['', [Validators.required]]  
+        etiquetavalor: ['', [Validators.required,Validators.maxLength(50)]]  
       }); 
 
       this.metodoEditForm= this.fb.group({
         nombreRedSocial_edit: ['', [Validators.required]], 
         tipo_metodo_edit: ['', [Validators.required]], 
         tipoSolicitud_edit: ['', [Validators.required]],
-        rama_edit: ['', [Validators.required]],
+        rama_edit: ['', [Validators.required,Validators.maxLength(255)]],
         resultado_edit: ['', [Validators.required]],
-        etiquetavalor_edit: ['', [Validators.required]],
+        etiquetavalor_edit: ['', [Validators.required,Validators.maxLength(50)]],
       }); 
 
       
@@ -202,6 +202,7 @@ get fe()  {
     this.submitted = true;
     // console.log("form: "+this.metodoEditForm.valid);
     if (this.metodoEditForm.valid) {
+      // alert("ok valido! ");
       this.submitted = true;
       this.updateMetodo();
 
@@ -618,7 +619,7 @@ get fe()  {
               text: 'Se eliminó correctamente!',
               confirmButtonText: 'Ok'
             });
-            
+            this.modalService.dismissAll(); 
             // this.modalService.dismissAll();
             // this.modalRef.nativeElement.dismissAll();
             // this.modalService.dismissAll();
