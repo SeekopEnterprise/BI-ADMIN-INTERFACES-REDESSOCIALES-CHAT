@@ -25,7 +25,8 @@
 
               <div class="mb-3">
                 <label for="nombreRedSocial">Red social*</label>
-                <select formControlName="idred" class="form-select" required>
+                <select formControlName="idred" id="idred" (change)="selectRedSocial($event)" 
+                class="form-select" required>
                   <option [value]="''" selected>Seleccione...</option>
                   <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
                 </select>
@@ -37,7 +38,8 @@
 
               <div class="mb-3">
                 <label for="usuario">Distribuidor*</label>
-                <select formControlName="iddistribuidor" class="form-select" required>
+                <select formControlName="iddistribuidor" id="iddistribuidor" (change)="changeDistribuidor($event)" 
+                class="form-select" required>
                   <option [value]="''">Seleccione...</option>
                   <option *ngFor="let listdistribuidores of distribuidoresSelect" [value]="listdistribuidores.iddistribuidor">{{listdistribuidores.nombredistribuidor}}</option>
                 </select>
@@ -52,7 +54,9 @@
 
               <div class="mb-3">
                 <label for="noCliente">No. de Cliente/Usuario*</label>
-                <input formControlName="idcliente" type="text" class="form-control" placeholder="Ejemplo: Cliente123" required pattern="[A-Za-z0-9\s]*">
+                <input (keyup)="onKeyUp($event)" formControlName="idcliente" type="text" 
+                class="form-control" id="idcliente"
+                placeholder="Ejemplo: Cliente123" required pattern="[A-Za-z0-9\s]*">
                 <div *ngIf="redesusuariosForm.controls['idcliente'].invalid && (redesusuariosForm.controls['idcliente'].dirty || redesusuariosForm.controls['idcliente'].touched)"
                      class="text-danger">
                   No. de Cliente/Usuario es requerido y no debe contener caracteres extraños.
@@ -61,7 +65,9 @@
 
               <div class="mb-3">
                 <label for="pagina">Pagina (Nombre)*</label>
-                <input formControlName="nombrepagina" type="text" class="form-control" placeholder="Ejemplo: www.mipagina.com" required pattern="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$">
+                <input (keyup)="onKeyUp($event)" id="nombrepagina" formControlName="nombrepagina" type="text" 
+                class="form-control" 
+                placeholder="Ejemplo: www.mipagina.com" required pattern="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$">
                 <div *ngIf="redesusuariosForm.controls['nombrepagina'].invalid && (redesusuariosForm.controls['nombrepagina'].dirty || redesusuariosForm.controls['nombrepagina'].touched)"
                      class="text-danger">
                   Pagina es requerido y debe ser una URL válida.
@@ -69,8 +75,20 @@
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
-                <button type="submit" class="btn btn-primary" (click)="asociarCuenta()" >Agregar</button>
+                
+                <div class="row">
+                    <div class="col-lg-3">
+                      <button type="button" id="testConnectionButton" 
+                      (click)="testConexion()" class="btn btn-primary btn_redesusuarios" 
+                      [disabled]="isButtonDisabled">Probar conexión</button>
+                      <small id="connectionMessage" class="form-text"></small>
+                    </div>
+                    <div class="col-lg-9">
+                      <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                      <button type="submit" id="btnGuardarUsuario" class="btn btn-primary" (click)="asociarCuenta()" [disabled]="isButtonSaveDisabled">Agregar</button>
+                    </div>
+                </div>
+
               </div>
             </form>
 

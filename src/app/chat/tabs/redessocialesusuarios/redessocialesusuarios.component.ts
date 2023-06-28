@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild  } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient } from '@angular/common/http';
 import { RedesUsuarios } from './redesusuarios.model';
 import { RedSocial } from '../redessociales/redsocial.model';
 import Swal from 'sweetalert2';
-import { FormBuilder, Validators, FormGroup, AbstractControl } from '@angular/forms'
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms'
 
 @Component({
   selector: 'app-redessocialesusuarios',
@@ -12,8 +12,19 @@ import { FormBuilder, Validators, FormGroup, AbstractControl } from '@angular/fo
   styleUrls: ['./redessocialesusuarios.component.scss']
 })
 export class RedessocialesusuariosComponent implements OnInit {
+  
+  @ViewChild('idred') idred!: ElementRef;
+  @ViewChild('nombrepagina', { static: true }) nombrepaginaInput: ElementRef<HTMLInputElement>;
 
+  public isButtonDisabled: boolean = true;
+  public isButtonSaveDisabled: boolean = true;
   redesusuariosForm: FormGroup;
+
+  /*
+  redesusuariosForm = new FormGroup({
+    idred: new FormControl({disabled: true}),
+    iddistribuidor: new FormControl({disabled: true})
+  });*/
 
   redesSelect: any;
   distribuidoresSelect: any;
@@ -43,6 +54,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         token: ['', [Validators.required]],
         fechavencimimiento: ['', [Validators.required]]
       }); */
+      
 
     }
 
@@ -90,6 +102,8 @@ export class RedessocialesusuariosComponent implements OnInit {
       nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
+    
+
   }
 
   openUsuarioRedSocialModal(content) {
@@ -133,8 +147,56 @@ export class RedessocialesusuariosComponent implements OnInit {
     if (this.redesusuariosForm.invalid) {
       return;
     }
+    else{
+      // this.isButtonDisabled = false;
 
+    }
     console.log(this.redesusuariosForm.value);
+  }
+
+  changeDistribuidor(event: KeyboardEvent){
+    this.submitted = true;
+
+    if (this.redesusuariosForm.invalid) {
+      this.isButtonDisabled = true;
+      return;
+    }
+    else{
+
+      this.isButtonDisabled = false;
+
+    }
+  }
+
+  selectRedSocial(event: KeyboardEvent){
+    this.submitted = true;
+
+    if (this.redesusuariosForm.invalid) {
+      this.isButtonDisabled = true;
+      return;
+    }
+    else{
+      // alert("prueba");
+      this.isButtonDisabled = false;
+
+      
+    }
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    
+    this.submitted = true;
+
+    if (this.redesusuariosForm.invalid) {
+      this.isButtonDisabled = true;
+      return;
+    }
+    else{
+      // alert("prueba");
+      this.isButtonDisabled = false;
+
+    }
+    // console.log(this.redesusuariosForm.value);
   }
 
   asociarCuenta() {
@@ -226,6 +288,106 @@ export class RedessocialesusuariosComponent implements OnInit {
     );
   }
 
+  probar(){
+      alert("alert");  
+    /*
+      this.redesusuariosForm.controls.idred.disable();
+      this.redesusuariosForm.controls.iddistribuidor.disable();
+      this.redesusuariosForm.controls.idcliente.disable();
+      this.redesusuariosForm.controls.nombrepagina.disable();
+      this.isButtonSaveDisabled = false; */
+  }
+
+  testConexion(){
+    // alert("ok test");
+
+    // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
+    // console.log("ok: "+nombrepagina.value);
+
+    
+    testConnection();
+    // const FetchButton = document.getElementById("nombrepagina") as HTMLInputElement;
+    // FetchButton.disabled=true;
+    const response=false;
+
+    async function testConnection() {
+
+      // const val=(document.getElementById('nombrepagina') as HTMLInputElement).disabled = false;
+      // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
+      
+
+      const token = 'APP_UR4158433912938780-041117-';
+      const url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+      const button = document.getElementById('testConnectionButton');
+      const nombrepagina = document.getElementById("nombrepagina");
+      const idred = document.getElementById("idred");
+      const iddistribuidor = document.getElementById("iddistribuidor");
+      const idcliente = document.getElementById("idcliente");
+
+      const btnGuardarUsuario = document.getElementById("btnGuardarUsuario");
 
 
+      try {
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (data.statusCode === 200) {
+            
+            nombrepagina?.setAttribute('disabled', 'true');
+            idred?.setAttribute('disabled', 'true');
+            iddistribuidor?.setAttribute('disabled', 'true');
+            idcliente?.setAttribute('disabled', 'true');
+            btnGuardarUsuario?.removeAttribute('disabled');
+
+
+              button.classList.remove('btn-danger');
+              button.classList.add('btn-primary');
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Conexión exitosa',
+                  text: 'La conexión fue correcta.',
+              });
+
+           
+
+/*
+              this.redesusuariosForm.controls.idred.disable();
+              this.redesusuariosForm.controls.iddistribuidor.disable();
+              this.redesusuariosForm.controls.idcliente.disable();
+              this.redesusuariosForm.controls.nombrepagina.disable();
+
+              this.isButtonSaveDisabled = false; */
+
+          } else {
+/*
+            this.redesusuariosForm.controls.idred.disable();
+            this.redesusuariosForm.controls.iddistribuidor.disable();
+            this.redesusuariosForm.controls.idcliente.disable();
+            this.redesusuariosForm.controls.nombrepagina.disable();
+
+            this.isButtonSaveDisabled = false; */
+
+              button.classList.remove('btn-primary');
+              button.classList.add('btn-danger');
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error en la conexión',
+                  text: 'Conexión errónea.',
+              });
+          }
+        } catch (error) {
+          console.error(error);
+          button.classList.remove('btn-primary');
+          button.classList.add('btn-danger');
+          Swal.fire({
+              icon: 'error',
+              title: 'Error en la conexión',
+              text: 'Conexión errónea.',
+          });
+        }
+      } 
+
+      // console.log("abc: "+response);
+    } 
+  
 }
