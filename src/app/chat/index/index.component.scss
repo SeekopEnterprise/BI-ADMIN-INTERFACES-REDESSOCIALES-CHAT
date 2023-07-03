@@ -1,3 +1,91 @@
 .chat-welcome-section.tabMetodos{
     display: none;
 }
+
+
+.container {
+  width: calc(2000px * 0.19999); /* calc(1777px * 0.19999); */
+  height: calc(2000px * 0.199);
+  position: relative;
+  left: -30px;
+  } 
+
+  /*
+  .container-sm {
+    width: calc(1800px * 0.19999); 
+    height: calc(1800px * 0.199);
+    position: relative;
+    left: -30px;
+    } */
+
+#iframePub{
+    
+    width: 775px;
+    height: 680px;
+    transform: scale(0.5999);
+    transform-origin: 0 0;
+    position: absolute;
+    left: 0;
+    top: 0; 
+  
+/* transform: scale(0.19999); */  /* 1777px; */    
+ /*
+  width: 1900px; 
+  height: 1750px;
+  -moz-transform: scale(2.5);
+  -webkit-transform: scale(2.5);
+  -o-transform: scale(2.5);
+
+  transform: scale(0.24); 
+  transform-origin: 0 0;
+  position: absolute;
+  left: 0;
+  top: 0;*/
+}
+
+/*
+.container[_ngcontent-acv-c41]{
+    position: relative; 
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    height: 0;
+    overflow: hidden; 
+}
+
+.container iframe,
+.responsive-iframe{
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 105%;
+  height: 100%;
+} */
+
+
+/*
+.container > iframe.responsive-iframe > #document > html > body ,
+#document,
+html, body{
+    min-width: 920px;
+    zoom: 50%;
+}
+
+html,
+body,
+.nav-header nav-header-plus.ui-navigation-v2 {
+zoom: 50%;
+}
+
+.onboarding-cp{
+    zoom:50%;
+}
+*/
+    /*
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border: none; */

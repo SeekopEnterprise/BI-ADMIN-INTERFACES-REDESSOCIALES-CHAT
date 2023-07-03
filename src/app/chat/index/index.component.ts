@@ -6,6 +6,7 @@ import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { chat, groups } from './data';
 import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem } from './chat.model';
 
@@ -54,7 +55,7 @@ export class IndexComponent implements OnInit {
   public RedSocial: string;
   public Email: string;
   public IdPublicacionLead: string;
-  public LinkPublicacion: string;
+  public LinkPublicacion: SafeResourceUrl;  // string;
   public modalDatos: any;
 
   listLang = [
@@ -70,10 +71,14 @@ export class IndexComponent implements OnInit {
 
   constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient) {
+    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer) {
       this.formData = this.formBuilder.group({
         message: ['', [Validators.required]],
       });
+
+  
+
+
      }
 
   /**
@@ -163,6 +168,12 @@ export class IndexComponent implements OnInit {
 
   ngAfterViewInit() {
     this.scrollRef.SimpleBar.getScrollElement().scrollTop = 100;
+
+    const iframeElement = document.getElementById("iframePub") as HTMLIFrameElement;
+    const iframeWindow = iframeElement.contentWindow;
+    const iframeDocument = iframeWindow.document;
+    const bodyElement = iframeDocument.getElementsByTagName("body")[0];
+    bodyElement.setAttribute("id", "idIframe");
   }
 
   ngOnDestroy(): void {
@@ -288,7 +299,8 @@ export class IndexComponent implements OnInit {
     this.RedSocial = "Mercado Libre"
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
-    this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
+    // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
+    this.LinkPublicacion= this.sanitizer.bypassSecurityTrustResourceUrl( "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f");
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion

@@ -758,7 +758,17 @@
                         </a>
                       </div>
                       <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
-                      <img src="../../../assets/images/publicacion.png" class="img-fluid">
+
+                      <div class="container container-lg container-md container-sm container-xs"> 
+                      <iframe class="responsive-iframe" id="iframePub" frameborder="0"
+                        [src]="LinkPublicacion" webkitallowfullscreen mozallowfullscreen
+                        allowfullscreen style="position:absolute; top:0; left: 0">
+                      </iframe>
+                      </div>
+                      <!--
+                      <img src="../../../assets/images/publicacion.png" class="img-fluid"> -->
+
+
                       <!-- <div class="mt-5">
                         <ul class="list-inline mb-1">
                           <li class="list-inline-item px-2 me-2 ms-0">
