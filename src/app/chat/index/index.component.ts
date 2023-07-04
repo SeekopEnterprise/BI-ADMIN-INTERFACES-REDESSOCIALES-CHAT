@@ -58,6 +58,12 @@ export class IndexComponent implements OnInit {
   public LinkPublicacion: SafeResourceUrl;  // string;
   public modalDatos: any;
 
+  public Telefono: string;
+  public LastName: string;
+  public idMensaje: string;
+  public idDistribuidor: string;
+  public nombreDistribuidor: string;
+
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
@@ -106,12 +112,14 @@ export class IndexComponent implements OnInit {
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
     .subscribe((event: MessageEvent) => {
       const data = JSON.parse(event.data);
+      
       if (event.type === 'open') {
         this.notificacionService.send({
           accion: 'setApp',
           nombreApp: 'proveedoresDigitales'
         });
       } else if (event.type === 'message') {
+        
         this.notificacionService = data.mensaje;
 
         const chatToUpdate = this.chat
@@ -272,6 +280,7 @@ export class IndexComponent implements OnInit {
   userName: any = 'Doris Brown';
   userStatus: any = 'En línea';
   userProfile: any = '';
+  urlPublicacion: any = ''; // "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f" 
   message: any;
   showChat(event: any, id: any) {
     var removeClass = document.querySelectorAll('.chat-user-list li');
@@ -299,13 +308,22 @@ export class IndexComponent implements OnInit {
     this.RedSocial = "Mercado Libre"
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
+    this.urlPublicacion = data[0].urlpublicacion;
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
-    this.LinkPublicacion= this.sanitizer.bypassSecurityTrustResourceUrl( "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f");
+    this.LinkPublicacion= this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPublicacion);
+    this.Telefono = data[0].Telefono;
+    this.LastName = data[0].Apellido;
+    this.idMensaje = data[0].IdProspecto;
+    this.idDistribuidor = data[0].IdDistribuidor;
+    this.nombreDistribuidor = data[0].NombreGrupo;
+
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
     this.selectedChatId = data[0].IdPublicacion;
     this.onListScroll();
+
+    // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
   }
 
   // Contact Search
@@ -592,7 +610,7 @@ export class IndexComponent implements OnInit {
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
         res => {
           let prospects = res.body;
-
+          
           prospects.forEach(prospect => {
             prospect.unreadCount = 0;  // Añadimos un contador de mensajes no leídos
             if (prospect.Conversacion && prospect.Conversacion.length > 0) {
@@ -659,14 +677,104 @@ export class IndexComponent implements OnInit {
   }
 
   confirmSend() {
+  
+    /*
+    console.log(
+                "Username: "+this.userName+
+                "Apellido: "+this.LastName+
+                "Email: "+this.Email+
+                "Telefono: "+this.Telefono+
+                "idMsj: "+this.idMensaje+
+                "idDistribuidor: "+this.idDistribuidor+
+                "Distribuidor: "+this.nombreDistribuidor); */
+
+
+    const data={
+      "prospect":{
+      "status":"new",
+      "id": "123456789",// this.idMensaje, //  "000000001", // idmsj
+      "requestdate":"2023-06-13 16:00:00",
+      "vehicle":{
+      "interest":"buy",
+      "status":"new",
+      "make":"Nissan", // Nissan
+      "year":"2023", 
+      "model":"Sentra"
+      },
+      "customer":{
+      "contact":{
+      "name":[
+      {
+      "part":"first",
+      "value":this.userName // "Marino"
+      },
+      {
+      "part":"middle",
+      "value":this.LastName // "Vargas"
+      },
+      {
+      "part":"last",
+      "value": "" // "Chavez"
+      }
+      ],
+      "email": this.Email, // "marino@gmail.com",
+      "phone":[
+      this.Telefono // "5511223344"
+      ]
+      },
+      "comments":" Prospecto enviado desde Mercado Libre de Comunity Manager  " 
+      },
+      "vendor":{
+      "source":"MERCADOLIBRE",
+      "id": this.idDistribuidor,// "609024", // id distribuidor al que se asigan el prospecto
+      "name": this.nombreDistribuidor,// "Suzuki Queretaro" // Nombre del distribuior
+      }
+      },
+      "provider":{
+      "name":"MERCADOLIBRE" 
+      }
+     };
+
     Swal.fire({
         title: '¿Seguro que deseas enviarlos?',
         showDenyButton: true,
         confirmButtonText: `Enviar`,
         denyButtonText: `Cancelar`,
     }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire('Los datos se enviaron correctamente', '', 'success');
+  
+      if (result.isConfirmed) {
+
+        console.log("Estos son los datos a enviar: "+data);
+          const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
+          /* 
+          this.http.post<any>(url, data).subscribe(
+            response => {
+              // Limpia el formulario y recarga la lista de redes sociales
+              // this.loadMetodos();
+              // Muestra una alerta de éxito y cierra el modal
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Se enviaron correctamente los datos a Seekop',
+                confirmButtonText: 'Ok'
+              });
+              this.modalService.dismissAll();
+            },
+            error => {
+              console.error(error);
+              // Muestra una alerta de error
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
+                confirmButtonText: 'Entendido'
+              });
+            }
+          ); */ 
+
+
+
+            // Swal.fire('Los datos se enviaron correctamente', '', 'success');
             this.modalDatos.close('Close click');
         }
     })
