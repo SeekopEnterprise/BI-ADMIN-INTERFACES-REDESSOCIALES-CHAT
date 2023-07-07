@@ -1,5 +1,5 @@
 <div class="layout-wrapper d-lg-flex">
-  <div class="side-menu flex-lg-column me-lg-1">
+  <div class="side-menu flex-lg-column me-lg-1" *ngIf="!hideMenu">
     <!-- LOGO -->
     <div class="navbar-brand-box">
       <a routerLink="/" class="logo logo-dark">
@@ -17,7 +17,7 @@
     <!-- end navbar-brand-box -->
 
     <!-- Start side-menu nav -->
-    <div class="flex-lg-column my-auto">
+    <div class="flex-lg-column my-auto" >
       <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
         <li class="nav-item" ngbTooltip="Perfil">
           <a class="nav-link" id="pills-user-tab" (click)="showTabMetodos('1')" (click)="activetab=1"
@@ -32,21 +32,28 @@
           </a>
         </li>
         <li class="nav-item" ngbTooltip="Distribuidores">
-          <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="activetab=3" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 3}">
+          <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="showTabMetodos('3')" (click)="activetab=3"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 3}">
             <i class="ri-shield-flash-fill"></i>
           </a>
         </li>
         <li class="nav-item" ngbTooltip="Redes Sociales" placement="top">
-          <a class="nav-link" id="pills-contacts-tab" (click)="activetab=4" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 4}">
+          <a class="nav-link" id="pills-contacts-tab" (click)="showTabMetodos('4')" (click)="activetab=4"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 4}">
             <i class="ri-chat-heart-line"></i>
           </a>
         </li>
 
-        <li class="nav-item" ngbTooltip="Usuarios redes sociales" placement="top">
-          <a class="nav-link" id="pills-redessocialesusuarios-tab" (click)="activetab=6" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 6}">
+        <!-- <li class="nav-item" ngbTooltip="Configuraciones">
+          <a class="nav-link" id="pills-setting-tab" (click)="activetab=5" href="javascript: void(0);"
+            [ngClass]="{'active': activetab === 5}">
+            <i class="ri-settings-2-line"></i>
+          </a>
+        </li> -->
+
+        <li class="nav-item" ngbTooltip="Distribuidores redes sociales" placement="top">
+          <a class="nav-link" id="pills-redessocialesusuarios-tab" (click)="showTabMetodos('6')" (click)="activetab=6"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 6}">
             <i class="ri-user-2-fill"></i>
           </a>
         </li>
@@ -58,12 +65,7 @@
           </a>
         </li>
 
-        <!-- <li class="nav-item" ngbTooltip="Configuraciones">
-          <a class="nav-link" id="pills-setting-tab" (click)="activetab=5" href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 5}">
-            <i class="ri-settings-2-line"></i>
-          </a>
-        </li> -->
+
 
 
         <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none" ngbDropdown placement="top">
@@ -609,7 +611,7 @@
 
   </div>
 
-  <div class="chat-welcome-section" id="chat-welcome-section">
+  <div class="chat-welcome-section" id="chat-welcome-section" *ngIf="activetab !== 7">
     <div class="row w-100 justify-content-center">
       <div class="col-xxl-5 col-md-7">
         <div class="p-4 text-center">
@@ -629,7 +631,7 @@
     </div>
   </div>
 
-  <div class="chat-welcome-section tabMetodos" id="tabMetodos">
+  <div class="chat-welcome-section tabMetodos" id="tabMetodos" *ngIf="activetab === 7">
     <div class="row w-100 justify-content-center">
       <div class="col-xxl-12 col-md-12">
         <div class="p-4 text-center">
@@ -692,7 +694,7 @@
 
 
   <!-- Start User chat -->
-  <div class="user-chat w-100 d-none" id="chat-room">
+  <div class="user-chat w-100 d-none" id="chat-room" *ngIf="activetab !== 7">
     <div class="d-lg-flex">
       <!-- start chat conversation section -->
       <div class="w-100 position-relative">
@@ -754,18 +756,17 @@
                       <div class="col-sm-12">
                         <!-- <img src="{{userProfile}}" alt="" class="img-thumbnail rounded-circle"> -->
                         <h4>{{RedSocial + ' - ' + Distribuidor}}</h4>
-                        <a href="{{urlPublicacion}}"
-                          target="_blank">
+                        <a href="{{urlPublicacion}}" target="_blank">
                           Visitar la publicación
                         </a>
                       </div>
                       <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
 
                       <div class="container container-lg container-md container-sm container-xs">
-                      <iframe class="responsive-iframe" id="iframePub" frameborder="0"
-                        [src]="LinkPublicacion" webkitallowfullscreen mozallowfullscreen
-                        allowfullscreen style="position:absolute; top:0; left: 0">
-                      </iframe>
+                        <iframe class="responsive-iframe" id="iframePub" frameborder="0" [src]="LinkPublicacion"
+                          webkitallowfullscreen mozallowfullscreen allowfullscreen
+                          style="position:absolute; top:0; left: 0">
+                        </iframe>
                       </div>
                       <!--
                       <img src="../../../assets/images/publicacion.png" class="img-fluid"> -->
