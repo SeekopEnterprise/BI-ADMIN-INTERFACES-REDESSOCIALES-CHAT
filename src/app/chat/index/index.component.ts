@@ -822,12 +822,22 @@ accept: 'application/json' };
             error => {
               console.error(error);
               // Muestra una alerta de error
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
-                confirmButtonText: 'Entendido'
-              });
+              if(error=="El Lead ya existe"){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Ya existe el leads en Seekop...',
+                  confirmButtonText: 'Entendido'
+                });
+              }
+              else{ 
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
+                  confirmButtonText: 'Entendido'
+                });
+              }
             }
           ); 
 
