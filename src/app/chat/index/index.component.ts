@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
@@ -34,7 +34,7 @@ export class IndexComponent implements OnInit {
 
   private chatSubscription: Subscription;
 
-  activetab = 2;
+  public activetab = 2;
   apiResponse: ApiResponse[];
   //chat: ResponseItem[];
   public chat: GroupedResponseItem[] = [];
@@ -64,6 +64,8 @@ export class IndexComponent implements OnInit {
   public idDistribuidor: string;
   public nombreDistribuidor: string;
 
+  public hideMenu: boolean;
+
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
@@ -72,11 +74,33 @@ export class IndexComponent implements OnInit {
     { text: 'Russian', flag: 'assets/images/flags/russia.jpg', lang: 'ru' },
   ];
 
+  TABS = {
+    '':0,
+    'perfil': 1,
+    'conversaciones': 2,
+    'distribuidores': 3,
+    'redes-sociales': 4,
+    'distribuidores-redes-sociales': 6,
+    'metodos': 7,
+
+  };
+
+  ROUTES = {
+    0:'',
+    1: 'perfil',
+    2: 'conversaciones',
+    3: 'distribuidores',
+    4: 'redes-sociales',
+    6: 'distribuidores-redes-sociales',
+    7: 'metodos',
+
+  };
+
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
   constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
-    private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
+    private router: Router,private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer) {
       this.formData = this.formBuilder.group({
         message: ['', [Validators.required]],
@@ -101,6 +125,15 @@ export class IndexComponent implements OnInit {
   senderName: any;
   senderProfile: any;
   async ngOnInit() {
+    this.route.url.subscribe(url => {
+      const tabId = url[0].path;
+      this.activetab = this.TABS[tabId];
+      if(tabId===''){
+        this.hideMenu = false;
+      }else{
+        this.hideMenu = true;
+      }
+    });
     try {
       await this.loadGrupos();
       await this.loadRecuperacionMensajes();
@@ -210,15 +243,11 @@ export class IndexComponent implements OnInit {
     document.getElementById('profile-detail').style.display = 'block';
   }
 
-  showTabMetodos(tab:string){
-
-    // alert(tab);
-    if(tab=='1'){
-      // document.getElementById('tabMetodos').style.display = 'none';
-      // document.getElementById('chat-welcome-section').style.display = 'block';
-
-    }
+  showTabMetodos(tabId: string) {
+    this.hideMenu = false;
+    this.activetab=Number(tabId);
   }
+
 
   /**
    * Close user chat

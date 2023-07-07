@@ -1,5 +1,5 @@
 <div class="layout-wrapper d-lg-flex">
-  <div class="side-menu flex-lg-column me-lg-1">
+  <div class="side-menu flex-lg-column me-lg-1" *ngIf="!hideMenu">
     <!-- LOGO -->
     <div class="navbar-brand-box">
       <a routerLink="/" class="logo logo-dark">
@@ -17,7 +17,7 @@
     <!-- end navbar-brand-box -->
 
     <!-- Start side-menu nav -->
-    <div class="flex-lg-column my-auto">
+    <div class="flex-lg-column my-auto" >
       <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
         <li class="nav-item" ngbTooltip="Perfil">
           <a class="nav-link" id="pills-user-tab" (click)="showTabMetodos('1')" (click)="activetab=1"
@@ -51,7 +51,7 @@
           </a>
         </li> -->
 
-        <li class="nav-item" ngbTooltip="Usuarios redes sociales" placement="top">
+        <li class="nav-item" ngbTooltip="Distribuidores redes sociales" placement="top">
           <a class="nav-link" id="pills-redessocialesusuarios-tab" (click)="showTabMetodos('6')" (click)="activetab=6"
             href="javascript: void(0);" [ngClass]="{'active': activetab === 6}">
             <i class="ri-user-2-fill"></i>
