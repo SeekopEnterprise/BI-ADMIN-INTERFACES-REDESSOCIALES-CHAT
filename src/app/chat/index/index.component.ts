@@ -730,6 +730,9 @@ export class IndexComponent implements OnInit {
                 "idDistribuidor: "+this.idDistribuidor+
                 "Distribuidor: "+this.nombreDistribuidor); */
 
+const headers = { 'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=', 
+//'My-Custom-Header': 'foobar'
+accept: 'application/json' };
 
     const data={
       "prospect":{
@@ -777,6 +780,7 @@ export class IndexComponent implements OnInit {
       }
      };
 
+
     Swal.fire({
         title: '¿Seguro que deseas enviarlos?',
         showDenyButton: true,
@@ -789,7 +793,7 @@ export class IndexComponent implements OnInit {
         console.log("Estos son los datos a enviar: "+data);
           const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
            
-          this.http.post<any>(url, data).subscribe(
+          this.http.post<any>(url, data,{headers}).subscribe(
             response => {
 
               // console.log("esta es la respuesta: "+response.status);
