@@ -7,11 +7,12 @@ import { IndexComponent } from './index/index.component';
 const routes: Routes = [
   {
     path: '',
-    component: IndexComponent
+    component: IndexComponent,
+    pathMatch: 'full'
   },
   {
-    path: ':tabId',
-    component: IndexComponent
+    path: ':tab',
+    component: IndexComponent,
   }
 ];
 

@@ -124,10 +124,15 @@ export class IndexComponent implements OnInit {
   senderName: any;
   senderProfile: any;
   async ngOnInit() {
-    this.route.params.subscribe(params => {
-      const tabId =  params['tabId']!==undefined ? params['tabId'] : '';
-      this.activetab = this.TABS[tabId];
-      this.hideMenu = tabId !== '' && tabId!==undefined;
+    this.route.queryParams.subscribe(params => {
+      try {
+        const tabId = params['tab'];
+        this.activetab = tabId === undefined ? 2 : this.TABS[tabId];
+        this.hideMenu = tabId !== '' && tabId !== undefined;
+      } catch (error) {
+        this.activetab = 2;
+        this.hideMenu = false;
+      }
     });
     try {
       await this.loadGrupos();
