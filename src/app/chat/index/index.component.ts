@@ -788,7 +788,7 @@ export class IndexComponent implements OnInit {
 
         console.log("Estos son los datos a enviar: "+data);
           const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
-          /* 
+           
           this.http.post<any>(url, data).subscribe(
             response => {
 
@@ -825,15 +825,14 @@ export class IndexComponent implements OnInit {
                 confirmButtonText: 'Entendido'
               });
             }
-          ); */ 
-
-            }
-
-            }
           ); 
+
+          }
+
+          }); 
         }
-    })
+    // })
 }
 
-}
+// }
 
