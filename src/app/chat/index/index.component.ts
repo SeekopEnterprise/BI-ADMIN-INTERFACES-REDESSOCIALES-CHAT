@@ -75,7 +75,7 @@ export class IndexComponent implements OnInit {
   ];
 
   TABS = {
-    '':0,
+    '': 2,
     'perfil': 1,
     'conversaciones': 2,
     'distribuidores': 3,
@@ -86,7 +86,6 @@ export class IndexComponent implements OnInit {
   };
 
   ROUTES = {
-    0:'',
     1: 'perfil',
     2: 'conversaciones',
     3: 'distribuidores',
@@ -125,14 +124,10 @@ export class IndexComponent implements OnInit {
   senderName: any;
   senderProfile: any;
   async ngOnInit() {
-    this.route.url.subscribe(url => {
-      const tabId = url[0].path;
+    this.route.params.subscribe(params => {
+      const tabId =  params['tabId']!==undefined ? params['tabId'] : '';
       this.activetab = this.TABS[tabId];
-      if(tabId===''){
-        this.hideMenu = false;
-      }else{
-        this.hideMenu = true;
-      }
+      this.hideMenu = tabId !== '' && tabId!==undefined;
     });
     try {
       await this.loadGrupos();

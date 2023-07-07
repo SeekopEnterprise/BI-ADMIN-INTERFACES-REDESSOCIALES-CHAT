@@ -10,29 +10,9 @@ const routes: Routes = [
     component: IndexComponent
   },
   {
-    path: 'perfil',
+    path: ':tabId',
     component: IndexComponent
-  },
-  {
-    path: 'conversaciones',
-    component: IndexComponent
-  },
-  {
-    path: 'distribuidores',
-    component: IndexComponent
-  },
-  {
-    path: 'redes-sociales',
-    component: IndexComponent
-  },
-  {
-    path: 'distribuidores-redes-sociales',
-    component: IndexComponent
-  },
-  {
-    path: 'metodos',
-    component: IndexComponent
-  },
+  }
 ];
 
 @NgModule({
