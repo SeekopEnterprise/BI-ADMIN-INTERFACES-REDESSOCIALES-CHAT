@@ -82,7 +82,7 @@ export class IndexComponent implements OnInit {
         message: ['', [Validators.required]],
       });
 
-  
+
 
 
      }
@@ -112,14 +112,14 @@ export class IndexComponent implements OnInit {
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
     .subscribe((event: MessageEvent) => {
       const data = JSON.parse(event.data);
-      
+
       if (event.type === 'open') {
         this.notificacionService.send({
           accion: 'setApp',
           nombreApp: 'proveedoresDigitales'
         });
       } else if (event.type === 'message') {
-        
+
         this.notificacionService = data.mensaje;
 
         const chatToUpdate = this.chat
@@ -218,22 +218,6 @@ export class IndexComponent implements OnInit {
       // document.getElementById('chat-welcome-section').style.display = 'block';
 
     }
-
-    if(tab=='2'){
-      document.getElementById('tabMetodos').style.display = 'none';
-      document.getElementById('chat-welcome-section').style.display = 'block';
-
-    }
-
-    else if(tab=='7'){
-
-      document.getElementById('chat-welcome-section').style.display = 'none';
-      document.getElementById('tabMetodos').style.display = 'block';
-    }
-    else{
-
-    }
-
   }
 
   /**
@@ -280,7 +264,7 @@ export class IndexComponent implements OnInit {
   userName: any = 'Doris Brown';
   userStatus: any = 'En línea';
   userProfile: any = '';
-  urlPublicacion: any = ''; // "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f" 
+  urlPublicacion: any = ''; // "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f"
   message: any;
   showChat(event: any, id: any) {
     var removeClass = document.querySelectorAll('.chat-user-list li');
@@ -610,7 +594,7 @@ export class IndexComponent implements OnInit {
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
         res => {
           let prospects = res.body;
-          
+
           prospects.forEach(prospect => {
             prospect.unreadCount = 0;  // Añadimos un contador de mensajes no leídos
             if (prospect.Conversacion && prospect.Conversacion.length > 0) {
@@ -677,7 +661,7 @@ export class IndexComponent implements OnInit {
   }
 
   confirmSend() {
-  
+
     /*
     console.log(
                 "Username: "+this.userName+
@@ -698,7 +682,7 @@ export class IndexComponent implements OnInit {
       "interest":"buy",
       "status":"new",
       "make":"Nissan", // Nissan
-      "year":"2023", 
+      "year":"2023",
       "model":"Sentra"
       },
       "customer":{
@@ -722,7 +706,7 @@ export class IndexComponent implements OnInit {
       this.Telefono // "5511223344"
       ]
       },
-      "comments":" Prospecto enviado desde Mercado Libre de Comunity Manager  " 
+      "comments":" Prospecto enviado desde Mercado Libre de Comunity Manager  "
       },
       "vendor":{
       "source":"MERCADOLIBRE",
@@ -731,7 +715,7 @@ export class IndexComponent implements OnInit {
       }
       },
       "provider":{
-      "name":"MERCADOLIBRE" 
+      "name":"MERCADOLIBRE"
       }
      };
 
@@ -741,12 +725,12 @@ export class IndexComponent implements OnInit {
         confirmButtonText: `Enviar`,
         denyButtonText: `Cancelar`,
     }).then((result) => {
-  
+
       if (result.isConfirmed) {
 
         console.log("Estos son los datos a enviar: "+data);
           const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
-          /* 
+          /*
           this.http.post<any>(url, data).subscribe(
             response => {
               // Limpia el formulario y recarga la lista de redes sociales
@@ -770,7 +754,7 @@ export class IndexComponent implements OnInit {
                 confirmButtonText: 'Entendido'
               });
             }
-          ); */ 
+          ); */
 
 
 
