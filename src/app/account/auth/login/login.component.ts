@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
       // Verifica si el usuario ya está autenticado
       const currentUser = event.data;
       if (currentUser && currentUser.token) {
+        localStorage.setItem('currentUser', currentUser);
         // Usuario ya autenticado, redirige a index
         this.router.navigate(['/']);
       }
