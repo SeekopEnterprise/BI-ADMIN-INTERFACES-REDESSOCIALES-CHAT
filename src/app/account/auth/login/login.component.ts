@@ -53,11 +53,20 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
+
+
+    // Verifica si el usuario ya está autenticado
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser && currentUser.token) {
+      // Usuario ya autenticado, redirige a index
+      this.router.navigate(['/']);
+    }else{
     // reset login status
     // this.authenticationService.logout();
     // get return url from route parameters or default to '/'
     // tslint:disable-next-line: no-string-literal
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    }
   }
 
   // convenience getter for easy access to form fields
