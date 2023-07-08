@@ -37,12 +37,20 @@ export class LoginComponent implements OnInit {
       password: ['123456', [Validators.required]],
     });
 
-    // Verifica si el usuario ya está autenticado
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && currentUser.token) {
-      // Usuario ya autenticado, redirige a index
-      this.router.navigate(['/']);
-    }
+    // Escucha los mensajes que llegan del padre
+    window.addEventListener('message', (event) => {
+      // Verifica el origen del mensaje
+      /* if (event.origin !== 'https://parent-website.com') {
+        return;
+      } */
+
+      // Verifica si el usuario ya está autenticado
+      const currentUser = event.data;
+      if (currentUser && currentUser.token) {
+        // Usuario ya autenticado, redirige a index
+        this.router.navigate(['/']);
+      }
+    });
     // reset login status
     // this.authenticationService.logout();
     // get return url from route parameters or default to '/'
