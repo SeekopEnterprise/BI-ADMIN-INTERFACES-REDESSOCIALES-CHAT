@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GlobalUserService } from '../../../services/global-user.service';
 
 @Component({
   selector: 'app-settings',
@@ -14,15 +15,29 @@ export class SettingsComponent implements OnInit {
   senderProfile:any;
   playerName:any;
 
-  constructor() { }
+  constructor(private globalUserService: GlobalUserService) { } // Inyecta el servicio en el constructor
 
   ngOnInit(): void {
-    const user = window.localStorage.getItem('currentUser');
-    this.senderName = JSON.parse(user).username
-    this.playerName = JSON.parse(user).username
-    this.senderProfile = 'assets/images/users/'+JSON.parse(user).profile
-  }
+    // Intenta obtener el usuario del servicio
+    let user = this.globalUserService.getCurrentUser();
 
+    // Si no hay usuario en el servicio, busca en localStorage
+    if (!user) {
+      user = JSON.parse(localStorage.getItem('currentUser'));
+
+      // Si encontramos un usuario en localStorage, lo guardamos en el servicio para futuras referencias
+      if(user) {
+        this.globalUserService.setCurrentUser(user);
+      }
+    }
+
+    // Si tenemos un usuario (del servicio o localStorage), establecemos los valores correspondientes
+    if (user) {
+      this.senderName = user.username;
+      this.playerName = user.username;
+      this.senderProfile = 'assets/images/users/' + user.profile;
+    }
+  }
   // User Profile Update
   imageURL: string | undefined;
 

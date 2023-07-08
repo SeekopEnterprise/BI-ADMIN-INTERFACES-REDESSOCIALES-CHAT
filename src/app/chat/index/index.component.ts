@@ -17,6 +17,7 @@ import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
 import { Subscription } from 'rxjs';
 import { NotificacionesService } from '../../chat/notificaciones/notificaciones.service';
+import { GlobalUserService } from '../../services/global-user.service';
 import Swal from 'sweetalert2';
 // Date Format
 import { DatePipe } from '@angular/common';
@@ -98,7 +99,7 @@ export class IndexComponent implements OnInit {
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
-  constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
+  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer) {
     this.formData = this.formBuilder.group({
@@ -198,10 +199,25 @@ export class IndexComponent implements OnInit {
 
     // Validation
 
+    // Escucha los mensajes que llegan del padre
+    window.addEventListener('message', (event) => {
+      // ...
 
-    const user = window.localStorage.getItem('currentUser');
-    this.senderName = JSON.parse(user).username
-    this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
+      // Almacena el usuario en el servicio
+      this.globalUserService.setCurrentUser(event.data);
+    });
+
+
+    // Recupera el usuario del servicio o del localStorage
+    let user = this.globalUserService.getCurrentUser();
+    if (!user) {
+      user = JSON.parse(localStorage.getItem('currentUser'));
+    }
+
+    if (user && user.token) {
+      this.senderName = user.username;
+      this.senderProfile = 'assets/images/users/' + user.profile;
+    }
 
     this.lang = this.translate.currentLang;
     this.onListScroll();
