@@ -113,7 +113,7 @@ export class IndexComponent implements OnInit {
 
   handleMessage(event) {
     // Asegúrate de verificar el origen por razones de seguridad
-    if (event.origin !== 'http://localhost:8000') return;  // Asume que tu aplicación padre se ejecuta en el puerto 8000
+    if (event.origin !== 'http://localhost:8080') return;  // Asume que tu aplicación padre se ejecuta en el puerto 8000
 
     let currentUser = JSON.parse(event.data);
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
