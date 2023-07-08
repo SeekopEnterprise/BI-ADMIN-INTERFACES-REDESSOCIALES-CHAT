@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
       /* if (event.origin !== 'https://parent-website.com') {
         return;
       } */
-
+      console.log("este es el maldito evento: ", event);
       // Verifica si el usuario ya está autenticado
       const currentUser = event.data;
       if (currentUser && currentUser.token) {
