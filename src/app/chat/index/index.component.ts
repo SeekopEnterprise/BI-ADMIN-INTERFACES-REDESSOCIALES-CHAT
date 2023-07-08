@@ -99,16 +99,25 @@ export class IndexComponent implements OnInit {
   images: { src: string; thumb: string; caption: string }[] = [];
 
   constructor(private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
-    private router: Router,private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
+    private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer) {
-      this.formData = this.formBuilder.group({
-        message: ['', [Validators.required]],
-      });
+    this.formData = this.formBuilder.group({
+      message: ['', [Validators.required]],
+    });
 
 
+    // Agrega el event listener cuando se instancia el servicio.
+    window.addEventListener('message', this.handleMessage.bind(this), false);
 
+  }
 
-     }
+  handleMessage(event) {
+    // Asegúrate de verificar el origen por razones de seguridad
+    if (event.origin !== 'http://localhost:8000') return;  // Asume que tu aplicación padre se ejecuta en el puerto 8000
+
+    let currentUser = JSON.parse(event.data);
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }
 
   /**
   * Open lightbox
@@ -143,57 +152,57 @@ export class IndexComponent implements OnInit {
     }
 
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
-    .subscribe((event: MessageEvent) => {
-      const data = JSON.parse(event.data);
+      .subscribe((event: MessageEvent) => {
+        const data = JSON.parse(event.data);
 
-      if (event.type === 'open') {
-        this.notificacionService.send({
-          accion: 'setApp',
-          nombreApp: 'proveedoresDigitales'
-        });
-      } else if (event.type === 'message') {
+        if (event.type === 'open') {
+          this.notificacionService.send({
+            accion: 'setApp',
+            nombreApp: 'proveedoresDigitales'
+          });
+        } else if (event.type === 'message') {
 
-        this.notificacionService = data.mensaje;
+          this.notificacionService = data.mensaje;
 
-        const chatToUpdate = this.chat
-          .map(group => group.prospects)
-          .reduce((a, b) => a.concat(b), [])
-          .find(prospect => prospect.IdPublicacion === data.idPublicacion);
+          const chatToUpdate = this.chat
+            .map(group => group.prospects)
+            .reduce((a, b) => a.concat(b), [])
+            .find(prospect => prospect.IdPublicacion === data.idPublicacion);
 
-        if (chatToUpdate) {
-          const newMessage = {
-            id: data.idMensaje,
-            texto: data.mensaje,
-            unreadCount: 0,
-            align: "left",
-            ultimoMensaje: true, // El nuevo mensaje es el último
-          };
-          chatToUpdate.Conversacion.push(newMessage);
+          if (chatToUpdate) {
+            const newMessage = {
+              id: data.idMensaje,
+              texto: data.mensaje,
+              unreadCount: 0,
+              align: "left",
+              ultimoMensaje: true, // El nuevo mensaje es el último
+            };
+            chatToUpdate.Conversacion.push(newMessage);
 
-          // Marcamos todos los mensajes como no últimos
-          chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+            // Marcamos todos los mensajes como no últimos
+            chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
 
-          // El nuevo mensaje es el último
-          newMessage.ultimoMensaje = true;
+            // El nuevo mensaje es el último
+            newMessage.ultimoMensaje = true;
 
-          // this.idMensajeLeads=data.idMensaje;
-          // console.log("este es el idmensaje a enviar: "+newMessage);
+            // this.idMensajeLeads=data.idMensaje;
+            // console.log("este es el idmensaje a enviar: "+newMessage);
 
-          // Incrementa el contador de mensajes no leídos
-          chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+            // Incrementa el contador de mensajes no leídos
+            chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
 
-          this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
+            this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
 
-          const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
-          if (groupToUpdate) {
-            groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
+            if (groupToUpdate) {
+              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            }
           }
-        }
 
-        this.showNewMessageNotification(chatToUpdate);
-        this.onListScroll();
-      }
-    });
+          this.showNewMessageNotification(chatToUpdate);
+          this.onListScroll();
+        }
+      });
 
 
 
@@ -249,7 +258,7 @@ export class IndexComponent implements OnInit {
 
   showTabMetodos(tabId: string) {
     this.hideMenu = false;
-    this.activetab=Number(tabId);
+    this.activetab = Number(tabId);
   }
 
 
@@ -314,28 +323,28 @@ export class IndexComponent implements OnInit {
      }); */
 
 
-    var IdUltimoMensaje=[]; 
+    var IdUltimoMensaje = [];
     var data = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
       .filter((prospect: any) => {
 
-        let val="";
-        if(prospect.Email === id ){ 
+        let val = "";
+        if (prospect.Email === id) {
           // console.log("=========> "+JSON.stringify(prospect.Conversacion[0].id));
-          IdUltimoMensaje.push(prospect.Conversacion); 
+          IdUltimoMensaje.push(prospect.Conversacion);
         }
 
         return prospect.Email === id;
       });
-      
-      for(let key in IdUltimoMensaje[0]){
-        
-        if(IdUltimoMensaje[0][key].ultimoMensaje==true){
-          // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
-          this.idMensajeLeads=IdUltimoMensaje[0][key].id;
-        }
+
+    for (let key in IdUltimoMensaje[0]) {
+
+      if (IdUltimoMensaje[0][key].ultimoMensaje == true) {
+        // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
+        this.idMensajeLeads = IdUltimoMensaje[0][key].id;
       }
+    }
 
     // console.log(Object.values(IdUltimoMensaje[0][0]))
 
@@ -347,7 +356,7 @@ export class IndexComponent implements OnInit {
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
-    this.LinkPublicacion= this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPublicacion);
+    this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPublicacion);
     this.Telefono = data[0].Telefono;
     this.LastName = data[0].Apellido;
     // this.idMensajeLeads.push(data[0].IdProspecto);
@@ -658,9 +667,9 @@ export class IndexComponent implements OnInit {
 
               // Marcamos el último mensaje como tal
               prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
-              
+
               // Se asigna el ultimo idmensaje para el envió de datos hacia sicop
-              console.log("este es el ultimo idmsj: "+prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje);
+              console.log("este es el ultimo idmsj: " + prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje);
               // this.idMensajeLeads.push({"if idmensaje": prospect.Conversacion[prospect.Conversacion.length - 1].id});
 
             }
@@ -730,122 +739,124 @@ export class IndexComponent implements OnInit {
                 "idDistribuidor: "+this.idDistribuidor+
                 "Distribuidor: "+this.nombreDistribuidor); */
 
-const headers = { 'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=', 
-//'My-Custom-Header': 'foobar'
-accept: 'application/json' };
+    const headers = {
+      'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
+      //'My-Custom-Header': 'foobar'
+      accept: 'application/json'
+    };
 
-    const data={
-      "prospect":{
-      "status":"new",
-      "id": this.idMensajeLeads, //  "000000001", // idmsj "123456710"
-      "requestdate":"2023-06-13 16:00:00",
-      "vehicle":{
-      "interest":"buy",
-      "status":"new",
-      "make":"Nissan", // Nissan
-      "year":"2023",
-      "model":"Sentra"
+    const data = {
+      "prospect": {
+        "status": "new",
+        "id": this.idMensajeLeads, //  "000000001", // idmsj "123456710"
+        "requestdate": "2023-06-13 16:00:00",
+        "vehicle": {
+          "interest": "buy",
+          "status": "new",
+          "make": "Nissan", // Nissan
+          "year": "2023",
+          "model": "Sentra"
+        },
+        "customer": {
+          "contact": {
+            "name": [
+              {
+                "part": "first",
+                "value": this.userName // "Marino"
+              },
+              {
+                "part": "middle",
+                "value": this.LastName // "Vargas"
+              },
+              {
+                "part": "last",
+                "value": "" // "Chavez"
+              }
+            ],
+            "email": this.Email, // "marino@gmail.com",
+            "phone": [
+              this.Telefono // "5511223344"
+            ]
+          },
+          "comments": " Prospecto enviado desde Mercado Libre de Comunity Manager  "
+        },
+        "vendor": {
+          "source": "MERCADOLIBRE",
+          "id": this.idDistribuidor, // this.idDistribuidor,// 158814  "609024", // id distribuidor al que se asigan el prospecto
+          "name": this.nombreDistribuidor,// "Suzuki Queretaro" // Nombre del distribuior
+        }
       },
-      "customer":{
-      "contact":{
-      "name":[
-      {
-      "part":"first",
-      "value":this.userName // "Marino"
-      },
-      {
-      "part":"middle",
-      "value":this.LastName // "Vargas"
-      },
-      {
-      "part":"last",
-      "value": "" // "Chavez"
+      "provider": {
+        "name": "MERCADOLIBRE"
       }
-      ],
-      "email": this.Email, // "marino@gmail.com",
-      "phone":[
-      this.Telefono // "5511223344"
-      ]
-      },
-      "comments":" Prospecto enviado desde Mercado Libre de Comunity Manager  "
-      },
-      "vendor":{
-      "source":"MERCADOLIBRE",
-      "id":this.idDistribuidor, // this.idDistribuidor,// 158814  "609024", // id distribuidor al que se asigan el prospecto
-      "name": this.nombreDistribuidor,// "Suzuki Queretaro" // Nombre del distribuior
-      }
-      },
-      "provider":{
-      "name":"MERCADOLIBRE"
-      }
-     };
+    };
 
 
     Swal.fire({
-        title: '¿Seguro que deseas enviarlos?',
-        showDenyButton: true,
-        confirmButtonText: `Enviar`,
-        denyButtonText: `Cancelar`,
+      title: '¿Seguro que deseas enviarlos?',
+      showDenyButton: true,
+      confirmButtonText: `Enviar`,
+      denyButtonText: `Cancelar`,
     }).then((result) => {
 
       if (result.isConfirmed) {
 
-        console.log("Estos son los datos a enviar: "+data);
-          const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
-           
-          this.http.post<any>(url, data,{headers}).subscribe(
-            response => {
+        console.log("Estos son los datos a enviar: " + data);
+        const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
 
-              // console.log("esta es la respuesta: "+response.status);
-              console.log("esta es la respuesta: "+response);
-              if(response==null){
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Servicio inactivo ...',
-                  confirmButtonText: 'Ok'
-                });
-  
-                this.modalDatos.close('Close click');
-              }
-              else{
-                Swal.fire({
-                  icon: 'success',
-                  title: '¡Éxito!',
-                  text: 'Se enviaron correctamente los datos a Seekop',
-                  confirmButtonText: 'Ok'
-                });
-  
-                this.modalDatos.close('Close click');
-              }
-            },
-            error => {
-              console.error(error);
-              // Muestra una alerta de error
-              if(error=="El Lead ya existe"){
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Ya existe el leads en Seekop...',
-                  confirmButtonText: 'Entendido'
-                });
-              }
-              else{ 
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
-                  confirmButtonText: 'Entendido'
-                });
-              }
+        this.http.post<any>(url, data, { headers }).subscribe(
+          response => {
+
+            // console.log("esta es la respuesta: "+response.status);
+            console.log("esta es la respuesta: " + response);
+            if (response == null) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Servicio inactivo ...',
+                confirmButtonText: 'Ok'
+              });
+
+              this.modalDatos.close('Close click');
             }
-          ); 
+            else {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Se enviaron correctamente los datos a Seekop',
+                confirmButtonText: 'Ok'
+              });
 
+              this.modalDatos.close('Close click');
+            }
+          },
+          error => {
+            console.error(error);
+            // Muestra una alerta de error
+            if (error == "El Lead ya existe") {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe el leads en Seekop...',
+                confirmButtonText: 'Entendido'
+              });
+            }
+            else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
+                confirmButtonText: 'Entendido'
+              });
+            }
           }
+        );
 
-          }); 
-        }
-    // })
+      }
+
+    });
+  }
+  // })
 }
 
 // }
