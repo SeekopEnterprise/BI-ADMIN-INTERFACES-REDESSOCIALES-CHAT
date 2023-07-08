@@ -105,18 +105,6 @@ export class IndexComponent implements OnInit {
       message: ['', [Validators.required]],
     });
 
-
-    // Agrega el event listener cuando se instancia el servicio.
-    window.addEventListener('message', this.handleMessage.bind(this), false);
-
-  }
-
-  handleMessage(event) {
-    // Asegúrate de verificar el origen por razones de seguridad
-    if (event.origin !== 'http://localhost:8080') return;  // Asume que tu aplicación padre se ejecuta en el puerto 8000
-
-    let currentUser = JSON.parse(event.data);
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
   }
 
   /**
