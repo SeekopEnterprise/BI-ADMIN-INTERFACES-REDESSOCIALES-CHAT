@@ -211,7 +211,23 @@ export class IndexComponent implements OnInit {
     // Recupera el usuario del servicio o del localStorage
     let user = this.globalUserService.getCurrentUser();
     if (!user) {
-      user = JSON.parse(localStorage.getItem('currentUser'));
+      try {
+        user = JSON.parse(localStorage.getItem('currentUser'));
+      } catch (error) {
+        console.error('Error al acceder a localStorage:', error);
+      }
+    }
+
+    if (!user) {
+      const emailCookie = this.getCookie('correo');
+      if (emailCookie) {
+        user = {
+          email: emailCookie,
+          username: emailCookie,
+          token: 'fake-jwt-token',
+          profile: 'avatar-1.jpg'
+        };
+      }
     }
 
     if (user && user.token) {
@@ -221,6 +237,13 @@ export class IndexComponent implements OnInit {
 
     this.lang = this.translate.currentLang;
     this.onListScroll();
+  }
+
+  getCookie(name: string): string {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
   }
 
   ngAfterViewInit() {
