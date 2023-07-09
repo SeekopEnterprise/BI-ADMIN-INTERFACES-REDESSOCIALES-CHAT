@@ -146,7 +146,7 @@ export class IndexComponent implements OnInit {
         }
       }
 
-      if (user && user.token) {
+      else if (user && user.token) {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
       }
