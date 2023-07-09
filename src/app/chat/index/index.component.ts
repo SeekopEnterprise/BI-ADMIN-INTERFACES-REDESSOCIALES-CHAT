@@ -232,6 +232,7 @@ export class IndexComponent implements OnInit {
         console.log("esta funcionando o no aquí lo sabremos: ", event.data);
         this.usuarioCorreo = event.data.username;
         if (this.usuarioCorreo) {
+          this.senderName = this.usuarioCorreo;
           this.senderProfile = 'assets/images/users/' + event.data.profile;
           await this.loadGrupos(); // se agrega await
           await this.loadRecuperacionMensajes(); // se agrega await
