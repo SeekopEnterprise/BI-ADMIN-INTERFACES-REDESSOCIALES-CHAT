@@ -12,7 +12,7 @@ import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms'
   styleUrls: ['./redessocialesusuarios.component.scss']
 })
 export class RedessocialesusuariosComponent implements OnInit {
-  
+
   @ViewChild('idred') idred!: ElementRef;
   @ViewChild('nombrepagina', { static: true }) nombrepaginaInput: ElementRef<HTMLInputElement>;
 
@@ -54,7 +54,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         token: ['', [Validators.required]],
         fechavencimimiento: ['', [Validators.required]]
       }); */
-      
+
 
     }
 
@@ -102,7 +102,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
-    
+
 
   }
 
@@ -179,12 +179,12 @@ export class RedessocialesusuariosComponent implements OnInit {
       // alert("prueba");
       this.isButtonDisabled = false;
 
-      
+
     }
   }
 
   onKeyUp(event: KeyboardEvent) {
-    
+
     this.submitted = true;
 
     if (this.redesusuariosForm.invalid) {
@@ -212,7 +212,7 @@ export class RedessocialesusuariosComponent implements OnInit {
           window.focus(); // Trae el foco de nuevo a la ventana principal
         },
         error => {
-          console.error(error);
+          console.log(error);
         }
       );
     }
@@ -237,7 +237,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.redesSelect = sorted;
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
   }
@@ -255,7 +255,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.distribuidoresSelect = arrayValue;
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
   }
@@ -283,13 +283,13 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.usuariosRedesSelect = Object.keys(grouped).map(key => ({ key, usuarios: grouped[key] }));
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
   }
 
   probar(){
-      alert("alert");  
+      alert("alert");
     /*
       this.redesusuariosForm.controls.idred.disable();
       this.redesusuariosForm.controls.iddistribuidor.disable();
@@ -304,7 +304,7 @@ export class RedessocialesusuariosComponent implements OnInit {
     // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
     // console.log("ok: "+nombrepagina.value);
 
-    
+
     testConnection();
     // const FetchButton = document.getElementById("nombrepagina") as HTMLInputElement;
     // FetchButton.disabled=true;
@@ -314,7 +314,7 @@ export class RedessocialesusuariosComponent implements OnInit {
 
       // const val=(document.getElementById('nombrepagina') as HTMLInputElement).disabled = false;
       // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
-      
+
 
       const token = 'APP_UR4158433912938780-041117-';
       const url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
@@ -330,9 +330,9 @@ export class RedessocialesusuariosComponent implements OnInit {
       try {
           const response = await fetch(url);
           const data = await response.json();
-          
+
           if (data.statusCode === 200) {
-            
+
             nombrepagina?.setAttribute('disabled', 'true');
             idred?.setAttribute('disabled', 'true');
             iddistribuidor?.setAttribute('disabled', 'true');
@@ -348,7 +348,7 @@ export class RedessocialesusuariosComponent implements OnInit {
                   text: 'La conexión fue correcta.',
               });
 
-           
+
 
 /*
               this.redesusuariosForm.controls.idred.disable();
@@ -376,7 +376,7 @@ export class RedessocialesusuariosComponent implements OnInit {
               });
           }
         } catch (error) {
-          console.error(error);
+          console.log(error);
           button.classList.remove('btn-primary');
           button.classList.add('btn-danger');
           Swal.fire({
@@ -385,9 +385,9 @@ export class RedessocialesusuariosComponent implements OnInit {
               text: 'Conexión errónea.',
           });
         }
-      } 
+      }
 
       // console.log("abc: "+response);
-    } 
-  
+    }
+
 }

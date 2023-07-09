@@ -56,7 +56,7 @@ export class RedesSocialesComponent implements OnInit {
         this.modalService.dismissAll();
       },
       error => {
-        console.error(error);
+        console.log(error);
         // Muestra una alerta de error
         Swal.fire({
           icon: 'error',
@@ -85,7 +85,7 @@ export class RedesSocialesComponent implements OnInit {
         this.redesSocialesList = Object.keys(grouped).map(key => ({ key, socialRedes: grouped[key] }));
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
   }

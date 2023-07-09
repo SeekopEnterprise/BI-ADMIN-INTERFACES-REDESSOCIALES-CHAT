@@ -142,7 +142,7 @@ export class IndexComponent implements OnInit {
         try {
             user = JSON.parse(localStorage.getItem('currentUser'));
         } catch (error) {
-          console.error('Error al acceder a localStorage nuevo:', error);
+          console.log('Error al acceder a localStorage nuevo:', error);
         }
       }
 
@@ -154,7 +154,7 @@ export class IndexComponent implements OnInit {
       await this.loadGrupos(user.username);
       await this.loadRecuperacionMensajes(null, user.username);
     } catch (error) {
-      console.error('Error cargando grupos o recuperando mensajes:', error);
+      console.log('Error cargando grupos o recuperando mensajes:', error);
       return;
     }
 
@@ -239,7 +239,7 @@ export class IndexComponent implements OnInit {
       const bodyElement = iframeDocument.getElementsByTagName("body")[0];
       bodyElement.setAttribute("id", "idIframe");
     } else {
-      console.error('El iframe no se encuentra en el DOM.');
+      console.log('El iframe no se encuentra en el DOM.');
     }
   }
 
@@ -718,7 +718,7 @@ export class IndexComponent implements OnInit {
           resolve();
         },
         error => {
-          console.error(error);
+          console.log(error);
           reject(error);
         }
       );
@@ -736,7 +736,7 @@ export class IndexComponent implements OnInit {
           resolve();
         },
         error => {
-          console.error(error);
+          console.log(error);
           reject(error);
         }
       );
@@ -847,7 +847,7 @@ export class IndexComponent implements OnInit {
             }
           },
           error => {
-            console.error(error);
+            console.log(error);
             // Muestra una alerta de error
             if (error == "El Lead ya existe") {
               Swal.fire({
