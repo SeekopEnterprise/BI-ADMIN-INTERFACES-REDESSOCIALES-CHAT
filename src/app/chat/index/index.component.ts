@@ -65,7 +65,7 @@ export class IndexComponent implements OnInit {
   public idDistribuidor: string;
   public nombreDistribuidor: string;
   public eventHandlerAdded = false;
-  public yaEstaSeteado =false;
+  public yaEstaSeteado = false;
 
   public hideMenu: boolean;
 
@@ -135,6 +135,22 @@ export class IndexComponent implements OnInit {
       }
     });
     try {
+
+      // Recupera el usuario del servicio o del localStorage
+      let user = this.globalUserService.getCurrentUser();
+      if (!user || !user.data) {
+        try {
+          user = JSON.parse(localStorage.getItem('currentUser'));
+        } catch (error) {
+          console.error('Error al acceder a localStorage:', error);
+        }
+      }
+
+      if (user && user.token) {
+        this.senderName = user.username;
+        this.senderProfile = 'assets/images/users/' + user.profile;
+      }
+
       await this.loadGrupos();
       await this.loadRecuperacionMensajes();
     } catch (error) {
@@ -199,25 +215,6 @@ export class IndexComponent implements OnInit {
 
     document.body.setAttribute('data-layout-mode', 'light');
 
-    // Validation
-
-
-
-
-    // Recupera el usuario del servicio o del localStorage
-    let user = this.globalUserService.getCurrentUser();
-    if (!user) {
-      try {
-        user = JSON.parse(localStorage.getItem('currentUser'));
-      } catch (error) {
-        console.error('Error al acceder a localStorage:', error);
-      }
-    }
-
-    if (user && user.token) {
-      this.senderName = user.username;
-      this.senderProfile = 'assets/images/users/' + user.profile;
-    }
 
     this.lang = this.translate.currentLang;
     this.onListScroll();
@@ -230,7 +227,7 @@ export class IndexComponent implements OnInit {
         // Almacena el usuario en el servicio
         this.globalUserService.setCurrentUser(event.data);
         console.log("esta funcionando o no aquí lo sabremos: ", event.data)
-        this.yaEstaSeteado=true;
+        this.yaEstaSeteado = true;
       }
     });
     this.scrollRef.SimpleBar.getScrollElement().scrollTop = 100;
@@ -671,7 +668,7 @@ export class IndexComponent implements OnInit {
 
   loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs').subscribe(
+      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario='+this.senderName).subscribe(
         res => {
           let prospects = res.body;
 
@@ -731,7 +728,7 @@ export class IndexComponent implements OnInit {
 
   loadGrupos(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
+      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/' + this.senderName).subscribe(
         res => {
           this.groups = res;
           console.log("Estos son los grupos", this.groups);
