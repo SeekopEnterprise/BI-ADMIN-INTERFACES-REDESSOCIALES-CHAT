@@ -135,26 +135,29 @@ export class IndexComponent implements OnInit {
       }
     });
     try {
+
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
       if (!user) {
         try {
           user = JSON.parse(localStorage.getItem('currentUser'));
         } catch (error) {
-          console.error('Error al acceder a localStorage:', error);
-        }
-      }
+          console.error('Error al acceder a localStorage:nuevo', error);
+          if (user && user.token) {
+            this.senderName = user.username;
+            this.senderProfile = 'assets/images/users/' + user.profile;
+          }
 
-      if (user && user.token) {
+          await this.loadGrupos();
+          await this.loadRecuperacionMensajes();
+        }
+      } else if (user && user.token) {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
-
-        // Llama a loadGrupos y loadRecuperacionMensajes solo si user y user.token existen
         await this.loadGrupos();
         await this.loadRecuperacionMensajes();
-      } else {
-        // Puedes manejar el caso en que user o user.token no existen aquí, si es necesario
       }
+
     } catch (error) {
       console.error('Error cargando grupos o recuperando mensajes:', error);
       return;
