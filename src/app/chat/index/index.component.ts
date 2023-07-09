@@ -64,6 +64,8 @@ export class IndexComponent implements OnInit {
   public idMensajeLeads;
   public idDistribuidor: string;
   public nombreDistribuidor: string;
+  public eventHandlerAdded = false;
+  public yaEstaSeteado =false;
 
   public hideMenu: boolean;
 
@@ -199,13 +201,7 @@ export class IndexComponent implements OnInit {
 
     // Validation
 
-    // Escucha los mensajes que llegan del padre
-    window.addEventListener('message', (event) => {
-      // ...
 
-      // Almacena el usuario en el servicio
-      this.globalUserService.setCurrentUser(event.data);
-    });
 
 
     // Recupera el usuario del servicio o del localStorage
@@ -218,18 +214,6 @@ export class IndexComponent implements OnInit {
       }
     }
 
-    if (!user) {
-      const emailCookie = this.getCookie('correo');
-      if (emailCookie) {
-        user = {
-          email: emailCookie,
-          username: emailCookie,
-          token: 'fake-jwt-token',
-          profile: 'avatar-1.jpg'
-        };
-      }
-    }
-
     if (user && user.token) {
       this.senderName = user.username;
       this.senderProfile = 'assets/images/users/' + user.profile;
@@ -239,22 +223,29 @@ export class IndexComponent implements OnInit {
     this.onListScroll();
   }
 
-  getCookie(name: string): string {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return '';
-  }
-
   ngAfterViewInit() {
+    // Escucha los mensajes que llegan del padre
+    window.addEventListener('message', (event) => {
+      if (!this.yaEstaSeteado) {
+        // Almacena el usuario en el servicio
+        this.globalUserService.setCurrentUser(event.data);
+        console.log("esta funcionando o no aquí lo sabremos: ", event.data)
+        this.yaEstaSeteado=true;
+      }
+    });
     this.scrollRef.SimpleBar.getScrollElement().scrollTop = 100;
 
     const iframeElement = document.getElementById("iframePub") as HTMLIFrameElement;
-    const iframeWindow = iframeElement.contentWindow;
-    const iframeDocument = iframeWindow.document;
-    const bodyElement = iframeDocument.getElementsByTagName("body")[0];
-    bodyElement.setAttribute("id", "idIframe");
+    if (iframeElement) {
+      const iframeWindow = iframeElement.contentWindow;
+      const iframeDocument = iframeWindow.document;
+      const bodyElement = iframeDocument.getElementsByTagName("body")[0];
+      bodyElement.setAttribute("id", "idIframe");
+    } else {
+      console.error('El iframe no se encuentra en el DOM.');
+    }
   }
+
 
   ngOnDestroy(): void {
     this.chatSubscription.unsubscribe();
