@@ -151,10 +151,11 @@ export class IndexComponent implements OnInit {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
         await this.loadGrupos();
+        await this.loadRecuperacionMensajes();
       }
 
 
-      await this.loadRecuperacionMensajes();
+
     } catch (error) {
       console.log('Error cargando grupos o recuperando mensajes:', error);
       return;
@@ -224,7 +225,7 @@ export class IndexComponent implements OnInit {
 
   ngAfterViewInit() {
     // Escucha los mensajes que llegan del padre
-    window.addEventListener('message', (event) => {
+    window.addEventListener('message', async (event) => { // marcado como async
       if (!this.yaEstaSeteado) {
         // Almacena el usuario en el servicio
         this.globalUserService.setCurrentUser(event.data);
@@ -232,7 +233,8 @@ export class IndexComponent implements OnInit {
         this.usuarioCorreo = event.data.username;
         if (this.usuarioCorreo) {
           this.senderProfile = 'assets/images/users/' + event.data.profile;
-          this.loadGrupos();
+          await this.loadGrupos(); // se agrega await
+          await this.loadRecuperacionMensajes(); // se agrega await
         }
         this.yaEstaSeteado = true;
       }
@@ -249,6 +251,7 @@ export class IndexComponent implements OnInit {
       console.log('El iframe no se encuentra en el DOM.');
     }
   }
+
 
 
   ngOnDestroy(): void {
