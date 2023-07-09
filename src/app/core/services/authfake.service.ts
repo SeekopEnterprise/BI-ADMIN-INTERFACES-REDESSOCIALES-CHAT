@@ -24,14 +24,14 @@ export class AuthfakeauthenticationService {
     try {
       user = JSON.parse(localStorage.getItem('currentUser'));
     } catch (e) {
-      console.error('Error obteniendo el usuario del localStorage', e);
+      console.log('Error obteniendo el usuario del localStorage', e);
     }
     if (!user) {
       user = getDefaultUser('default.pruebas@seekoop.com'); // Define un correo por defecto aquí.
       try {
         localStorage.setItem('currentUser', JSON.stringify(user));
       } catch (e) {
-        console.error('Error estableciendo el usuario en el localStorage', e);
+        console.log('Error estableciendo el usuario en el localStorage', e);
       }
     }
     this.currentUserSubject = new BehaviorSubject<User>(user);
@@ -51,7 +51,7 @@ export class AuthfakeauthenticationService {
           try {
             localStorage.setItem('currentUser', JSON.stringify(user));
           } catch (e) {
-            console.error('Error estableciendo el usuario en el localStorage', e);
+            console.log('Error estableciendo el usuario en el localStorage', e);
           }
           this.currentUserSubject.next(user);
         }

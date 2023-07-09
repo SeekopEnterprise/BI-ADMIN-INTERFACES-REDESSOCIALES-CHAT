@@ -15,7 +15,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     try {
       users = JSON.parse(localStorage.getItem('users')) || [{ username: 'Seekop', email: 'chatvia@themesbrand.com', password: '123456', profile: 'avatar-1.jpg' }];
     } catch (e) {
-      console.error('Error al acceder a localStorage', e);
+      console.log('Error al acceder a localStorage', e);
       users = [{ username: 'Seekop', email: 'chatvia@themesbrand.com', password: '123456', profile: 'avatar-1.jpg' }];
     }
 
@@ -96,7 +96,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         try {
           localStorage.setItem('users', JSON.stringify(users));
         } catch (e) {
-          console.error('Error al guardar en localStorage', e);
+          console.log('Error al guardar en localStorage', e);
         }
 
         // respond 200 OK
