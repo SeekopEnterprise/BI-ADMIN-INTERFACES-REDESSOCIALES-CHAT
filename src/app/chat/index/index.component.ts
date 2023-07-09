@@ -140,9 +140,7 @@ export class IndexComponent implements OnInit {
       let user = this.globalUserService.getCurrentUser();
       if (!user) {
         try {
-          if (!user.data) {
             user = JSON.parse(localStorage.getItem('currentUser'));
-          }
         } catch (error) {
           console.error('Error al acceder a localStorage:', error);
         }
@@ -734,6 +732,7 @@ export class IndexComponent implements OnInit {
         res => {
           this.groups = res;
           console.log("Estos son los grupos", this.groups);
+          console.log("Estos son los grupos de", this.senderName);
           resolve();
         },
         error => {
