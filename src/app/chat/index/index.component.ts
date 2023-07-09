@@ -138,7 +138,7 @@ export class IndexComponent implements OnInit {
 
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
-      if (!user || !user.data) {
+      if (!user.data) {
         try {
           user = JSON.parse(localStorage.getItem('currentUser'));
         } catch (error) {
