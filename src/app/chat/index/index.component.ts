@@ -152,7 +152,7 @@ export class IndexComponent implements OnInit {
         this.senderProfile = 'assets/images/users/' + user.profile;
       }
 
-      await this.loadGrupos();
+
       await this.loadRecuperacionMensajes();
     } catch (error) {
       console.log('Error cargando grupos o recuperando mensajes:', error);
@@ -668,7 +668,8 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  loadRecuperacionMensajes(socketData = null): Promise<void> {
+  async loadRecuperacionMensajes(socketData = null): Promise<void> {
+    await this.loadGrupos();
     return new Promise((resolve, reject) => {
       const userName = this.senderName ? this.senderName : this.usuarioCorreo;
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + userName).subscribe(
