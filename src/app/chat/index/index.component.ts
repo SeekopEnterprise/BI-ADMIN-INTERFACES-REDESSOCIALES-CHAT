@@ -138,9 +138,11 @@ export class IndexComponent implements OnInit {
 
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
-      if (!user.data) {
+      if (!user) {
         try {
-          user = JSON.parse(localStorage.getItem('currentUser'));
+          if (!user.data) {
+            user = JSON.parse(localStorage.getItem('currentUser'));
+          }
         } catch (error) {
           console.error('Error al acceder a localStorage:', error);
         }
@@ -668,7 +670,7 @@ export class IndexComponent implements OnInit {
 
   loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario='+this.senderName).subscribe(
+      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + this.senderName).subscribe(
         res => {
           let prospects = res.body;
 
