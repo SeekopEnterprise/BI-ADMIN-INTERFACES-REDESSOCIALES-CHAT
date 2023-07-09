@@ -140,24 +140,19 @@ export class IndexComponent implements OnInit {
       let user = this.globalUserService.getCurrentUser();
       if (!user) {
         try {
-          user = JSON.parse(localStorage.getItem('currentUser'));
+            user = JSON.parse(localStorage.getItem('currentUser'));
         } catch (error) {
-          console.error('Error al acceder a localStorage:nuevo', error);
-          if (user && user.token) {
-            this.senderName = user.username;
-            this.senderProfile = 'assets/images/users/' + user.profile;
-          }
-
-          await this.loadGrupos();
-          await this.loadRecuperacionMensajes();
+          console.error('Error al acceder a localStorage nuevo:', error);
         }
-      } else if (user && user.token) {
-        this.senderName = user.username;
-        this.senderProfile = 'assets/images/users/' + user.profile;
-        await this.loadGrupos();
-        await this.loadRecuperacionMensajes();
       }
 
+      if (user && user.token) {
+        this.senderName = user.username;
+        this.senderProfile = 'assets/images/users/' + user.profile;
+      }
+
+      await this.loadGrupos(user.username);
+      await this.loadRecuperacionMensajes(null, user.username);
     } catch (error) {
       console.error('Error cargando grupos o recuperando mensajes:', error);
       return;
@@ -671,9 +666,9 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  loadRecuperacionMensajes(socketData = null): Promise<void> {
+  loadRecuperacionMensajes(socketData = null, usuario): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + this.senderName).subscribe(
+      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + usuario).subscribe(
         res => {
           let prospects = res.body;
 
@@ -731,13 +726,13 @@ export class IndexComponent implements OnInit {
   }
 
 
-  loadGrupos(): Promise<void> {
+  loadGrupos(usuario:any): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/' + this.senderName).subscribe(
+      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/' + usuario).subscribe(
         res => {
           this.groups = res;
           console.log("Estos son los grupos", this.groups);
-          console.log("Estos son los grupos de", this.senderName);
+          console.log("Estos son los grupos de", usuario);
           resolve();
         },
         error => {
