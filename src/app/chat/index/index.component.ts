@@ -150,6 +150,7 @@ export class IndexComponent implements OnInit {
       if (user && user.token) {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
+        await this.loadGrupos();
       }
 
 
@@ -229,6 +230,10 @@ export class IndexComponent implements OnInit {
         this.globalUserService.setCurrentUser(event.data);
         console.log("esta funcionando o no aquí lo sabremos: ", event.data);
         this.usuarioCorreo = event.data.username;
+        if (this.usuarioCorreo) {
+          this.senderProfile = 'assets/images/users/' + event.data.profile;
+          this.loadGrupos();
+        }
         this.yaEstaSeteado = true;
       }
     });
@@ -668,8 +673,7 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  async loadRecuperacionMensajes(socketData = null): Promise<void> {
-    await this.loadGrupos();
+  loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
       const userName = this.senderName ? this.senderName : this.usuarioCorreo;
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + userName).subscribe(
