@@ -2,7 +2,7 @@
 
 /* Importing Bootstrap SCSS file. */
 // @import '~bootstrap/scss/bootstrap';
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 i.ri-ball-pen-fill,
 i.ri-delete-bin-6-fill{
@@ -19,4 +19,20 @@ i.ri-delete-bin-6-fill{
 
 .mb-4.title{
     color:rgb(0,42,127);
+}
+#chat-room, #chat-welcome-section{
+  border-color: rgba(231, 234, 236, 0);
+  border-style: solid solid none;
+  border-width: 2px 0 0;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px rgba(39, 45, 59, 0.2);
+  border-radius: 20px;
+  opacity: 1;
+  color: black;
+}
+
+.layout-wrapper{
+  background: white;
 }

@@ -21,31 +21,31 @@ export class MetodosComponent implements OnInit{
   @ViewChild('rama_edit') rama_edit: ElementRef;
   @ViewChild('content_eliminar') modalRef: ElementRef<any>;
   @ViewChild('content_edit') modalEditRef: ElementRef<any>;
-  
-  // metodoForm: FormGroup; 
+
+  // metodoForm: FormGroup;
   // metodoForm: FormControl;
 
   idMetodo;
   metodoForm: FormGroup = new FormGroup({
-    nombreRedSocial: new FormControl(''), 
+    nombreRedSocial: new FormControl(''),
     tipometodo: new FormControl(''),
     tipoSolicitud: new FormControl(''),
     rama: new FormControl(''),
     resultado: new FormControl(''),
-    etiquetavalor: new FormControl(''), 
+    etiquetavalor: new FormControl(''),
   });
 
 
   metodoEditForm: FormGroup= new FormGroup({
-    nombreRedSocial_edit: new FormControl(''), 
+    nombreRedSocial_edit: new FormControl(''),
     tipo_metodo_edit: new FormControl(''),
     tipoSolicitud_edit: new FormControl(''),
     rama_edit: new FormControl(''),
     resultado_edit: new FormControl(''),
     etiquetavalor_edit: new FormControl(''),
   });
-  
- 
+
+
 
   submitted= false;
   list="";
@@ -55,7 +55,7 @@ export class MetodosComponent implements OnInit{
   tipoSolicitudSelect: any;
   metodo: Metodos[];
   newMetodo: Partial<Metodos> = {
-    
+
     idred: null,
     idsolicitud: null,
     tipometodo: null ,
@@ -85,38 +85,38 @@ export class MetodosComponent implements OnInit{
   };
 
 
-  constructor(private modalService: NgbModal, private http: HttpClient,private fb: FormBuilder) { 
-      
+  constructor(private modalService: NgbModal, private http: HttpClient,private fb: FormBuilder) {
+
       this.metodoForm= this.fb.group({
-        nombreRedSocial: ['', [Validators.required]], 
+        nombreRedSocial: ['', [Validators.required]],
         tipometodo: ['', [Validators.required]],
-        tipoSolicitud: ['', [Validators.required]], 
+        tipoSolicitud: ['', [Validators.required]],
         rama: ['', [Validators.required,Validators.maxLength(255)]],
         resultado: ['', [Validators.required]],
-        etiquetavalor: ['', [Validators.required,Validators.maxLength(50)]]  
-      }); 
+        etiquetavalor: ['', [Validators.required,Validators.maxLength(50)]]
+      });
 
       this.metodoEditForm= this.fb.group({
-        nombreRedSocial_edit: ['', [Validators.required]], 
-        tipo_metodo_edit: ['', [Validators.required]], 
+        nombreRedSocial_edit: ['', [Validators.required]],
+        tipo_metodo_edit: ['', [Validators.required]],
         tipoSolicitud_edit: ['', [Validators.required]],
         rama_edit: ['', [Validators.required,Validators.maxLength(255)]],
         resultado_edit: ['', [Validators.required]],
         etiquetavalor_edit: ['', [Validators.required,Validators.maxLength(50)]],
-      }); 
+      });
 
-      
+
 
     }
 
   ngOnInit(): void {
-    
+
     this.loadMetodos();
     this.loadRedesSociales();
     this.loadTipoSolicitud();
   }
 
-  
+
   changeResultado(e) {
     this.getResultado.setValue(e.target.value, {
       onlySelf: true
@@ -132,7 +132,7 @@ export class MetodosComponent implements OnInit{
     this.getTipoMetodo.setValue(e.target.value, {
       onlySelf: true
     })
-  } 
+  }
 
   changeRedSocial(e) {
     console.log("datos changed: "+this.metodoForm.valid);
@@ -140,7 +140,7 @@ export class MetodosComponent implements OnInit{
 
     this.getRedSocial.setValue(e.target.value, {
       onlySelf: true
-    }) 
+    })
   }
 
   changeEtiqueta(e) {
@@ -149,29 +149,29 @@ export class MetodosComponent implements OnInit{
     })
   }
 
-  get getResultado() { 
-    return this.metodoForm.get('resultado');   
+  get getResultado() {
+    return this.metodoForm.get('resultado');
   }
 
-  get getTipoSolicitud() { 
+  get getTipoSolicitud() {
     return this.metodoForm.get('tipoSolicitud');
   }
 
-  get getTipoMetodo() { 
+  get getTipoMetodo() {
     return this.metodoForm.get('tipometodo');
   }
 
-  get getRedSocial() { 
+  get getRedSocial() {
     return this.metodoForm.get('nombreRedSocial');
   }
 
-  get getEtiqueta() { 
+  get getEtiqueta() {
     return this.metodoForm.get('etiquetavalor');
   }
 
-  get getRama() { 
+  get getRama() {
     return this.metodoForm.get('rama');
- } 
+ }
 
  get f()  {
   return this.metodoForm.controls;
@@ -187,15 +187,15 @@ get fe()  {
     // console.log("datos form: "+this.newMetodo.tipometodo);
 
     if (this.metodoForm.valid) {
-      
+
       this.submitted = true;
       // console.log("datos validos: "+this.metodoForm.value);
       this.addNewMetodo();
       // return true;
 		} else {
       return console.log(this.metodoForm.value);
-		} 
-    
+		}
+
   }
 
   validateUpdateForm(): void{
@@ -208,8 +208,8 @@ get fe()  {
 
 		} else {
       return console.log(this.metodoEditForm.value);
-		} 
-    
+		}
+
   }
 
   openMetodosModal(content) {
@@ -292,8 +292,8 @@ get fe()  {
 		);
   }
 
-  addNewMetodo() { 
-    // console.log(this.newMetodo);  
+  addNewMetodo() {
+    // console.log(this.newMetodo);
     const data={
       "idred":this.newMetodo.idred,
       "idsolicitud":this.newMetodo.idsolicitud,
@@ -311,8 +311,8 @@ get fe()  {
       +" resultado: "+data.resultado
       +" etiqueta"+data.etiquetavalor);
     const url = 'https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos';
-    
-    
+
+
     this.http.post<Metodos>(url, data).subscribe(
       response => {
         // Limpia el formulario y recarga la lista de redes sociales
@@ -322,7 +322,7 @@ get fe()  {
           nombrered: '',
           nombresolicitud: '',
           rama: '',
-          tipometodo: '' 
+          tipometodo: ''
         }; */
 
         this.loadMetodos();
@@ -337,7 +337,7 @@ get fe()  {
         this.modalService.dismissAll();
       },
       error => {
-        console.error(error);
+        console.log(error);
         // Muestra una alerta de error
         Swal.fire({
           icon: 'error',
@@ -346,32 +346,32 @@ get fe()  {
           confirmButtonText: 'Entendido'
         });
       }
-    ); 
+    );
   }
 
   loadMetodos(): void {
     this.http.get<Metodos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos').subscribe(
       metodos => {
-        
+
         const sorted = metodos.sort((a, b) => a.nombrered > b.nombrered ? 1 : -1);
         const arrayValue=[];
-        
+
         for (const { index, value } of sorted.map((value, index) => ({ index, value }))) {
           // console.log(index); // 0, 1, 2
           // console.log(value); // 9, 2, 5
           arrayValue.push(value);
-          
-      } 
+
+      }
 
       document.getElementById('bodyMetodos').innerHTML="";
       // document.getElementById('etiquetavalor_edit').innerText="";
-      
+
 
       const tbody = document.getElementById('bodyMetodos');
 
       /*
       this.metodoEditForm= {
-        nombreRedSocial_edit: '', 
+        nombreRedSocial_edit: '',
         tipo_metodo_edit: '',
         tipoSolicitud_edit: '',
         rama_edit: '',
@@ -380,11 +380,11 @@ get fe()  {
       }; */
 
       // this.metodoEditForm.controls['etiquetavalor_edit'].reset();
-      // this.etiquetavalor_p=""; 
+      // this.etiquetavalor_p="";
 
       for(let obj in arrayValue) {
 
-        const 
+        const
         idmetodo_p=0,
         idred_p=0,
         nombrered_p="",
@@ -394,9 +394,9 @@ get fe()  {
         tipoaccion_p=0,
         rama_p="",
         resultado_p="",
-        etiquetavalor_p=""; 
-        
-        
+        etiquetavalor_p="";
+
+
         this.idmetodo_p= arrayValue[obj].idmetodo.toString();
         this.idred_p= arrayValue[obj].idred.toString();
         this.nombrered_p= arrayValue[obj].nombrered.toString();
@@ -406,15 +406,15 @@ get fe()  {
         this.tipoaccion_p= arrayValue[obj].tipoaccion.toString();
         this.rama_p= arrayValue[obj].rama.toString();
         this.resultado_p= arrayValue[obj].resultado.toString();
-        this.etiquetavalor_p= arrayValue[obj].etiquetavalor.toString(); 
+        this.etiquetavalor_p= arrayValue[obj].etiquetavalor.toString();
 
         const fila = document.createElement('tr');
-  
+
         const nombrered = document.createElement('td');
         nombrered.className="text";
         nombrered.textContent = arrayValue[obj].nombrered.toString();
         fila.appendChild(nombrered);
-        
+
         const nombresolicitud = document.createElement('td');
         nombresolicitud.textContent = arrayValue[obj].nombresolicitud.toString();
         nombresolicitud.className="text";
@@ -441,7 +441,7 @@ get fe()  {
         fila.appendChild(etiquetavalor);
 
         const tdbtn = document.createElement('td');
-        
+
         const btneditar = document.createElement('a');
         const ieditar = document.createElement('i');
         btneditar.innerHTML=""
@@ -470,10 +470,10 @@ get fe()  {
                                       arrayValue[obj].rama,
                                       arrayValue[obj].resultado,
                                       arrayValue[obj].etiquetavalor
-            ); 
+            );
 
             // console.log("etiquetavalor_p:"+arrayValue[obj].etiquetavalor.toString(), event);
-            
+
         });
 
 
@@ -498,7 +498,7 @@ get fe()  {
           // alert("Editar");
         };*/
 
-        
+
 
         /*
         btneditar.onclick = function handleClick() {
@@ -526,10 +526,10 @@ get fe()  {
         });*/
 
 
-      tdbtn.appendChild(btneditar);  
-      tdbtn.appendChild(btneliminar);      
+      tdbtn.appendChild(btneditar);
+      tdbtn.appendChild(btneliminar);
       fila.appendChild(tdbtn);
-        
+
       // btneditar.textContent = arrayValue[obj].idmetodo.toString();
       // fila.appendChild(btneditar);
 
@@ -538,7 +538,7 @@ get fe()  {
 
       // console.log(this.list);
       // document.getElementById('list_tablemetodos').innerHTML= this.list;
-      
+
       /*
       sorted.forEach((value, index) => {
         // console.log(index); // 0, 1, 2
@@ -551,51 +551,51 @@ get fe()  {
 
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
   }
 
-  
+
 
   loadRedesSociales() { // https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales
     this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales').subscribe(
       redsocial => {
-        
+
         const sorted = redsocial.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
         //console.log(sorted);
         const arrayValue=[];
         for (const { index, value } of sorted.map((value, index) => ({ index, value }))) {
           // console.log("index"+value.idred); // 9, 2, 5
           arrayValue.push(value);
-      } 
+      }
 
       this.redesSelect=arrayValue;
       // console.log(".......... red social: "+this.redesSelect);
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
 
   }
-  
+
   loadTipoSolicitud() {
     this.http.get<any>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/tiposdesolicitud').subscribe(
       tiposolicitud => {
-        
+
         const sorted = tiposolicitud.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
         const arrayValue=[];
         for (const { index, value } of sorted.map((value, index) => ({ index, value }))) {
           // console.log("index"+value.idred); // 9, 2, 5
           arrayValue.push(value);
-      } 
+      }
 
         this.tipoSolicitudSelect=arrayValue;
         // console.log("......... "+arrayValue);
       },
       error => {
-        console.error(error);
+        console.log(error);
       }
     );
 
@@ -605,7 +605,7 @@ get fe()  {
     // console.log("Hola:"+id.idMetodo);
     // this.modalRef.nativeElement.click();
     const val=id.idMetodo;
-    
+
     this.http.delete('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos/'+val)
     .subscribe({
         next: data => {
@@ -619,7 +619,7 @@ get fe()  {
               text: 'Se eliminó correctamente!',
               confirmButtonText: 'Ok'
             });
-            this.modalService.dismissAll(); 
+            this.modalService.dismissAll();
             // this.modalService.dismissAll();
             // this.modalRef.nativeElement.dismissAll();
             // this.modalService.dismissAll();
@@ -627,10 +627,10 @@ get fe()  {
         },
         error: error => {
             // this.errorMessage = error.message;
-            console.error('Hubo un error!', error);
+            console.log('Hubo un error!', error);
         }
-    });  
-   
+    });
+
   }
 
   updateMetodo(){
@@ -656,21 +656,21 @@ get fe()  {
     +" resultado: "+this.editMet.resultado
     +" etiquetavalor: "+this.editMet.etiquetavalor); */
 
-    
+
     const url = 'https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/metodos/' + this.IdMetodo + '.json';
-    
+
     this.http.put(url, data)
     .subscribe(
       () => {
 
-        
+
         this.editMet = {
           rama: '',
           tipometodo: '' ,
           resultado: 0,
           etiquetavalor: '',
-        }; 
-        
+        };
+
         this.loadMetodos();
 
         Swal.fire({
@@ -683,7 +683,7 @@ get fe()  {
         this.modalService.dismissAll();
       },
       error => {
-        console.error(error);
+        console.log(error);
 
         Swal.fire({
           icon: 'error',
@@ -692,8 +692,8 @@ get fe()  {
           confirmButtonText: 'Entendido'
         });
       }
-      ); 
-   
+      );
+
   }
 
 }
