@@ -1,9 +1,10 @@
-import { Component, OnInit, ElementRef, ViewChild  } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient } from '@angular/common/http';
 import { RedesUsuarios } from './redesusuarios.model';
 import { RedSocial } from '../redessociales/redsocial.model';
 import Swal from 'sweetalert2';
+import { GlobalUserService } from '../../../services/global-user.service';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms'
 
 @Component({
@@ -18,6 +19,8 @@ export class RedessocialesusuariosComponent implements OnInit {
 
   public isButtonDisabled: boolean = true;
   public isButtonSaveDisabled: boolean = true;
+  public yaEstaSeteado = false;
+  public usuarioCorreo: string;
   redesusuariosForm: FormGroup;
 
   /*
@@ -43,25 +46,48 @@ export class RedessocialesusuariosComponent implements OnInit {
 
   modal: any;
 
-  constructor(private modalService: NgbModal, private http: HttpClient,
+  constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, private http: HttpClient,
     private fb: FormBuilder) {
-/*
-      this.redesusuariosForm= this.fb.group({
-        idred: [0, [Validators.required]],
-        usuario: ['', [Validators.required]],
-        noCliente: ['', [Validators.required]],
-        pagina: ['', [Validators.required]],
-        token: ['', [Validators.required]],
-        fechavencimimiento: ['', [Validators.required]]
-      }); */
+    /*
+          this.redesusuariosForm= this.fb.group({
+            idred: [0, [Validators.required]],
+            usuario: ['', [Validators.required]],
+            noCliente: ['', [Validators.required]],
+            pagina: ['', [Validators.required]],
+            token: ['', [Validators.required]],
+            fechavencimimiento: ['', [Validators.required]]
+          }); */
 
 
-    }
+  }
 
   ngOnInit(): void {
-    this.loadRedesSocialesUsuarios();
-    this.loadRedesSociales();
-    this.loadDistribuidores();
+
+    try {
+
+      // Recupera el usuario del servicio o del localStorage
+      let user = this.globalUserService.getCurrentUser();
+      if (!user || user.type === "webpackOk") {
+        try {
+          user = JSON.parse(localStorage.getItem('currentUser'));
+        } catch (error) {
+          console.log('Error al acceder a localStorage para distribuidores redes :', error);
+        }
+      }
+
+      if (user && user.token) {
+        this.usuarioCorreo = user.username;
+        this.loadRedesSocialesUsuarios();
+        this.loadRedesSociales();
+        this.loadDistribuidores();
+      }
+
+    } catch (error) {
+      console.log('Error cargando grupos o recuperando mensajes:', error);
+      return;
+    }
+
+
 
     const today = new Date();
     const day = today.getDate();
@@ -106,6 +132,25 @@ export class RedessocialesusuariosComponent implements OnInit {
 
   }
 
+  ngAfterViewInit() {
+    // Escucha los mensajes que llegan del padre
+    window.addEventListener('message', async (event) => { // marcado como async
+      if (!this.yaEstaSeteado) {
+        // Almacena el usuario en el servicio
+        this.globalUserService.setCurrentUser(event.data);
+        console.log("esta funcionando o no aquí lo sabremos: ", event.data);
+        this.usuarioCorreo = event.data.username;
+        if (this.usuarioCorreo) {
+          this.loadRedesSocialesUsuarios();
+          this.loadRedesSociales();
+          this.loadDistribuidores();
+        }
+        this.yaEstaSeteado = true;
+      }
+    });
+  }
+
+
   openUsuarioRedSocialModal(content) {
     this.modal = this.modalService.open(content, {
       centered: true,
@@ -147,35 +192,35 @@ export class RedessocialesusuariosComponent implements OnInit {
     if (this.redesusuariosForm.invalid) {
       return;
     }
-    else{
+    else {
       // this.isButtonDisabled = false;
 
     }
     console.log(this.redesusuariosForm.value);
   }
 
-  changeDistribuidor(event: KeyboardEvent){
+  changeDistribuidor(event: KeyboardEvent) {
     this.submitted = true;
 
     if (this.redesusuariosForm.invalid) {
       this.isButtonDisabled = true;
       return;
     }
-    else{
+    else {
 
       this.isButtonDisabled = false;
 
     }
   }
 
-  selectRedSocial(event: KeyboardEvent){
+  selectRedSocial(event: KeyboardEvent) {
     this.submitted = true;
 
     if (this.redesusuariosForm.invalid) {
       this.isButtonDisabled = true;
       return;
     }
-    else{
+    else {
       // alert("prueba");
       this.isButtonDisabled = false;
 
@@ -191,7 +236,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       this.isButtonDisabled = true;
       return;
     }
-    else{
+    else {
       // alert("prueba");
       this.isButtonDisabled = false;
 
@@ -220,7 +265,7 @@ export class RedessocialesusuariosComponent implements OnInit {
 
 
   loadRedesSociales() {
-    this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales').subscribe(
+    this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/' + this.usuarioCorreo).subscribe(
       redsocial => {
         // Creamos un Set para mantener un registro único de los 'idred'
         const idredSet = new Set();
@@ -244,7 +289,7 @@ export class RedessocialesusuariosComponent implements OnInit {
 
 
   loadDistribuidores(): void {
-    this.http.get<any>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos').subscribe(
+    this.http.get<any>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/' + this.usuarioCorreo).subscribe(
       distribuidor => {
         const sorted = distribuidor.sort((a, b) => a.nombredistribuidor > b.nombredistribuidor ? 1 : -1);
         console.log("sortted: " + sorted);
@@ -262,10 +307,10 @@ export class RedessocialesusuariosComponent implements OnInit {
 
 
   loadRedesSocialesUsuarios(): void {
-    this.http.get<any>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios').subscribe(
+    this.http.get<any>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios/red/' + this.usuarioCorreo).subscribe(
       redesSocialesUsuarios => {
         const sorted = redesSocialesUsuarios.sort((a, b) => {
-          if(a.red !== b.red) {
+          if (a.red !== b.red) {
             return a.red > b.red ? 1 : -1;
           } else {
             return a.user > b.user ? 1 : -1;
@@ -288,8 +333,8 @@ export class RedessocialesusuariosComponent implements OnInit {
     );
   }
 
-  probar(){
-      alert("alert");
+  probar() {
+    alert("alert");
     /*
       this.redesusuariosForm.controls.idred.disable();
       this.redesusuariosForm.controls.iddistribuidor.disable();
@@ -298,7 +343,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       this.isButtonSaveDisabled = false; */
   }
 
-  testConexion(){
+  testConexion() {
     // alert("ok test");
 
     // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
@@ -308,7 +353,7 @@ export class RedessocialesusuariosComponent implements OnInit {
     testConnection();
     // const FetchButton = document.getElementById("nombrepagina") as HTMLInputElement;
     // FetchButton.disabled=true;
-    const response=false;
+    const response = false;
 
     async function testConnection() {
 
@@ -328,66 +373,66 @@ export class RedessocialesusuariosComponent implements OnInit {
 
 
       try {
-          const response = await fetch(url);
-          const data = await response.json();
+        const response = await fetch(url);
+        const data = await response.json();
 
-          if (data.statusCode === 200) {
+        if (data.statusCode === 200) {
 
-            nombrepagina?.setAttribute('disabled', 'true');
-            idred?.setAttribute('disabled', 'true');
-            iddistribuidor?.setAttribute('disabled', 'true');
-            idcliente?.setAttribute('disabled', 'true');
-            btnGuardarUsuario?.removeAttribute('disabled');
-
-
-              button.classList.remove('btn-danger');
-              button.classList.add('btn-primary');
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Conexión exitosa',
-                  text: 'La conexión fue correcta.',
-              });
+          nombrepagina?.setAttribute('disabled', 'true');
+          idred?.setAttribute('disabled', 'true');
+          iddistribuidor?.setAttribute('disabled', 'true');
+          idcliente?.setAttribute('disabled', 'true');
+          btnGuardarUsuario?.removeAttribute('disabled');
 
 
+          button.classList.remove('btn-danger');
+          button.classList.add('btn-primary');
+          Swal.fire({
+            icon: 'success',
+            title: 'Conexión exitosa',
+            text: 'La conexión fue correcta.',
+          });
 
-/*
-              this.redesusuariosForm.controls.idred.disable();
-              this.redesusuariosForm.controls.iddistribuidor.disable();
-              this.redesusuariosForm.controls.idcliente.disable();
-              this.redesusuariosForm.controls.nombrepagina.disable();
 
-              this.isButtonSaveDisabled = false; */
 
-          } else {
-/*
-            this.redesusuariosForm.controls.idred.disable();
-            this.redesusuariosForm.controls.iddistribuidor.disable();
-            this.redesusuariosForm.controls.idcliente.disable();
-            this.redesusuariosForm.controls.nombrepagina.disable();
+          /*
+                        this.redesusuariosForm.controls.idred.disable();
+                        this.redesusuariosForm.controls.iddistribuidor.disable();
+                        this.redesusuariosForm.controls.idcliente.disable();
+                        this.redesusuariosForm.controls.nombrepagina.disable();
 
-            this.isButtonSaveDisabled = false; */
+                        this.isButtonSaveDisabled = false; */
 
-              button.classList.remove('btn-primary');
-              button.classList.add('btn-danger');
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Error en la conexión',
-                  text: 'Conexión errónea.',
-              });
-          }
-        } catch (error) {
-          console.log(error);
+        } else {
+          /*
+                      this.redesusuariosForm.controls.idred.disable();
+                      this.redesusuariosForm.controls.iddistribuidor.disable();
+                      this.redesusuariosForm.controls.idcliente.disable();
+                      this.redesusuariosForm.controls.nombrepagina.disable();
+
+                      this.isButtonSaveDisabled = false; */
+
           button.classList.remove('btn-primary');
           button.classList.add('btn-danger');
           Swal.fire({
-              icon: 'error',
-              title: 'Error en la conexión',
-              text: 'Conexión errónea.',
+            icon: 'error',
+            title: 'Error en la conexión',
+            text: 'Conexión errónea.',
           });
         }
+      } catch (error) {
+        console.log(error);
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-danger');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en la conexión',
+          text: 'Conexión errónea.',
+        });
       }
-
-      // console.log("abc: "+response);
     }
+
+    // console.log("abc: "+response);
+  }
 
 }
