@@ -802,7 +802,7 @@ accept: 'application/json' };
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
-                  text: 'Servicio inactivo ...',
+                  text: 'Hubo un problema al enviar los datos hacia Sicop. Por favor, inténtalo más tarde.',
                   confirmButtonText: 'Ok'
                 });
   
@@ -834,7 +834,7 @@ accept: 'application/json' };
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
-                  text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
+                  text: 'Hubo un problema al enviar los datos hacia Sicop. Por favor, inténtalo más tarde.',
                   confirmButtonText: 'Entendido'
                 });
               }
