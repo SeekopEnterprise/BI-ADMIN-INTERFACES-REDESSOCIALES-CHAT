@@ -67,6 +67,7 @@ export class IndexComponent implements OnInit {
   public eventHandlerAdded = false;
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
+  public AutoDeInteres= "Sentra";
 
   public hideMenu: boolean;
 
@@ -787,7 +788,7 @@ export class IndexComponent implements OnInit {
           "status": "new",
           "make": "Nissan", // Nissan
           "year": "2023",
-          "model": "Sentra"
+          "model": this.AutoDeInteres // "Sentra"
         },
         "customer": {
           "contact": {
