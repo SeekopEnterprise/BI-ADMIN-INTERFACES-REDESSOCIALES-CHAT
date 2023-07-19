@@ -24,23 +24,28 @@
           <form #socialForm="ngForm">
             <div class="mb-3">
               <label class="form-label" for="nombreRedSocial">Nombre Red Social *</label>
-              <input type="text" class="form-control" id="nombreRedSocial" [(ngModel)]="newRedSocial.nombre" name="nombre" placeholder="Facebook">
+              <input type="text" class="form-control" id="nombreRedSocial" [(ngModel)]="newRedSocial.nombre"
+                name="nombre" placeholder="Facebook">
             </div>
             <div class="mb-3">
               <label class="form-label" for="endpointApi">EndpointApi *</label>
-              <input type="text" class="form-control" id="endpointApi" [(ngModel)]="newRedSocial.endpointapi" name="endpointapi" placeholder="https://sicopweb.com">
+              <input type="text" class="form-control" id="endpointApi" [(ngModel)]="newRedSocial.endpointapi"
+                name="endpointapi" placeholder="https://sicopweb.com">
             </div>
             <div class="mb-3">
               <label class="form-label" for="apiKey">ApiKey *</label>
-              <input type="text" class="form-control" id="apiKey" [(ngModel)]="newRedSocial.apikey" name="apikey" placeholder="abcA123ABC-.cdeCDE123">
+              <input type="text" class="form-control" id="apiKey" [(ngModel)]="newRedSocial.apikey" name="apikey"
+                placeholder="abcA123ABC-.cdeCDE123">
             </div>
             <div class="mb-3">
               <label class="form-label" for="secretKey">Secret Key *</label>
-              <input type="text" class="form-control" id="secretKey" [(ngModel)]="newRedSocial.secretkey" name="secretkey" placeholder="abcA123ABC-.cdeCDE123">
+              <input type="text" class="form-control" id="secretKey" [(ngModel)]="newRedSocial.secretkey"
+                name="secretkey" placeholder="abcA123ABC-.cdeCDE123">
             </div>
             <div class="mb-3">
               <label class="form-label" for="urlLogotipo">Url Logotipo (opcional)</label>
-              <input type="text" class="form-control" id="urlLogotipo" [(ngModel)]="newRedSocial.urllogotipo" name="urllogotipo" placeholder="https://sicopweb.com">
+              <input type="text" class="form-control" id="urlLogotipo" [(ngModel)]="newRedSocial.urllogotipo"
+                name="urllogotipo" placeholder="https://sicopweb.com">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
@@ -69,38 +74,36 @@
 
   <!-- Start contact lists -->
   <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar>
-    <div *ngFor="let item of redesSocialesList">
-      <div class="p-3 font-weight-bold text-primary">
-        <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{item.key}}
-      </div>
-      <ul class="list-unstyled contact-list">
-        <li *ngFor="let item of item.socialRedes">
+    <ul class="list-unstyled chat-list group-list">
+      <li *ngFor="let redSocial of redesSocialesList">
+        <a href="javascript:void(0);">
           <div class="d-flex align-items-center">
-            <div class="flex-grow-1">
-              <h5 class="font-size-14 m-0">{{item.nombre | translate}}</h5>
-            </div>
-
-            <div class="dropdown" ngbDropdown>
-              <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <i class="ri-more-2-fill"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-                <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
-                    class="ri-share-line float-end text-muted"></i></a>
-                <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
-                    class="ri-forbid-line float-end text-muted"></i></a>
-                <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
-                    class="ri-delete-bin-line float-end text-muted"></i></a>
+            <div class="chat-user-img me-3 ms-0">
+              <div class="avatar-xs">
+                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                  {{redSocial.nombre.charAt(0)}}
+                </span>
               </div>
             </div>
+            <div class="flex-grow-1 overflow-hidden">
+              <h5 class="text-truncate font-size-14 mb-0">{{redSocial.nombre}}
+                <!--
+                En el ejemplo que proporcionaste, hay una insignia que muestra el número de mensajes no leídos.
+                No estoy seguro de si quieres mantener esta funcionalidad, así que la he comentado.
+                Si tienes una propiedad similar para las redes sociales, puedes descomentar la siguiente línea y sustituir 'unread' por la propiedad correcta.
+                <span class="badge badge-soft-danger rounded-pill float-end">{{redSocial.unread}}</span>
+                -->
+              </h5>
+            </div>
           </div>
-        </li>
-      </ul>
-    </div>
-    <!-- end contact list A -->
-
+        </a>
+      </li>
+    </ul>
   </perfect-scrollbar>
+
+
+
+
   <!-- end contact lists -->
 </div>
 <!-- Start Contact content -->

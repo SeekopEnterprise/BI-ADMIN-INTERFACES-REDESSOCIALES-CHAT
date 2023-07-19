@@ -67,7 +67,7 @@ export class RedessocialesusuariosComponent implements OnInit {
 
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
-      if (!user || user.type === "webpackOk") {
+      if (!user || user.type.toLowerCase().includes("web")) {
         try {
           user = JSON.parse(localStorage.getItem('currentUser'));
         } catch (error) {
@@ -265,20 +265,10 @@ export class RedessocialesusuariosComponent implements OnInit {
 
 
   loadRedesSociales() {
-    this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/' + this.usuarioCorreo).subscribe(
+    this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/').subscribe(
       redsocial => {
-        // Creamos un Set para mantener un registro único de los 'idred'
-        const idredSet = new Set();
-        // Filtramos la lista original para mantener solo los elementos con un 'idred' único
-        const uniqueRedsocial = redsocial.filter(item => {
-          if (!idredSet.has(item.idred)) {
-            idredSet.add(item.idred);
-            return true;
-          }
-          return false;
-        });
-        // Ordenamos la lista filtrada
-        const sorted = uniqueRedsocial.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
+        // Ordenamos la lista
+        const sorted = redsocial.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
         this.redesSelect = sorted;
       },
       error => {
@@ -286,6 +276,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
     );
   }
+
 
 
   loadDistribuidores(): void {
