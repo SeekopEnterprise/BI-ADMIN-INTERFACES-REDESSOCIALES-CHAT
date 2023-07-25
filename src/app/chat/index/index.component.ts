@@ -70,6 +70,7 @@ export class IndexComponent implements OnInit {
   public AutoDeInteres= "Sentra";
 
   public hideMenu: boolean;
+  public enviadoaseekop: boolean;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -390,11 +391,24 @@ export class IndexComponent implements OnInit {
     this.idDistribuidor = data[0].IdDistribuidor;
     this.nombreDistribuidor = data[0].NombreGrupo;
 
+    this.enviadoaseekop=true;
+
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
     this.selectedChatId = data[0].IdPublicacion;
     this.onListScroll();
+
+    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
+    if(this.enviadoaseekop==true){
+      // Deshabilitar el botón de enviar seekop #btnEnviarSeekop 
+      btnEnviarSeekop?.setAttribute('disabled', 'true');
+
+    }
+    else{
+      // Llamar function de envió de prospecto hacia sicop
+      
+    }
 
     // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
   }
@@ -759,6 +773,9 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  validarProspectoEnviadoSeekop(){
+
+  }
 
   confirmSend() {
 
@@ -771,7 +788,8 @@ export class IndexComponent implements OnInit {
                 "idMsj: "+this.idMensaje+
                 "idDistribuidor: "+this.idDistribuidor+
                 "Distribuidor: "+this.nombreDistribuidor); */
-
+    
+    // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
       //'My-Custom-Header': 'foobar'
@@ -837,6 +855,7 @@ export class IndexComponent implements OnInit {
         console.log("Estos son los datos a enviar: " + data);
         const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
 
+
         this.http.post<any>(url, data, { headers }).subscribe(
           response => {
 
@@ -859,7 +878,8 @@ export class IndexComponent implements OnInit {
                   text: 'Se enviaron correctamente los datos a Seekop',
                   confirmButtonText: 'Ok'
                 });
-  
+                
+                this.addNewProspecto();
                 this.modalDatos.close('Close click');
               }
             },
@@ -883,14 +903,51 @@ export class IndexComponent implements OnInit {
                 });
               }
             }
-          ); 
+          );
 
       }
 
     });
   }
-  // })
+
+  addNewProspecto(){
+    // enviarprospecto,idpublicacion,idmensaje,idDistribuidor,idredsocial
+    const data={ 
+      "enviarprospecto":this.idMensajeLeads,
+      "idpublicacion":this.IdPublicacionLead,
+      "idmensaje":this.idMensajeLeads,
+      "idDistribuidor":this.idDistribuidor,
+      "idredsocial":this.idMensajeLeads,
+    };
+
+    const url = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs';
+    // https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=2838348&idpublicacion=kasdjlf&idmensaje=45455&idDistribuidor=237237&idredsocial=1828
+
+    this.http.post<any>(url, data).subscribe(
+      response => {
+        // Muestra una alerta de éxito y cierra el modal
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'El propecto se agregó correctamente!',
+          confirmButtonText: 'Ok'
+        });
+        this.modalService.dismissAll();
+      },
+      error => {
+        console.log(error);
+        // Muestra una alerta de error
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al agregar el propecto. Por favor, inténtalo más tarde.',
+          confirmButtonText: 'Entendido'
+        });
+      }
+    );
+
+  }  
+  
 }
 
-// }
 

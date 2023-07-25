@@ -134,7 +134,7 @@
                 formControlName="etiquetavalor" 
                 type="text" class="form-control" 
                 [ngClass]="{'is-invalid': submitted && f.etiquetavalor.errors }" required 
-                [(ngModel)]="newMetodo.etiquetavalor">
+                [(ngModel)]="newMetodo.etiquetavalor" placeholder="Etiqueta prueba" >
                 
                 <!-- submitted && f.etiquetavalor.errors?.required -->
                 <div *ngIf="submitted && f.etiquetavalor.errors" class="invalid-feedback">
