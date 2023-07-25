@@ -104,12 +104,12 @@
           </div>
         </li> -->
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" id="light-dark" href="javascript:void(0);" ngbTooltip="Light Mode">
             <i class="ri-sun-line theme-mode-icon layout-mode-dark" (click)="changeMode('dark')"></i>
             <i class="ri-sun-line theme-mode-icon layout-mode-light" (click)="changeMode('light')"></i>
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-item btn-group dropup profile-user-dropdown" ngbDropdown placement="top-left">
           <a class="nav-link dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
@@ -238,7 +238,7 @@
               <ul class="list-unstyled chat-list chat-user-list">
                 <ng-container *ngFor="let group of chat">
                   <div class="p-3 font-weight-bold text-primary">
-                    <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ group.key }} 
+                    <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ group.key }}
                   </div>
                   <!-- <li class="group-name">{{ group.key }}</li> -->
                   <li *ngFor="let user of group.prospects" [ngClass]="{'typing': user.isTyping}"
@@ -266,10 +266,10 @@
                             </span></p>
                           <p class="chat-user-message text-truncate mb-0"
                             *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje">
-                             {{getLastMessage(user.Conversacion)?.texto}} 
+                             {{getLastMessage(user.Conversacion)?.texto}}
                           </p>
 
-                          
+
                         </div>
                         <div class="font-size-11">{{user.time | translate}}</div>
                         <div class="unread-message">
@@ -817,7 +817,7 @@
                       <p class="text-center"> Red Social: {{RedSocial}}</p>
                       <p class="text-center"> Email: {{Email}}</p>
                       <p class="text-center"> IdPublicacion: {{IdPublicacionLead}}</p>
-                      <p class="text-center"> Distribuidor: {{Distribuidor}}</p> 
+                      <p class="text-center"> Distribuidor: {{Distribuidor}}</p>
                       <p class="text-center">Los datos del interesado se enviarán correctamente al distribuidor:
                         {{Distribuidor}} </p> -->
 

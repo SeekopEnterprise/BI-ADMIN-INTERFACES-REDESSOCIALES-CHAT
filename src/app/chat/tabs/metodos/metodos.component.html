@@ -2,16 +2,16 @@
 <div>
     <div class="p-4">
       <div class="user-chat-nav float-end">
-        <div ngbTooltip="Agregar Nueva Red Social">
+        <div ngbTooltip="Agregar Método">
 
           <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
-            data-target="#addMetodos-exampleModal" (click)="openMetodosModal(content)">
-            <i class="ri-chat-new-fill"></i>
-          </button> 
+            data-target="#addMetodos-exampleModal" (click)="openMetodosModal(content)" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, .5);">
+            <i class="ri-chat-new-fill" style="font-size: 30px;"></i>
+          </button>
         </div>
       </div>
       <h4 class="mb-4 title">Métodos</h4>
-  
+
       <ng-template #content let-modal>
         <div class="modal-content">
           <div class="modal-header">
@@ -19,40 +19,40 @@
             <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
             </button>
           </div>
-          <div class="modal-body p-4"> 
+          <div class="modal-body p-4">
 
             <!-- (change)="changeRedSocial($event)" -->
             <!-- [ngClass]="{ 'is-invalid': submitted && getRedSocial.nombreRedSocial.errors }" -->
-            
-            <form [formGroup]="metodoForm" (ngSubmit)="validateForm()"> 
-              
+
+            <form [formGroup]="metodoForm" (ngSubmit)="validateForm()">
+
               <div class="mb-3">
                 <label for="nombreRedSocial">Red social*</label>
-                <select 
+                <select
                 formControlName="nombreRedSocial" required
                  [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors || f.nombreRedSocial.value==='null'}"
                  (change)="changeRedSocial($event)"
-                 class="form-select" 
+                 class="form-select"
                  [(ngModel)]="newMetodo.idred">
-                  <option [value]="null" >Seleccione...</option> 
+                  <option [value]="null" >Seleccione...</option>
                   <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
-                  {{newMetodo.idred?.idred}} 
+                  {{newMetodo.idred?.idred}}
                 </select>
 
-                
+
                 <div *ngIf="submitted && f.nombreRedSocial.errors?.required || f.nombreRedSocial.value==='null'" class="invalid-feedback">
                   Este campo es obligatorio!
                   <!-- <div *ngIf="f.nombreRedSocial.errors.required">Este campo es obligatorio!</div> -->
                 </div>
 
               </div>
-            
-              
+
+
               <div class="mb-3">
                 <label for="tipometodo">Tipo de método*</label>
-                <select 
-                formControlName="tipometodo" 
-                class="form-select" 
+                <select
+                formControlName="tipometodo"
+                class="form-select"
                 [ngClass]="{ 'is-invalid': submitted && f.tipometodo.errors || f.tipometodo.value==='null'}"
                 (change)="changeTipoMetodo($event)"
                 [(ngModel)]="newMetodo.tipometodo">
@@ -65,101 +65,105 @@
 
                 <div *ngIf="submitted && f.tipometodo.errors?.required || f.tipometodo.value==='null'" class="invalid-feedback">
                   El campo es requerido!
-                </div> 
+                </div>
 
-              </div> 
+              </div>
 
-              
+
               <div class="mb-3">
                 <label for="tipoSolicitud">Tipo acción*</label>
-                <select  
+                <select
                 formControlName="tipoSolicitud"
-                class="form-select" 
+                class="form-select"
                 [ngClass]="{ 'is-invalid': submitted && f.tipoSolicitud.errors }"
                 [(ngModel)]="newMetodo.idsolicitud">
                     <option [ngValue]="null" selected>Seleccione...</option>
                     <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.tipoaccion">{{title.nombre}}</option>
-                    {{newMetodo.idsolicitud?.idsolicitud}} 
+                    {{newMetodo.idsolicitud?.idsolicitud}}
                 </select>
                 <div *ngIf="submitted && f.tipoSolicitud.errors?.required" class="invalid-feedback">
                   El campo es requerido!
-                </div> 
-              </div> 
-              
-              
-              <div class="mb-3" >
+                </div>
+              </div>
+
+
+              <div class="mb-3">
                 <label for="rama">Rama*</label>
-                <input  
-                formControlName="rama"
-                class="form-control"  
-                [ngClass]="{'is-invalid': submitted && f.rama.errors }"
-                type="text" placeholder="rama/rama1" 
-                [(ngModel)]="newMetodo.rama" required>
-                 
+                <div class="input-group">
+                  <input
+                    formControlName="rama"
+                    class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f.rama.errors }"
+                    type="text" placeholder="rama/rama1"
+                    [(ngModel)]="newMetodo.rama" required>
+                  <div class="input-group-append">
+                    <span class="input-group-text bg-transparent border-0" ngbTooltip="La rama debe seguir el formato 'rama/rama1'" triggers="click:blur">
+                      <i class="ri-information-line text-danger"></i>
+                    </span>
+                  </div>
+                </div>
                 <div *ngIf="submitted && f.rama.errors" class="invalid-feedback">
-  
                   <div *ngIf="f.rama.errors.required">
                     EL campo es requerido!
                   </div>
                   <div *ngIf="f.rama.errors.maxlength">
-                        Ingresa un valor con una longitud menor a 255 caracteres!
+                    Ingresa un valor con una longitud menor a 255 caracteres!
                   </div>
-                </div> 
+                </div>
+              </div>
 
-              </div> 
 
-              
+
               <div class="mb-3">
                 <label for="resultado">Resultado *</label>
-                <select  
-                formControlName="resultado" 
+                <select
+                formControlName="resultado"
                 class="form-select"
                 [ngClass]="{'is-invalid': submitted && f.resultado.errors}"
                 [(ngModel)]="newMetodo.resultado">
                     <option [ngValue]="null">Seleccione...</option>
                     <option [ngValue]="1">Json</option>
                     <option [ngValue]="2">XML</option>
-                </select> 
-                
+                </select>
+
                 <div *ngIf="submitted && f.resultado.errors?.required" class="invalid-feedback">
-                    El campo es requerido! 
+                    El campo es requerido!
                 </div>
 
               </div>
 
-            
+
               <div class="mb-3">
                 <label for="etiquetavalor">Etiqueta *</label>
-                <input  
-                formControlName="etiquetavalor" 
-                type="text" class="form-control" 
-                [ngClass]="{'is-invalid': submitted && f.etiquetavalor.errors }" required 
-                [(ngModel)]="newMetodo.etiquetavalor" placeholder="Etiqueta prueba" >
-                
-                <!-- submitted && f.etiquetavalor.errors?.required -->
+                <div class="input-group">
+                  <input
+                    formControlName="etiquetavalor"
+                    type="text" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && f.etiquetavalor.errors }" required
+                    [(ngModel)]="newMetodo.etiquetavalor" placeholder="Etiqueta prueba">
+                  <div class="input-group-append">
+                    <span class="input-group-text bg-transparent border-0" ngbTooltip="Ingrese el valor de la etiqueta" triggers="click:blur">
+                      <i class="ri-information-line text-danger"></i>
+                    </span>
+                  </div>
+                </div>
+
                 <div *ngIf="submitted && f.etiquetavalor.errors" class="invalid-feedback">
-                  
                   <div *ngIf="f.etiquetavalor.errors.required">
-                        EL campo es requerido!
+                    EL campo es requerido!
                   </div>
                   <div *ngIf="f.etiquetavalor.errors.maxlength">
-                        Ingresa un valor con una longitud menor a 50 caracteres!
+                    Ingresa un valor con una longitud menor a 50 caracteres!
                   </div>
-
                 </div>
-                
-                <!--
-                <div *ngIf="submitted && f.etiquetavalor.errors?.['maxlength']" class="invalid-feedback">
-                  Ingresa un valor con una longitud menor a 50 caracteres!
-                </div> -->
-                
-              </div>   
+              </div>
+
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
                 <button type="submit" class="btn btn-primary" >Agregar</button>
               </div>
-            </form> 
+            </form>
 
             <!--
             <p>Form value: {{ metodoForm.value | json }}</p>
@@ -169,7 +173,7 @@
         </div>
       </ng-template>
       <!-- End Add contact Modal -->
-  
+
       <div class="search-box chat-search-box">
         <div class="input-group bg-light input-group-lg rounded-3">
           <div class="input-group-prepend">
@@ -184,9 +188,9 @@
       <!-- End search-box -->
     </div>
     <!-- end p-4 -->
-  
 
-    
+
+
         <!-- Start Add contact Modal -->
         <ng-template #content_edit let-modal>
           <div class="modal-content">
@@ -195,33 +199,33 @@
               <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
               </button>
             </div>
-            <div class="modal-body p-4"> 
+            <div class="modal-body p-4">
               <form [formGroup]="metodoEditForm" (ngSubmit)="validateUpdateForm($event)">
                 <div class="mb-3">
                   <label for="nombreRedSocial_edit">Red social*</label>
-                  
+
                   <select
                   [(ngModel)]="editMet.idred"
                   formControlName="nombreRedSocial_edit" class="form-control"
-                  [ngClass]="{ 'is-invalid': submitted && fe.nombreRedSocial_edit.errors }" required> 
+                  [ngClass]="{ 'is-invalid': submitted && fe.nombreRedSocial_edit.errors }" required>
                   <option *ngFor="let option of redesSelect" [ngValue]="option.idred">
                     {{option.nombre}}
-                  </option> 
+                  </option>
                   <!-- [selected]="option.idred===editMet.idred" -->
                       {{editMet.idred?.idred}}
                   </select>
-                  
+
                   <div *ngIf="submitted && fe.nombreRedSocial_edit.errors" class="invalid-feedback">
                     <div *ngIf="fe.nombreRedSocial_edit.errors.required">El campo es obligatorio!</div>
                   </div>
 
-                </div> 
-              
+                </div>
+
                 <div class="mb-3">
                   <label for="tipo_metodo_edit">Tipo de método*</label>
-                  <select id="tipo_metodo_edit" 
-                  formControlName="tipo_metodo_edit" 
-                  class="form-control" 
+                  <select id="tipo_metodo_edit"
+                  formControlName="tipo_metodo_edit"
+                  class="form-control"
                   [(ngModel)]="editMet.tipometodo"
                   [ngClass]="{ 'is-invalid': submitted && fe.tipo_metodo_edit.errors }" required>
                     <!-- <option value="-1" disabled='' selected>Seleccione...</option> -->
@@ -235,34 +239,34 @@
                     <div *ngIf="fe.tipo_metodo_edit.errors.required">El campo es obligatorio!</div>
                   </div>
                 </div>
-                
-                
+
+
                 <div class="mb-3">
                   <label for="tipoSolicitud_edit">Tipo acción*</label>
-                  <select id="tipoSolicitud_edit" 
-                  formControlName="tipoSolicitud_edit" 
-                  class="form-control" 
+                  <select id="tipoSolicitud_edit"
+                  formControlName="tipoSolicitud_edit"
+                  class="form-control"
                   [(ngModel)]="editMet.idsolicitud"
                   [ngClass]="{ 'is-invalid': submitted && fe.tipoSolicitud_edit.errors }" required>
-                  
+
                       <!-- <option [ngValue]="-1" disabled='' selected>Seleccione...</option> -->
                       <option *ngFor="let title of tipoSolicitudSelect" [ngValue]="title.idsolicitud">{{title.nombre}}</option>
-                      {{editMet.idsolicitud?.idsolicitud}} 
+                      {{editMet.idsolicitud?.idsolicitud}}
                   </select>
                   <div *ngIf="submitted && fe.tipoSolicitud_edit.errors" class="invalid-feedback">
                     <div *ngIf="fe.tipoSolicitud_edit.errors.required">El campo es obligatorio!</div>
                   </div>
 
                 </div>
-                
-                
+
+
                 <div class="mb-3">
                   <label for="rama_edit">Rama *</label>
-                  <input id="rama_edit" 
+                  <input id="rama_edit"
                   [ngClass]="{'is-invalid': submitted && fe.rama_edit.errors }"
-                  formControlName="rama_edit" type="text" class="form-control" 
+                  formControlName="rama_edit" type="text" class="form-control"
                   placeholder="rama/rama1" [(ngModel)]="editMet.rama">
-                  
+
                   <div *ngIf="submitted && fe.rama_edit.errors" class="invalid-feedback">
                     <!-- El campo es requerido! -->
                     <div *ngIf="fe.rama_edit.errors.required">
@@ -272,10 +276,10 @@
                           Ingresa un valor con una longitud menor a 255 caracteres!
                     </div>
 
-                  </div> 
+                  </div>
                 </div>
-                
-                
+
+
                 <div class="mb-3">
                   <label for="resultado_edit">Resultado *</label>
                   <select id="resultado_edit" formControlName="resultado_edit" class="form-control" [(ngModel)]="editMet.resultado">
@@ -284,14 +288,14 @@
                       <option value="2">XML</option>
                   </select>
                 </div>
-  
-                
+
+
                 <div class="mb-3">
                   <label for="etiquetavalor_edit">Etiqueta *</label>
-                  <input id="etiquetavalor_edit" 
+                  <input id="etiquetavalor_edit"
                   [ngClass]="{'is-invalid': submitted && fe.etiquetavalor_edit.errors }"
-                  formControlName="etiquetavalor_edit" type="text" 
-                  class="form-control" placeholder="etiqueta prueba" 
+                  formControlName="etiquetavalor_edit" type="text"
+                  class="form-control" placeholder="etiqueta prueba"
                   [(ngModel)]="editMet.etiquetavalor">
 
                   <div *ngIf="submitted && fe.etiquetavalor_edit.errors" class="invalid-feedback">
@@ -301,19 +305,19 @@
                     <div *ngIf="fe.etiquetavalor_edit.errors.maxlength">
                           Ingresa un valor con una longitud menor a 50 caracteres!
                     </div>
-                  </div> 
-                </div>   
-  
+                  </div>
+                </div>
+
                 <div class="modal-footer">
                   <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
                   <button type="submit" class="btn btn-primary" >Guardar</button>
                 </div>
-              </form> 
+              </form>
             </div>
           </div>
         </ng-template>
         <!-- End Add contact Modal -->
-    
+
 
         <!-- Modal Delete Metodos-->
         <ng-template #content_eliminar let-modal>
@@ -323,18 +327,18 @@
               <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
               </button>
             </div>
-            <div class="modal-body p-4"> 
-              
+            <div class="modal-body p-4">
+
                 <div class="mb-3">
                   <label for="nombreRedSocial_edit">Desea eliminar el método?</label>
-                
+
                 </div>
-              
+
                 <div class="modal-footer" >
                   <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
                   <button type="button" class="btn btn-primary" (click)="deleteMetodo($event,{idMetodo})">Eliminar</button>
                 </div>
-              
+
             </div>
           </div>
         </ng-template>
@@ -343,10 +347,10 @@
 
 
     <!-- Start contact lists -->
-    <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar> 
+    <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar>
     <!-- <div *ngFor="let item of MetodosList">
         <div class="p-3 font-weight-bold text-primary">
-          {{item.nombrered}} 
+          {{item.nombrered}}
         </div> --> <!--
         <div class="table-responsive">
         <table class="table table-bordered" style="overflow-x:scroll">
@@ -357,7 +361,7 @@
                     <th>Rama</th>
                     <th>Tipo de método</th>
                     <th>Resultado</th>
-                    <th>Etiqueta</th> 
+                    <th>Etiqueta</th>
 
                 </tr>
             </thead>
@@ -365,20 +369,20 @@
                 <tr *ngFor="let item of MetodosList">
                     <td>{{item.nombrered}}</td>
                     <td>{{item.nombresolicitud}}</td>
-                    <td>{{item.rama}}</td> 
-                    <td>{{item.tipometodo}}</td> 
+                    <td>{{item.rama}}</td>
+                    <td>{{item.tipometodo}}</td>
                     <td>{{item.resultado}}</td>
-                    <td>{{item.etiquetavalor}}</td> 
+                    <td>{{item.etiquetavalor}}</td>
                 </tr>
             </tbody>
-        </table>  
+        </table>
         </div> -->
 
         <ul class="list-unstyled metodos-list">
 
-        
+
           <li>
-            
+
             <div class="d-flex flex-row p-6">
 
               <!--
@@ -386,7 +390,7 @@
                     <thead>
                         <tr>
                             <th>Red social</th>
-                            <th>Solicitud</th> 
+                            <th>Solicitud</th>
                             <th>Tipo de método</th>
 
                         </tr>
@@ -395,8 +399,8 @@
                         <tr *ngFor="let item of MetodosList">
                             <td>{{item.nombrered}}</td>
                             <td>{{item.nombresolicitud}}</td>
-                            <td>{{item.tipometodo}}</td> 
-                            
+                            <td>{{item.tipometodo}}</td>
+
                             <div class="dropdown" ngbDropdown>
                                 <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
                                   aria-haspopup="true" aria-expanded="false">
@@ -409,19 +413,19 @@
                                       class="ri-forbid-line float-end text-muted"></i></a>
                                   <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMetodo($event,item.idmetodo)">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
                                       class="ri-delete-bin-line float-end text-muted"></i></a>
-                                  
+
                                  <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"
                                  data-target="#editMetodos-exampleModal" (click)="openMetodosModalEdit(content_edit,item.idmetodo,
                                  item.idred,item.nombrered,item.tipometodo,item.idsolicitud,item.nombresolicitud,item.tipoaccion,item.rama,item.resultado,item.etiquetavalor)">Editar <i
                                         class="ri-edit-2-fill float-end text-muted"></i></a>
                                 </div>
                               </div>
-                            
+
                         </tr>
                     </tbody>
                 </table> -->
-            
-               <!-- 
+
+               <!--
               <div class="d-flex flex-grow-2 align-items-center" style="width: 200px;">
                 <label class="font-size-14 m-0">{{item.nombrered | translate}}</label>
               </div>
@@ -432,8 +436,8 @@
 
               <div class="d-flex flex-grow-0 align-items-center" style="width: 100px;">
                 <label class="font-size-14 m-0">{{item.tipometodo | translate}}</label>
-              </div> 
-  
+              </div>
+
               <div class="dropdown" ngbDropdown>
                 <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
@@ -451,13 +455,12 @@
 
             </div>
           </li>
-        </ul> 
+        </ul>
         <!--
       </div> -->
       <!-- end contact list A -->
-  
+
     </perfect-scrollbar>
     <!-- end contact lists -->
   </div>
   <!-- Start Contact content -->
-  

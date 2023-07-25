@@ -76,39 +76,51 @@ export class RedesSocialesComponent implements OnInit {
 
 
   addNewSocial() {
-    this.http.post<RedSocial>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales', this.newRedSocial).subscribe(
-      response => {
-        // Limpia el formulario y recarga la lista de redes sociales
-        this.newRedSocial = {
-          nombre: '',
-          endpointapi: '',
-          apikey: '',
-          secretkey: '',
-          urllogotipo: ''
-        };
-        this.loadRedesSociales();
+    // Valida que newRedSocial no sea nulo y que no esté vacío
+    if (this.newRedSocial && Object.values(this.newRedSocial).every(x => x !== null && x !== '')) {
+      this.http.post<RedSocial>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales', this.newRedSocial).subscribe(
+        response => {
+          // Limpia el formulario y recarga la lista de redes sociales
+          this.newRedSocial = {
+            nombre: '',
+            endpointapi: '',
+            apikey: '',
+            secretkey: '',
+            urllogotipo: ''
+          };
+          this.loadRedesSociales();
 
-        // Muestra una alerta de éxito y cierra el modal
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'La red social ha sido agregada correctamente.',
-          confirmButtonText: 'Ok'
-        });
-        this.modalService.dismissAll();
-      },
-      error => {
-        console.log(error);
-        // Muestra una alerta de error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
-          confirmButtonText: 'Entendido'
-        });
-      }
-    );
+          // Muestra una alerta de éxito y cierra el modal
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'La red social ha sido agregada correctamente.',
+            confirmButtonText: 'Ok'
+          });
+          this.modalService.dismissAll();
+        },
+        error => {
+          console.log(error);
+          // Muestra una alerta de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al agregar la red social. Por favor, inténtalo más tarde.',
+            confirmButtonText: 'Entendido'
+          });
+        }
+      );
+    } else {
+      // Muestra una alerta indicando que el formulario no puede estar vacío
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'El formulario no puede estar vacío.',
+        confirmButtonText: 'Entendido'
+      });
+    }
   }
+
 
 
   loadRedesSociales(): void {
@@ -122,5 +134,19 @@ export class RedesSocialesComponent implements OnInit {
       }
     );
   }
+
+  resetForm() {
+    this.newRedSocial = {
+      idred: null,
+      nombre: '',
+      endpointapi: '',
+      apikey: '',
+      secretkey: '',
+      urllogotipo: '',
+      idgrupo: null,
+      nombredistribuidor: ''
+    };
+  }
+
 
 }
