@@ -23,36 +23,121 @@
           </button>
         </div>
         <div class="modal-body p-4">
-          <form #socialForm="ngForm">
+          <form [formGroup]="redessocialesForm" (ngSubmit)="validateForm()"> <!--  #socialForm="ngForm" -->
             <div class="mb-3">
               <label class="form-label" for="nombreRedSocial">Nombre Red Social *</label>
-              <input type="text" class="form-control" id="nombreRedSocial" [(ngModel)]="newRedSocial.nombre"
-                name="nombre" placeholder="Facebook">
-            </div>
+              <input 
+              formControlName="nombreRedSocial"
+              [ngClass]="{'is-invalid': submitted && f.nombreRedSocial.errors }" type="text" 
+              class="form-control" [(ngModel)]="newRedSocial.nombre"
+              placeholder="Facebook">
+
+              <div *ngIf="submitted && f.nombreRedSocial.errors" class="invalid-feedback">
+                  <div *ngIf="f.nombreRedSocial.errors.required">
+                    EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.nombreRedSocial.errors.maxlength">
+                    Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                  </div>
+
+              </div>
+            </div> 
             <div class="mb-3">
               <label class="form-label" for="endpointApi">EndpointApi *</label>
-              <input type="text" class="form-control" id="endpointApi" [(ngModel)]="newRedSocial.endpointapi"
+              <input 
+              formControlName="endpointApi"
+              [ngClass]="{'is-invalid': submitted && f.endpointApi.errors }"
+              class="form-control" [(ngModel)]="newRedSocial.endpointapi"
                 name="endpointapi" placeholder="https://sicopweb.com">
+
+              <div *ngIf="submitted && f.endpointApi.errors" class="invalid-feedback">
+                  <div *ngIf="f.endpointApi.errors.required">
+                    EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.endpointApi.errors.maxlength">
+                    Ingresa un valor con una longitud menor o igual a 400 carácteres!
+                  </div>
+                  <div *ngIf="f.endpointApi.errors?.pattern">
+                    EL valor es invalido!
+                  </div>
+              </div>
             </div>
+
+            
             <div class="mb-3">
               <label class="form-label" for="apiKey">ApiKey *</label>
-              <input type="text" class="form-control" id="apiKey" [(ngModel)]="newRedSocial.apikey" name="apikey"
-                placeholder="abcA123ABC-.cdeCDE123">
+              <input 
+              formControlName="apiKey"
+              [ngClass]="{'is-invalid': submitted && f.apiKey.errors }"
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="newRedSocial.apikey" name="apikey"
+              placeholder="abcA123ABC-.cdeCDE123">
+
+                <div *ngIf="submitted && f.apiKey.errors" class="invalid-feedback">
+                  <div *ngIf="f.apiKey.errors.required">
+                    EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.apiKey.errors.maxlength">
+                    Ingresa un valor con una longitud menor o igual a 400 carácteres!
+                  </div> 
+                  <div *ngIf="f.apiKey.errors?.pattern">
+                    EL valor es invalido!
+                  </div> 
+              </div>
             </div>
+
+            
             <div class="mb-3">
               <label class="form-label" for="secretKey">Secret Key *</label>
-              <input type="text" class="form-control" id="secretKey" [(ngModel)]="newRedSocial.secretkey"
+              <input 
+              formControlName="secretKey"
+              [ngClass]="{'is-invalid': submitted && f.secretKey.errors }"
+              type="text" 
+              class="form-control"
+              [(ngModel)]="newRedSocial.secretkey"
                 name="secretkey" placeholder="abcA123ABC-.cdeCDE123">
+
+              <div *ngIf="submitted && f.secretKey.errors" class="invalid-feedback">
+                  <div *ngIf="f.secretKey.errors.required">
+                    EL campo es requerido!
+                  </div>
+                  <div *ngIf="f.secretKey.errors.maxlength">
+                    Ingresa un valor con una longitud menor o igual a 100 carácteres!
+                  </div> 
+                  <div *ngIf="f.secretKey.errors?.pattern">
+                    EL valor es invalido!
+                  </div> 
+              </div>
             </div>
+
+            
             <div class="mb-3">
               <label class="form-label" for="urlLogotipo">Url Logotipo (opcional)</label>
-              <input type="text" class="form-control" id="urlLogotipo" [(ngModel)]="newRedSocial.urllogotipo"
-                name="urllogotipo" placeholder="https://sicopweb.com">
-            </div>
+              <input
+              formControlName="urlLogotipo"
+              [ngClass]="{'is-invalid': submitted && f.urlLogotipo.errors }"
+              type="text" 
+              class="form-control"
+              [(ngModel)]="newRedSocial.urllogotipo"
+              name="urllogotipo" placeholder="https://sicopweb.com">
+
+                <div *ngIf="submitted && f.urlLogotipo.errors" class="invalid-feedback">
+                  
+                  <div *ngIf="f.urlLogotipo.errors.maxlength">
+                    Ingresa un valor con una longitud menor o igual a 100 carácteres!
+                  </div> 
+                  <div *ngIf="f.urlLogotipo.errors?.pattern">
+                    EL valor es invalido!
+                  </div> 
+              </div>
+
+            </div> 
+
             <div class="modal-footer">
               <button type="button" class="btn btn-link" (click)="resetForm(); modal.dismiss('Cross click')">Cancelar</button>
               <!-- <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button> -->
-              <button type="button" class="btn btn-primary" (click)="addNewSocial()">Agregar</button>
+              <button type="submit" class="btn btn-primary" >Agregar</button> <!-- (click)="addNewSocial()" -->
             </div>
           </form>
         </div>

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RedSocial } from './redsocial.model';
 import Swal from 'sweetalert2';
 import { GlobalUserService } from '../../../services/global-user.service';
-
+import {FormGroup, FormControl, Validators,FormBuilder} from '@angular/forms';
 @Component({
   selector: 'app-redessociales',
   templateUrl: './redessociales.component.html',
@@ -14,7 +14,7 @@ import { GlobalUserService } from '../../../services/global-user.service';
 export class RedesSocialesComponent implements OnInit {
   redSocial: RedSocial[];
   redesSocialesList: any;
-
+  submitted= false;
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
 
@@ -27,7 +27,31 @@ export class RedesSocialesComponent implements OnInit {
     urllogotipo: ''
   };
 
-  constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, private http: HttpClient) { }
+  redessocialesForm: FormGroup = new FormGroup({
+    nombreRedSocial: new FormControl(''),
+    endpointApi: new FormControl(''),
+    apiKey: new FormControl(''),
+    secretKey: new FormControl(''),
+    urlLogotipo: new FormControl('')
+  });
+
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+    }),
+  };
+
+  constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, 
+    private http: HttpClient, private fb: FormBuilder) {
+
+    this.redessocialesForm= this.fb.group({
+      nombreRedSocial: ['', [Validators.required,Validators.maxLength(20)]],
+      endpointApi: ['', [Validators.required,Validators.maxLength(400),Validators.pattern(/(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/)]], 
+      apiKey: ['', [Validators.required,Validators.maxLength(100),Validators.pattern(/^[a-zA-Z0-9]{1,}[\w.-]{0,}$/)]],
+      secretKey: ['', [Validators.required,Validators.maxLength(100),Validators.pattern(/^[a-zA-Z]{1,}[\w.-]{0,}$/)]],
+      urlLogotipo: ['', [Validators.maxLength(400),Validators.pattern(/(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/)]],
+    });
+   }
 
   ngOnInit(): void {
 
@@ -74,10 +98,29 @@ export class RedesSocialesComponent implements OnInit {
     });
   }
 
+  get f()  {
+    return this.redessocialesForm.controls;
+  }
+
+  validateForm(): void{
+    this.submitted = true;
+    const var_inv= document.getElementsByClassName('ng-invalid');
+
+    if (this.redessocialesForm.valid) {
+
+      this.submitted = true;
+      // console.log("datos validos: "+this.redessocialesForm.value);
+      this.addNewSocial();
+      // return true;
+		} else {
+      return console.log(this.redessocialesForm.value);
+		}
+
+  }
 
   addNewSocial() {
     // Valida que newRedSocial no sea nulo y que no esté vacío
-    if (this.newRedSocial && Object.values(this.newRedSocial).every(x => x !== null && x !== '')) {
+    // if (this.newRedSocial && Object.values(this.newRedSocial).every(x => x !== null && x !== '')) {
       this.http.post<RedSocial>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales', this.newRedSocial).subscribe(
         response => {
           // Limpia el formulario y recarga la lista de redes sociales
@@ -110,7 +153,7 @@ export class RedesSocialesComponent implements OnInit {
           });
         }
       );
-    } else {
+    /* } else {
       // Muestra una alerta indicando que el formulario no puede estar vacío
       Swal.fire({
         icon: 'warning',
@@ -118,7 +161,7 @@ export class RedesSocialesComponent implements OnInit {
         text: 'El formulario no puede estar vacío.',
         confirmButtonText: 'Entendido'
       });
-    }
+     } */
   }
 
 
