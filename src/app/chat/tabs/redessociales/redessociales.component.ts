@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, ViewChild,ElementRef } from '@angular/core';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RedSocial } from './redsocial.model';
 import Swal from 'sweetalert2';
 import { GlobalUserService } from '../../../services/global-user.service';
 import {FormGroup, FormControl, Validators,FormBuilder} from '@angular/forms';
+import { find } from 'rxjs';
 @Component({
   selector: 'app-redessociales',
   templateUrl: './redessociales.component.html',
@@ -17,6 +18,7 @@ export class RedesSocialesComponent implements OnInit {
   submitted= false;
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
+  @ViewChild('content_edit') modalEditRef: ElementRef<any>;
 
   // Nueva red social a agregar
   newRedSocial: Partial<RedSocial> = {
@@ -27,6 +29,15 @@ export class RedesSocialesComponent implements OnInit {
     urllogotipo: ''
   };
 
+  editRedSocial: Partial<RedSocial> = {
+    nombre: '',
+    endpointapi: '',
+    apikey: '',
+    secretkey: '',
+    urllogotipo: ''
+  };
+
+  idRedSocial;
   redessocialesForm: FormGroup = new FormGroup({
     nombreRedSocial: new FormControl(''),
     endpointApi: new FormControl(''),
@@ -35,11 +46,24 @@ export class RedesSocialesComponent implements OnInit {
     urlLogotipo: new FormControl('')
   });
 
+  redessocialesEditForm: FormGroup = new FormGroup({
+    nombreRedSocial: new FormControl(''),
+    endpointApi: new FormControl(''),
+    apiKey: new FormControl(''),
+    secretKey: new FormControl(''),
+    urlLogotipo: new FormControl('')
+  });
+
+  IdRedSocial: Partial<RedSocial> = {
+    idred:0
+  };
+
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
     }),
   };
+  closeResult: string;
 
   constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, 
     private http: HttpClient, private fb: FormBuilder) {
@@ -51,6 +75,15 @@ export class RedesSocialesComponent implements OnInit {
       secretKey: ['', [Validators.required,Validators.maxLength(100),Validators.pattern(/^[a-zA-Z]{1,}[\w.-]{0,}$/)]],
       urlLogotipo: ['', [Validators.maxLength(400),Validators.pattern(/(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/)]],
     });
+
+    this.redessocialesEditForm= this.fb.group({
+      nombreRedSocial: ['', [Validators.required,Validators.maxLength(20)]],
+      endpointApi: ['', [Validators.required,Validators.maxLength(400),Validators.pattern(/(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/)]], 
+      apiKey: ['', [Validators.required,Validators.maxLength(100),Validators.pattern(/^[a-zA-Z0-9]{1,}[\w.-]{0,}$/)]],
+      secretKey: ['', [Validators.required,Validators.maxLength(100),Validators.pattern(/^[a-zA-Z]{1,}[\w.-]{0,}$/)]],
+      urlLogotipo: ['', [Validators.maxLength(400),Validators.pattern(/(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/)]],
+    });
+
    }
 
   ngOnInit(): void {
@@ -102,6 +135,10 @@ export class RedesSocialesComponent implements OnInit {
     return this.redessocialesForm.controls;
   }
 
+  get fe()  {
+    return this.redessocialesEditForm.controls;
+  }
+
   validateForm(): void{
     this.submitted = true;
     const var_inv= document.getElementsByClassName('ng-invalid');
@@ -116,6 +153,20 @@ export class RedesSocialesComponent implements OnInit {
       return console.log(this.redessocialesForm.value);
 		}
 
+  }
+
+  validateUpdateForm(): void{
+    this.submitted = true;
+    // console.log("form: "+this.metodoEditForm.valid);
+    if (this.redessocialesEditForm.valid) {
+      // alert("ok valido! ");
+      this.submitted = true;
+      this.updateRedSocial();
+
+		} else {
+      return console.log(this.redessocialesEditForm.value);
+		}
+    
   }
 
   addNewSocial() {
@@ -171,6 +222,7 @@ export class RedesSocialesComponent implements OnInit {
       redesSociales => {
         const sorted = redesSociales.sort((a, b) => a.nombre > b.nombre ? 1 : -1);
         this.redesSocialesList = sorted;
+        console.log("###### "+JSON.stringify(redesSociales));
       },
       error => {
         console.log(error);
@@ -191,5 +243,77 @@ export class RedesSocialesComponent implements OnInit {
     };
   }
 
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC key';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  openRedSocialEditModal(content,id: any,nombre: any,endpointApi: any, apikey: any,secretKey: any,urlLogotipo: any){
+    this.IdRedSocial=id;
+    this.editRedSocial = {
+      nombre: nombre,
+      endpointapi: endpointApi,
+      apikey: apikey,
+      secretkey: secretKey,
+      urllogotipo: urlLogotipo
+    };
+
+    // console.log("datos a editar: "+JSON.stringify(this.editRedSocial));
+
+    this.modalService.open(this.modalEditRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+			(result) => {
+				this.closeResult = `Closed with: ${result}`;
+			},
+			(reason) => {
+				this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+			},
+		);
+    
+  }
+
+  updateRedSocial(){
+    
+    const data={
+      nombre: this.editRedSocial.nombre,
+      endpointapi: this.editRedSocial.endpointapi,
+      apikey: this.editRedSocial.apikey,
+      secretkey: this.editRedSocial.secretkey,
+      urllogotipo: this.editRedSocial.urllogotipo
+    };
+    // console.log("data: "+JSON.stringify(data));
+    
+    const url = 'https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/' + this.IdRedSocial + '.json';
+    this.http.put(url, data)
+    .subscribe(
+      () => {
+
+        this.loadRedesSociales();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Se actualizó correctamente!',
+          confirmButtonText: 'Ok'
+        });
+
+        this.modalService.dismissAll();
+      },
+      error => {
+        console.log(error);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error en la actualización. Por favor, inténtalo más tarde.',
+          confirmButtonText: 'Entendido'
+        });
+      }
+      );
+
+  }
 
 }
