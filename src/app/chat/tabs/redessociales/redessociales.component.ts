@@ -19,7 +19,7 @@ export class RedesSocialesComponent implements OnInit {
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
   @ViewChild('content_edit') modalEditRef: ElementRef<any>;
-
+  @ViewChild('content_eliminar') modalRef: ElementRef<any>;
   // Nueva red social a agregar
   newRedSocial: Partial<RedSocial> = {
     nombre: '',
@@ -253,6 +253,21 @@ export class RedesSocialesComponent implements OnInit {
     }
   }
 
+  openModalDelete(content_eliminar,id: any){
+    // alert("Okkk"+id);
+    this.IdRedSocial=id;
+    this.modalService.open(this.modalRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+			(result) => {
+				// this.closeResult = `Closed with: ${result}`;
+        const dismissReason = this.getDismissReason(result);
+			},
+			(reason) => {
+				// this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        const dismissReason = this.getDismissReason(reason);
+			},
+		);
+  }
+
   openRedSocialEditModal(content,id: any,nombre: any,endpointApi: any, apikey: any,secretKey: any,urlLogotipo: any){
     this.IdRedSocial=id;
     this.editRedSocial = {
@@ -313,6 +328,31 @@ export class RedesSocialesComponent implements OnInit {
         });
       }
       );
+
+  }
+
+  deleteRedSocial(event: any){
+    
+    this.http.delete('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/'+this.IdRedSocial)
+    .subscribe({
+        next: data => {
+
+            this.loadRedesSociales();
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Se eliminó correctamente!',
+              confirmButtonText: 'Ok'
+            });
+            this.modalService.dismissAll();
+            // this.modalRef.nativeElement.click();
+        },
+        error: error => {
+            // this.errorMessage = error.message;
+            console.log('Hubo un error!', error);
+        }
+    }); 
 
   }
 

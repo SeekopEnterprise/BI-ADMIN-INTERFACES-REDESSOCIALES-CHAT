@@ -331,8 +331,8 @@
                     class="ri-share-line float-end text-muted"></i></a>
                 <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
                     class="ri-forbid-line float-end text-muted"></i></a>
-                <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
-                    class="ri-delete-bin-line float-end text-muted"></i></a>
+                <a class="dropdown-item" (click)="openModalDelete(content_eliminar,redSocial.idred);" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                    class="ri-delete-bin-line float-end text-muted" data-target="#eliminarRedSocial-exampleModalLabel"></i></a>
                 <a class="dropdown-item" (click)="openRedSocialEditModal(content_edit,
                                                         redSocial.idred,
                                                         redSocial.nombre,
@@ -350,6 +350,30 @@
     </ul>
   </perfect-scrollbar>
 
+  <!-- Modal Delete Metodos-->
+  <ng-template #content_eliminar let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title font-size-16" id="eliminarRedSocial-exampleModalLabel">Eliminar Red Social</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+        </button>
+      </div>
+      <div class="modal-body p-4">
+
+          <div class="mb-3">
+            <label for="nombreRedSocial_edit">Desea eliminar la Red Social?</label>
+
+          </div>
+
+          <div class="modal-footer" >
+            <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+            <button type="button" class="btn btn-primary" (click)="deleteRedSocial($event)">Eliminar</button>
+          </div>
+
+      </div>
+    </div>
+  </ng-template>
+  <!-- Fin modal delete -->
 
 
 
