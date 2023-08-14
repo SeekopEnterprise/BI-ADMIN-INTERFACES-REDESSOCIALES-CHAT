@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient } from '@angular/common/http';
 import { RedesUsuarios } from './redesusuarios.model';
 import { RedSocial } from '../redessociales/redsocial.model';
@@ -16,12 +16,17 @@ export class RedessocialesusuariosComponent implements OnInit {
 
   @ViewChild('idred') idred!: ElementRef;
   @ViewChild('nombrepagina', { static: true }) nombrepaginaInput: ElementRef<HTMLInputElement>;
+  @ViewChild('content_edit') modalEditRef: ElementRef<any>;
 
   public isButtonDisabled: boolean = true;
   public isButtonSaveDisabled: boolean = true;
+  public isButtonDisabledEdit: boolean = true;
+  public isButtonSaveDisabledEdit: boolean = true;
+
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
   redesusuariosForm: FormGroup;
+  redesusuariosEditForm: FormGroup;
 
   /*
   redesusuariosForm = new FormGroup({
@@ -29,6 +34,7 @@ export class RedessocialesusuariosComponent implements OnInit {
     iddistribuidor: new FormControl({disabled: true})
   });*/
 
+  idredusuario:any;
   redesSelect: any;
   distribuidoresSelect: any;
   usuariosRedesSelect: any;
@@ -44,8 +50,19 @@ export class RedessocialesusuariosComponent implements OnInit {
     fechavencimimiento: new Date("2000-01-01")
   };
 
-  modal: any;
+  newRedesUsuariosEdit: Partial<RedesUsuarios> = {
+    idred: '',
+    iddistribuidor: '',
+    idcliente: '',
+    identificadorplataforma: '-',
+    nombrepagina: '',
+    token: '',
+    fechacreacion: new Date("2000-01-01"),
+    fechavencimimiento: new Date("2000-01-01")
+  };
 
+  modal: any;
+  closeResult: string;
   constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, private http: HttpClient,
     private fb: FormBuilder) {
     /*
@@ -128,6 +145,12 @@ export class RedessocialesusuariosComponent implements OnInit {
       nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
+    this.redesusuariosEditForm = this.fb.group({
+      idred: ['', Validators.required],
+      iddistribuidor: ['', Validators.required],
+      idcliente: ['', [Validators.required, Validators.pattern('[A-Za-z0-9\s]*')]],
+      nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
+    });
 
 
   }
@@ -150,6 +173,29 @@ export class RedessocialesusuariosComponent implements OnInit {
     });
   }
 
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC key';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  openRedSocialUsuariosEditModal(content_edit,idred,nombre,idredusuario,idcliente,nombrepagina){
+    this.idredusuario=idredusuario;
+    // alert(idredusuario);
+    this.modalService.open(this.modalEditRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+      (result) => {
+        this.closeResult = `Closed with: ${result}`;
+      },
+      (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      },
+    );
+
+  }
 
   openUsuarioRedSocialModal(content) {
     this.modal = this.modalService.open(content, {
@@ -173,9 +219,22 @@ export class RedessocialesusuariosComponent implements OnInit {
     // return this.redesusuariosForm.get('nombreRedSocial');
   }
 
+  changeRedSocialEdit(e) {
+
+    this.getRedSocialEdit.setValue(e.target.value, {
+      onlySelf: true
+    })
+    // return this.redesusuariosForm.get('nombreRedSocial');
+  }
+
   get getRedSocial() {
     // alert("red social");
     return this.redesusuariosForm.get('nombreRedSocial');
+  }
+
+  get getRedSocialEdit() {
+    // alert("red social");
+    return this.redesusuariosEditForm.get('nombreRedSocial');
   }
 
   get f() {
@@ -199,6 +258,19 @@ export class RedessocialesusuariosComponent implements OnInit {
     console.log(this.redesusuariosForm.value);
   }
 
+  validateFormEdit() {
+    this.submitted = true;
+
+    if (this.redesusuariosEditForm.invalid) {
+      return;
+    }
+    else {
+      // this.isButtonDisabled = false;
+
+    }
+    // console.log(this.redesusuariosForm.value);
+  }
+
   changeDistribuidor(event: KeyboardEvent) {
     this.submitted = true;
 
@@ -213,6 +285,20 @@ export class RedessocialesusuariosComponent implements OnInit {
     }
   }
 
+  changeDistribuidorEdit(event: KeyboardEvent) {
+    this.submitted = true;
+
+    if (this.redesusuariosEditForm.invalid) {
+      this.isButtonDisabledEdit = true;
+      return;
+    }
+    else {
+
+      this.isButtonDisabledEdit = false;
+
+    }
+  }
+
   selectRedSocial(event: KeyboardEvent) {
     this.submitted = true;
 
@@ -223,8 +309,19 @@ export class RedessocialesusuariosComponent implements OnInit {
     else {
       // alert("prueba");
       this.isButtonDisabled = false;
+    }
+  }
 
+  selectRedSocialEdit(event: KeyboardEvent) {
+    this.submitted = true;
 
+    if (this.redesusuariosEditForm.invalid) {
+      this.isButtonDisabledEdit = true;
+      return;
+    }
+    else {
+      // alert("prueba");
+      this.isButtonDisabledEdit = false;
     }
   }
 
@@ -239,6 +336,22 @@ export class RedessocialesusuariosComponent implements OnInit {
     else {
       // alert("prueba");
       this.isButtonDisabled = false;
+
+    }
+    // console.log(this.redesusuariosForm.value);
+  }
+
+  onKeyUpEdit(event: KeyboardEvent) {
+
+    this.submitted = true;
+
+    if (this.redesusuariosEditForm.invalid) {
+      this.isButtonDisabledEdit = true;
+      return;
+    }
+    else {
+      // alert("prueba");
+      this.isButtonDisabledEdit = false;
 
     }
     // console.log(this.redesusuariosForm.value);
@@ -263,6 +376,30 @@ export class RedessocialesusuariosComponent implements OnInit {
     }
   }
 
+  asociarCuenta_EditarUsuario() { 
+    // Oye Gil, para editar un usuario de red social es el mismo endpoint ?
+    const datos = this.redesusuariosEditForm.value;
+    console.log(datos);
+    
+    if (this.redesusuariosEditForm.valid) {
+      const datos = this.redesusuariosEditForm.value;
+      // this.http.post('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios', datos).subscribe(
+      this.http.put('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios/redusuario/'+this.idredusuario, datos).subscribe(
+      response => {
+          console.log(response);
+          // this.modal.close('Cross click');
+          this.modalService.dismissAll();
+          this.loadRedesSocialesUsuarios();
+          const iddistribuidor = this.redesusuariosEditForm.get('iddistribuidor').value;
+          const newWindow = window.open(`http://auth.mercadolibre.com.mx/authorization?response_type=code&client_id=7024360621079096&redirect_uri=https://06qe3dt50i.execute-api.us-west-1.amazonaws.com/dev&state=${iddistribuidor}`);
+          window.focus(); // Trae el foco de nuevo a la ventana principal
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    } 
+  }
 
   loadRedesSociales() {
     this.http.get<RedSocial[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redessociales/').subscribe(
@@ -422,8 +559,81 @@ export class RedessocialesusuariosComponent implements OnInit {
         });
       }
     }
-
     // console.log("abc: "+response);
+  }
+
+  testConexionEdit() {
+    // alert("ok test");
+
+    // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
+    // console.log("ok: "+nombrepagina.value);
+
+
+    testConnection();
+    // const FetchButton = document.getElementById("nombrepagina") as HTMLInputElement;
+    // FetchButton.disabled=true;
+    const response = false;
+
+    async function testConnection() {
+
+      // const val=(document.getElementById('nombrepagina') as HTMLInputElement).disabled = false;
+      // const nombrepagina = document.getElementById('nombrepagina') as HTMLInputElement;
+
+
+      const token = 'APP_UR4158433912938780-041117-';
+      const url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+      const button = document.getElementById('testConnectionButtonEdit');
+      const nombrepagina = document.getElementById("nombrepaginaedit");
+      const idred = document.getElementById("idrededit");
+      const iddistribuidor = document.getElementById("iddistribuidoredit");
+      const idcliente = document.getElementById("idclienteedit");
+
+      const btnGuardarUsuario = document.getElementById("btnEditarUsuario");
+
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.statusCode === 200) {
+
+          nombrepagina?.setAttribute('disabled', 'true');
+          idred?.setAttribute('disabled', 'true');
+          iddistribuidor?.setAttribute('disabled', 'true');
+          idcliente?.setAttribute('disabled', 'true');
+          btnGuardarUsuario?.removeAttribute('disabled');
+
+
+          button.classList.remove('btn-danger');
+          button.classList.add('btn-primary');
+          Swal.fire({
+            icon: 'success',
+            title: 'Conexión exitosa',
+            text: 'La conexión fue correcta.',
+          });
+
+        } else {
+          
+
+          button.classList.remove('btn-primary');
+          button.classList.add('btn-danger');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error en la conexión',
+            text: 'Conexión errónea.',
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-danger');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en la conexión',
+          text: 'Conexión errónea.',
+        });
+      }
+    }
   }
 
 }

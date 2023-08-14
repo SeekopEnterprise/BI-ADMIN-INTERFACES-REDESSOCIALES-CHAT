@@ -114,16 +114,85 @@
 
 
 
-        <!-- Start Add contact Modal -->
+        <!-- Start Edit contact Modal -->
         <ng-template #content_edit let-modal>
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title font-size-16" id="editMetodos-exampleModalLabel">Editar Método</h5>
+              <h5 class="modal-title font-size-16" id="editRedSocialUsuarios-exampleModalLabel">Editar Usuarios Redes Sociales</h5>
               <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
               </button>
             </div>
             <div class="modal-body p-4">
-              <form #redesusuariosEditForm="ngForm" [formGroup]="redesusuariosEditForm">
+              <form [formGroup]="redesusuariosEditForm" (ngSubmit)="validateFormEdit()"> <!-- #redesusuariosEditForm="ngForm" -->
+                   
+              <div class="mb-3">
+                <label for="nombreRedSocial">Red social*</label>
+                <select formControlName="idred" id="idrededit" (change)="selectRedSocialEdit($event)"
+                class="form-select" required>
+                  <option [value]="''" selected>Seleccione...</option>
+                  <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                </select>
+                <div *ngIf="redesusuariosEditForm.controls['idred'].invalid && (redesusuariosEditForm.controls['idred'].dirty || redesusuariosEditForm.controls['idred'].touched)"
+                     class="text-danger">
+                  Red social es requerido.
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="usuario">Distribuidor*</label>
+                <select formControlName="iddistribuidor" id="iddistribuidoredit" (change)="changeDistribuidorEdit($event)"
+                class="form-select" required>
+                  <option [value]="''">Seleccione...</option>
+                  <option *ngFor="let listdistribuidores of distribuidoresSelect" [value]="listdistribuidores.iddistribuidor">{{listdistribuidores.nombredistribuidor}}</option>
+                </select>
+                <div *ngIf="redesusuariosEditForm.controls['iddistribuidor'].invalid && (redesusuariosEditForm.controls['iddistribuidor'].dirty || redesusuariosEditForm.controls['iddistribuidor'].touched)"
+                     class="text-danger">
+                  Distribuidor es requerido.
+                </div>
+              </div>
+
+
+
+
+              <div class="mb-3">
+                <label for="noCliente">No. de Cliente/Usuario*</label>
+                <input (keyup)="onKeyUpEdit($event)" formControlName="idcliente" type="text"
+                class="form-control" id="idclienteedit"
+                placeholder="Ejemplo: Cliente123" required pattern="[A-Za-z0-9\s]*">
+                <div *ngIf="redesusuariosEditForm.controls['idcliente'].invalid && (redesusuariosEditForm.controls['idcliente'].dirty || redesusuariosEditForm.controls['idcliente'].touched)"
+                     class="text-danger">
+                  No. de Cliente/Usuario es requerido y no debe contener caracteres extraños.
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="pagina">Pagina (Nombre)*</label>
+                <input (keyup)="onKeyUpEdit($event)" id="nombrepaginaedit" formControlName="nombrepagina" type="text"
+                class="form-control"
+                placeholder="Ejemplo: www.mipagina.com" required pattern="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$">
+                <div *ngIf="redesusuariosEditForm.controls['nombrepagina'].invalid && (redesusuariosEditForm.controls['nombrepagina'].dirty || redesusuariosEditForm.controls['nombrepagina'].touched)"
+                     class="text-danger">
+                  Pagina es requerido y debe ser una URL válida.
+                </div>
+              </div> 
+
+              <div class="modal-footer">
+                
+                <div class="row" id="rowmodalfooter_edit">
+                    <div class="col-lg-3">
+                      <button type="button" id="testConnectionButtonEdit"
+                      (click)="testConexionEdit()" class="btn btn-primary btn_redesusuarios"
+                      [disabled]="isButtonDisabledEdit">Probar conexión</button>
+                      <small id="connectionMessageEdit" class="form-text"></small>
+                      
+                    </div>
+                    <div class="col-lg-9">
+                      <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                      <button type="submit" id="btnEditarUsuario" class="btn btn-primary" (click)="asociarCuenta_EditarUsuario()" [disabled]="isButtonSaveDisabledEdit">Guardar</button>
+                    </div>
+                </div> 
+
+              </div>
                 <!--
                 <div class="mb-3">
                   <label for="nombreRedSocial_edit">Red social*</label>
@@ -201,7 +270,7 @@
           <li *ngFor="let usuario of grupo.usuarios">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h5 class="font-size-14 m-0">{{usuario.nombredistribuidor}}</h5>
+                <h5 class="font-size-14 m-0">{{usuario.nombredistribuidor}} </h5>
               </div>
 
 
@@ -214,9 +283,17 @@
                   <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
                       class="ri-share-line float-end text-muted"></i></a>
                   <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
-                      class="ri-forbid-line float-end text-muted"></i></a>
-                  <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
-                      class="ri-delete-bin-line float-end text-muted"></i></a>
+                      class="ri-forbid-line float-end text-muted"></i></a> <!--
+                  <a class="dropdown-item" (click)="openRedSocialUsuariosDelete
+                  Modal(content_delete,usuario.idredusuario)" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                      class="ri-delete-bin-line float-end text-muted"></i></a> -->
+                  <a class="dropdown-item" (click)="openRedSocialUsuariosEditModal(content_edit,
+                      usuario.idred, 
+                      usuario.nombre,
+                      usuario.idredusuario,
+                      usuario.idcliente,
+                      usuario.nombrepagina);" href="javascript:void(0);">Editar <i
+                          class="ri-edit-2-fill float-end text-muted"></i></a>  
                 </div>
               </div>
 
