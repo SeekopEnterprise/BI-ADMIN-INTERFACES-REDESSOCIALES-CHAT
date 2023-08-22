@@ -51,7 +51,7 @@
 
 
 
-
+              <!--
               <div class="mb-3">
                 <label for="noCliente">No. de Cliente/Usuario*</label>
                 <input (keyup)="onKeyUp($event)" formControlName="idcliente" type="text"
@@ -72,7 +72,7 @@
                      class="text-danger">
                   Pagina es requerido y debe ser una URL válida.
                 </div>
-              </div>
+              </div> -->
 
               <div class="modal-footer">
 
@@ -152,28 +152,35 @@
               </div>
 
 
-
-
+              
+              <!-- value="usuario.idcliente" [(ngValue)]="usuario.idcliente" newRedesUsuariosEdit.idcliente -->
               <div class="mb-3">
                 <label for="noCliente">No. de Cliente/Usuario*</label>
+                <input type="text" readonly formControlName="idcliente"
+                class="form-control" id="idclienteedit">
+                <!--
                 <input (keyup)="onKeyUpEdit($event)" formControlName="idcliente" type="text"
                 class="form-control" id="idclienteedit"
                 placeholder="Ejemplo: Cliente123" required pattern="[A-Za-z0-9\s]*">
                 <div *ngIf="redesusuariosEditForm.controls['idcliente'].invalid && (redesusuariosEditForm.controls['idcliente'].dirty || redesusuariosEditForm.controls['idcliente'].touched)"
                      class="text-danger">
                   No. de Cliente/Usuario es requerido y no debe contener caracteres extraños.
-                </div>
+                </div> -->
               </div>
 
               <div class="mb-3">
-                <label for="pagina">Pagina (Nombre)*</label>
+                <label for="pagina">Pagina (Nombre)</label>
+                <input id="nombrepaginaedit" formControlName="nombrepagina" readonly type="text" class="form-control">
+                
+                <!--
                 <input (keyup)="onKeyUpEdit($event)" id="nombrepaginaedit" formControlName="nombrepagina" type="text"
                 class="form-control"
                 placeholder="Ejemplo: www.mipagina.com" required pattern="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$">
+                
                 <div *ngIf="redesusuariosEditForm.controls['nombrepagina'].invalid && (redesusuariosEditForm.controls['nombrepagina'].dirty || redesusuariosEditForm.controls['nombrepagina'].touched)"
                      class="text-danger">
                   Pagina es requerido y debe ser una URL válida.
-                </div>
+                </div> -->
               </div> 
 
               <div class="modal-footer">
@@ -258,6 +265,30 @@
         </ng-template>
         <!-- End Add contact Modal -->
 
+        <!-- Modal Delete Metodos-->
+        <ng-template #content_eliminar let-modal>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title font-size-16" id="eliminarUsuarioRedSocial-exampleModalLabel">Eliminar Método</h5>
+              <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+              </button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="mb-3">
+                  <label for="nombreRedSocial_edit">Desea eliminar el usuario?</label>
+
+                </div>
+
+                <div class="modal-footer" >
+                  <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                  <button type="button" class="btn btn-primary" (click)="deleteUsuarioRedSocial($event,{idredusuario})">Eliminar</button>
+                </div>
+
+            </div>
+          </div>
+        </ng-template>
+        <!-- Fin modal delete -->
 
 
     <!-- Start contact lists -->
@@ -283,10 +314,9 @@
                   <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
                       class="ri-share-line float-end text-muted"></i></a>
                   <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
-                      class="ri-forbid-line float-end text-muted"></i></a> <!--
-                  <a class="dropdown-item" (click)="openRedSocialUsuariosDelete
-                  Modal(content_delete,usuario.idredusuario)" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
-                      class="ri-delete-bin-line float-end text-muted"></i></a> -->
+                      class="ri-forbid-line float-end text-muted"></i></a> 
+                  <a class="dropdown-item" (click)="openRedSocialUsuariosDeleteModal(content_eliminar,usuario.idredusuario)" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                      class="ri-delete-bin-line float-end text-muted"></i></a> 
                   <a class="dropdown-item" (click)="openRedSocialUsuariosEditModal(content_edit,
                       usuario.idred, 
                       usuario.nombre,

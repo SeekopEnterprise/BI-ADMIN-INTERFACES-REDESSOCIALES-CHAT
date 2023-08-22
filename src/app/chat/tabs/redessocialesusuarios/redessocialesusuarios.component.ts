@@ -17,7 +17,7 @@ export class RedessocialesusuariosComponent implements OnInit {
   @ViewChild('idred') idred!: ElementRef;
   @ViewChild('nombrepagina', { static: true }) nombrepaginaInput: ElementRef<HTMLInputElement>;
   @ViewChild('content_edit') modalEditRef: ElementRef<any>;
-
+  @ViewChild('content_eliminar') modalRef: ElementRef<any>;
   public isButtonDisabled: boolean = true;
   public isButtonSaveDisabled: boolean = true;
   public isButtonDisabledEdit: boolean = true;
@@ -61,6 +61,7 @@ export class RedessocialesusuariosComponent implements OnInit {
     fechavencimimiento: new Date("2000-01-01")
   };
 
+  
   modal: any;
   closeResult: string;
   constructor(private globalUserService: GlobalUserService, private modalService: NgbModal, private http: HttpClient,
@@ -74,8 +75,7 @@ export class RedessocialesusuariosComponent implements OnInit {
             token: ['', [Validators.required]],
             fechavencimimiento: ['', [Validators.required]]
           }); */
-
-
+          // this.redesusuariosEditForm.get('nombrepaginaedit').disabled;
   }
 
   ngOnInit(): void {
@@ -141,8 +141,8 @@ export class RedessocialesusuariosComponent implements OnInit {
     this.redesusuariosForm = this.fb.group({
       idred: ['', Validators.required],
       iddistribuidor: ['', Validators.required],
-      idcliente: ['', [Validators.required, Validators.pattern('[A-Za-z0-9\s]*')]],
-      nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
+      // idcliente: ['', [Validators.required, Validators.pattern('[A-Za-z0-9\s]*')]],
+      // nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
     this.redesusuariosEditForm = this.fb.group({
@@ -152,7 +152,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
-
+    
   }
 
   ngAfterViewInit() {
@@ -171,6 +171,8 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.yaEstaSeteado = true;
       }
     });
+
+    
   }
 
   private getDismissReason(reason: any): string {
@@ -184,6 +186,10 @@ export class RedessocialesusuariosComponent implements OnInit {
   }
 
   openRedSocialUsuariosEditModal(content_edit,idred,nombre,idredusuario,idcliente,nombrepagina){
+
+    this.redesusuariosEditForm.get('idcliente')?.setValue(idcliente);
+    this.redesusuariosEditForm.get('nombrepagina')?.setValue(nombrepagina);
+
     this.idredusuario=idredusuario;
     // alert(idredusuario);
     this.modalService.open(this.modalEditRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
@@ -194,6 +200,23 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
       },
     );
+
+  }
+
+  openRedSocialUsuariosDeleteModal(content_delete,idredusuario){
+    this.idredusuario=idredusuario; 
+    // alert(this.idredusuario);
+  
+    this.modalService.open(this.modalRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+			(result) => {
+				// this.closeResult = `Closed with: ${result}`;
+        const dismissReason = this.getDismissReason(result);
+			},
+			(reason) => {
+				// this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        const dismissReason = this.getDismissReason(reason);
+			},
+		); 
 
   }
 
@@ -358,11 +381,19 @@ export class RedessocialesusuariosComponent implements OnInit {
   }
 
   asociarCuenta() {
-    if (this.redesusuariosForm.valid) {
-      const datos = this.redesusuariosForm.value;
+    if (this.redesusuariosForm.valid){  
+    // console.log("ok....."+JSON.stringify(this.redesusuariosForm.value.idred)); 
+    const datos={
+      idred:this.redesusuariosForm.value.idred,
+      iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+      idcliente:"",
+      nombrepagina:""
+    };
+    
+      // const datos = this.redesusuariosForm.value;
       this.http.post('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios', datos).subscribe(
         response => {
-          console.log(response);
+          // console.log(response);
           this.modal.close('Cross click');
           this.loadRedesSocialesUsuarios();
           const iddistribuidor = this.redesusuariosForm.get('iddistribuidor').value;
@@ -372,7 +403,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         error => {
           console.log(error);
         }
-      );
+      ); 
     }
   }
 
@@ -635,5 +666,35 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
     }
   }
+
+  deleteUsuarioRedSocial(event: any, id: any){
+    const val=id.idredusuario;
+    // alert(id.idredusuario); 
+    
+    this.http.delete('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios/redusuario/'+val)
+    .subscribe({
+        next: data => {
+            // this.status = 'Delete successful';
+            // console.log("se eliminó correctamente");
+            this.loadRedesSocialesUsuarios();
+            // console.log("respuesta: "+JSON.stringify(data));
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Se eliminó correctamente!',
+              confirmButtonText: 'Ok'
+            });
+            this.modalService.dismissAll();
+            // this.modalService.dismissAll();
+            // this.modalRef.nativeElement.dismissAll();
+            // this.modalService.dismissAll();
+            // this.modalRef.nativeElement.click();
+        },
+        error: error => {
+            // this.errorMessage = error.message;
+            console.log('Hubo un error!', error);
+        }
+    });  
+  } 
 
 }
