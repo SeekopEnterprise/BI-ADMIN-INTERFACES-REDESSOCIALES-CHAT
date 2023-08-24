@@ -176,10 +176,12 @@ export class IndexComponent implements OnInit {
 
           this.notificacionService = data.mensaje;
 
+          console.log(this.chat);
+
           const chatToUpdate = this.chat
             .map(group => group.prospects)
             .reduce((a, b) => a.concat(b), [])
-            .find(prospect => prospect.IdPublicacion === data.idPublicacion);
+            .find(prospect => prospect.idPregunta === data.idMensaje+"");
 
           if (chatToUpdate) {
             const newMessage = {
@@ -396,18 +398,18 @@ export class IndexComponent implements OnInit {
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
-    this.selectedChatId = data[0].IdPublicacion;
+    this.selectedChatId = data[0].idPregunta;
     this.onListScroll();
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     if(this.enviadoaseekop==true){
-      // Deshabilitar el botón de enviar seekop #btnEnviarSeekop 
+      // Deshabilitar el botón de enviar seekop #btnEnviarSeekop
       btnEnviarSeekop?.setAttribute('disabled', 'true');
 
     }
     else{
       // Llamar function de envió de prospecto hacia sicop
-      
+
     }
 
     // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
@@ -496,7 +498,7 @@ export class IndexComponent implements OnInit {
     const chatToUpdate = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
-      .find(prospect => prospect.IdPublicacion === this.selectedChatId);
+      .find(prospect => prospect.idPregunta === this.selectedChatId);
 
 
     if (chatToUpdate) {
@@ -732,7 +734,7 @@ export class IndexComponent implements OnInit {
             const chatToUpdate = this.chat
               .map(group => group.prospects)
               .reduce((a, b) => a.concat(b), [])
-              .find(prospect => prospect.IdPublicacion === socketData.idPublicacion);
+              .find(prospect => prospect.idPregunta === socketData.idMensaje);
 
             const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
 
@@ -788,7 +790,7 @@ export class IndexComponent implements OnInit {
                 "idMsj: "+this.idMensaje+
                 "idDistribuidor: "+this.idDistribuidor+
                 "Distribuidor: "+this.nombreDistribuidor); */
-    
+
     // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
@@ -868,7 +870,7 @@ export class IndexComponent implements OnInit {
                   text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
                   confirmButtonText: 'Ok'
                 });
-  
+
                 this.modalDatos.close('Close click');
               }
               else{
@@ -878,7 +880,7 @@ export class IndexComponent implements OnInit {
                   text: 'Se enviaron correctamente los datos a Seekop',
                   confirmButtonText: 'Ok'
                 });
-                
+
                 this.addNewProspecto();
                 this.modalDatos.close('Close click');
               }
@@ -894,7 +896,7 @@ export class IndexComponent implements OnInit {
                   confirmButtonText: 'Entendido'
                 });
               }
-              else{ 
+              else{
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
@@ -912,7 +914,7 @@ export class IndexComponent implements OnInit {
 
   addNewProspecto(){
     // enviarprospecto,idpublicacion,idmensaje,idDistribuidor,idredsocial
-    const data={ 
+    const data={
       "enviarprospecto":this.idMensajeLeads,
       "idpublicacion":this.IdPublicacionLead,
       "idmensaje":this.idMensajeLeads,
@@ -946,8 +948,8 @@ export class IndexComponent implements OnInit {
       }
     );
 
-  }  
-  
+  }
+
 }
 
 

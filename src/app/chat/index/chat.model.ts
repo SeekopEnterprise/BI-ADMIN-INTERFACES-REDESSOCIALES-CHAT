@@ -19,6 +19,7 @@ export interface GroupedResponseItem {
 
 export interface ResponseItem {
   IdPublicacion: string;
+  idPregunta: string;
   IdDistribuidor: string;
   NombreGrupo: string;
   idRed: string;
