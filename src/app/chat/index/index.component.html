@@ -242,7 +242,7 @@
                   </div>
                   <!-- <li class="group-name">{{ group.key }}</li> -->
                   <li *ngFor="let user of group.prospects" [ngClass]="{'typing': user.isTyping}"
-                    (click)="showChat($event,user.Email)">
+                    (click)="showChat($event,user.idPregunta)">
                     <a href="javascript:void(0);">
                       <div class="d-flex">
                         <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">

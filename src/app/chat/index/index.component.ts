@@ -181,7 +181,7 @@ export class IndexComponent implements OnInit {
           const chatToUpdate = this.chat
             .map(group => group.prospects)
             .reduce((a, b) => a.concat(b), [])
-            .find(prospect => prospect.idPregunta === data.idMensaje+"");
+            .find(prospect => prospect.IdPublicacion === data.idPublicacion+"");
 
           if (chatToUpdate) {
             const newMessage = {
@@ -360,12 +360,12 @@ export class IndexComponent implements OnInit {
       .filter((prospect: any) => {
 
         let val = "";
-        if (prospect.Email === id) {
+        if (prospect.idPregunta === id) {
           // console.log("=========> "+JSON.stringify(prospect.Conversacion[0].id));
           IdUltimoMensaje.push(prospect.Conversacion);
         }
 
-        return prospect.Email === id;
+        return prospect.idPregunta === id;
       });
 
     for (let key in IdUltimoMensaje[0]) {
