@@ -166,6 +166,8 @@ export class IndexComponent implements OnInit {
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
+         this.loadGrupos(); // se agrega await
+         this.loadRecuperacionMensajes(); // se agrega await
 
         if (event.type === 'open') {
           this.notificacionService.send({
@@ -181,7 +183,7 @@ export class IndexComponent implements OnInit {
           const chatToUpdate = this.chat
             .map(group => group.prospects)
             .reduce((a, b) => a.concat(b), [])
-            .find(prospect => prospect.IdPublicacion === data.idPublicacion+"");
+            .find(prospect => prospect.idPregunta === data.idMensaje+"");
 
           if (chatToUpdate) {
             const newMessage = {
