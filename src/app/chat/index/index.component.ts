@@ -183,7 +183,7 @@ export class IndexComponent implements OnInit {
             // Buscar y actualizar el contador de mensajes no leídos del prospecto relevante
             const chatToUpdate = [].concat(...this.chat
               .map(group => group.prospects))
-              .find(prospect => prospect.idPregunta === data.idMensaje+"");
+              .find(prospect => prospect.idPregunta === data.idMensaje + "");
 
             if (chatToUpdate) {
               chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
@@ -441,20 +441,34 @@ export class IndexComponent implements OnInit {
   }
 
   /**
-   * Save the message in chat
+   * Guarda y muestra un nuevo mensaje en la conversación.
+   * Además, envía el mensaje a la API para que sea persistido y reflejado en la base de datos.
    */
-  messageSave() {
-    var groupMsg = document.querySelector('.pills-groups-tab.active');
+  async messageSave() {
+    // Captura de elementos y valores relevantes de la interfaz de usuario.
+
+    // Comprueba qué grupo de chat está activo.
+    const groupMsg = document.querySelector('.pills-groups-tab.active');
+
+    // Obtiene el contenido del mensaje del formulario.
     const message = this.formData.get('message')!.value;
+
+    // Muestra el mensaje en la lista de chat si no hay ningún grupo de chat activo.
     if (!groupMsg) {
       document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img;
     }
-    var img = this.img ? this.img : '';
-    var status = this.img ? true : '';
-    var dateTime = this.datePipe.transform(new Date(), "h:mm a");
-    var chatReplyUser = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : '';
-    var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : '';
-    var newMessage = {
+
+    // Configura las propiedades del mensaje, como la imagen y el estado.
+    const img = this.img ? this.img : '';
+    const status = this.img ? true : '';
+    const dateTime = this.datePipe.transform(new Date(), "h:mm a");
+
+    // Captura la información del mensaje de respuesta si existe.
+    const chatReplyUser = this.isreplyMessage ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : '';
+    const chatReplyMessage = this.isreplyMessage ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : '';
+
+    // Construye el objeto del nuevo mensaje.
+    const newMessage = {
       id: 1,
       texto: message,
       name: this.senderName,
@@ -468,40 +482,52 @@ export class IndexComponent implements OnInit {
       replaymsg: chatReplyMessage,
     };
 
-    // Encuentra la conversación a la que pertenece este mensaje
-    // const chatToUpdate = this.chat.flatMap(group => group.prospects).find(prospect => prospect.IdPublicacion === this.selectedChatId);
+    // Busca la conversación correspondiente para este mensaje.
     const chatToUpdate = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
       .find(prospect => prospect.idPregunta === this.selectedChatId);
 
-
+    // Si encontramos la conversación, añade el nuevo mensaje y actualiza los metadatos.
     if (chatToUpdate) {
       chatToUpdate.Conversacion.push(newMessage);
-      // Marca todos los mensajes como no últimos
       chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
-      // Marca el nuevo mensaje como el último
       newMessage.ultimoMensaje = true;
     }
 
-    // Solo empuja a this.message si no es el mismo que chatToUpdate.Conversacion
+    // Asegúrate de que el mensaje se añade a la lista principal si es necesario.
     if (chatToUpdate && this.message !== chatToUpdate.Conversacion) {
       this.message.push(newMessage);
     }
 
+    // Desplaza la vista de chat para mostrar el nuevo mensaje.
     this.onListScroll();
 
-    // Set Form Data Reset
+    // Envía el mensaje a la API para persistirlo y reflejarlo en la base de datos.
+    try {
+      await this.http.post('https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs', {
+        IdPregunta: this.selectedChatId,
+        Mensaje: message
+      }).toPromise();
+
+      // Después de guardar con éxito, recarga la conversación para reflejar cualquier cambio.
+      await this.loadRecuperacionMensajes();
+
+    } catch (error) {
+      // En caso de error al guardar el mensaje, muestra el error.
+      console.error('Error al guardar el mensaje:', error);
+    }
+
+    // Restablece los campos y la interfaz de usuario para preparar el próximo mensaje.
     this.formData = this.formBuilder.group({
       message: null,
     });
     this.isreplyMessage = false;
     this.emoji = '';
     this.img = '';
-    chatReplyUser = '';
-    chatReplyMessage = '';
     document.querySelector('.replyCard')?.classList.remove('show');
   }
+
 
   onListScroll() {
     if (this.scrollRef !== undefined) {
@@ -669,67 +695,67 @@ export class IndexComponent implements OnInit {
     })
   }
 
- // Método para cargar los mensajes recuperados
-loadRecuperacionMensajes(socketData = null): Promise<void> {
-  return new Promise((resolve, reject) => {
+  // Método para cargar los mensajes recuperados
+  loadRecuperacionMensajes(socketData = null): Promise<void> {
+    return new Promise((resolve, reject) => {
       // Obtener el nombre del usuario remitente o usar el correo del usuario como respaldo
       const userName = this.senderName || this.usuarioCorreo;
 
       // Realizar una petición GET al servidor para recuperar los mensajes del usuario
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs', { params: { usuario: userName } }).subscribe(
-          res => {
-              const prospects = res.body;
-
-              // Procesar cada 'prospect' (interlocutor del chat)
-              prospects.forEach(prospect => {
-                  if (prospect.Conversacion && prospect.Conversacion.length > 0) {
-                      // Marcar el último mensaje de la conversación como 'ultimoMensaje'
-                      prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
-                  }
-              });
-
-              // Agrupar los prospectos por distribuidor
-              const grouped = prospects.reduce((groups, prospect) => {
-                  const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
-                  groups[grupo] = groups[grupo] || [];
-                  groups[grupo].push(prospect);
-                  return groups;
-              }, {});
-
-              // Actualizar la estructura 'chat' para reflejar los grupos y prospectos
-              this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
-              resolve();
-          },
-          error => {
-              // En caso de error, imprimir el error y rechazar la promesa
-              console.error(error);
-              reject(error);
-          }
-      );
-  });
-}
-
-
-loadGrupos(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Define el nombre de usuario basado en las propiedades de clase
-    const userName = this.senderName || this.usuarioCorreo;
-
-    // Realiza la solicitud GET al API usando template strings para construir la URL
-    this.http.get<Grupos[]>(`https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/${userName}`)
-      .subscribe(
         res => {
-          this.groups = res;
+          const prospects = res.body;
+
+          // Procesar cada 'prospect' (interlocutor del chat)
+          prospects.forEach(prospect => {
+            if (prospect.Conversacion && prospect.Conversacion.length > 0) {
+              // Marcar el último mensaje de la conversación como 'ultimoMensaje'
+              prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
+            }
+          });
+
+          // Agrupar los prospectos por distribuidor
+          const grouped = prospects.reduce((groups, prospect) => {
+            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
+            groups[grupo] = groups[grupo] || [];
+            groups[grupo].push(prospect);
+            return groups;
+          }, {});
+
+          // Actualizar la estructura 'chat' para reflejar los grupos y prospectos
+          this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
           resolve();
         },
-        // Proporciona información más descriptiva en caso de error
         error => {
-          console.error('Error al cargar los grupos:', error);
+          // En caso de error, imprimir el error y rechazar la promesa
+          console.error(error);
           reject(error);
         }
       );
-  });
-}
+    });
+  }
+
+
+  loadGrupos(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Define el nombre de usuario basado en las propiedades de clase
+      const userName = this.senderName || this.usuarioCorreo;
+
+      // Realiza la solicitud GET al API usando template strings para construir la URL
+      this.http.get<Grupos[]>(`https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/${userName}`)
+        .subscribe(
+          res => {
+            this.groups = res;
+            resolve();
+          },
+          // Proporciona información más descriptiva en caso de error
+          error => {
+            console.error('Error al cargar los grupos:', error);
+            reject(error);
+          }
+        );
+    });
+  }
 
   validarProspectoEnviadoSeekop() {
 
