@@ -67,7 +67,7 @@ export class IndexComponent implements OnInit {
   public eventHandlerAdded = false;
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
-  public AutoDeInteres= "Sentra";
+  public AutoDeInteres = "Sentra";
 
   public hideMenu: boolean;
   public enviadoaseekop: boolean;
@@ -126,6 +126,7 @@ export class IndexComponent implements OnInit {
 
   senderName: any;
   senderProfile: any;
+
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
       try {
@@ -163,60 +164,31 @@ export class IndexComponent implements OnInit {
       return;
     }
 
+    // Suscripción al servicio WebSocket para recibir notificaciones en tiempo real
     this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
-         this.loadGrupos(); // se agrega await
-         this.loadRecuperacionMensajes(); // se agrega await
 
+        // Si la conexión al WebSocket se abre con éxito
         if (event.type === 'open') {
           this.notificacionService.send({
             accion: 'setApp',
             nombreApp: 'proveedoresDigitales'
           });
-        } else if (event.type === 'message') {
+        }
+        // En caso de recibir un mensaje a través del WebSocket
+        else if (event.type === 'message') {
+          // Recargar los mensajes al recibir un nuevo mensaje
+          this.loadRecuperacionMensajes(data).then(() => {
+            // Buscar y actualizar el contador de mensajes no leídos del prospecto relevante
+            const chatToUpdate = [].concat(...this.chat
+              .map(group => group.prospects))
+              .find(prospect => prospect.idPregunta === data.idMensaje+"");
 
-          this.notificacionService = data.mensaje;
-
-          console.log(this.chat);
-
-          const chatToUpdate = this.chat
-            .map(group => group.prospects)
-            .reduce((a, b) => a.concat(b), [])
-            .find(prospect => prospect.idPregunta === data.idMensaje+"");
-
-          if (chatToUpdate) {
-            const newMessage = {
-              id: data.idMensaje,
-              texto: data.mensaje,
-              unreadCount: 0,
-              align: "left",
-              ultimoMensaje: true, // El nuevo mensaje es el último
-            };
-            chatToUpdate.Conversacion.push(newMessage);
-
-            // Marcamos todos los mensajes como no últimos
-            chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
-
-            // El nuevo mensaje es el último
-            newMessage.ultimoMensaje = true;
-
-            // this.idMensajeLeads=data.idMensaje;
-            // console.log("este es el idmensaje a enviar: "+newMessage);
-
-            // Incrementa el contador de mensajes no leídos
-            chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-
-            this.chat.sort((a, b) => a.prospects.includes(chatToUpdate) ? -1 : b.prospects.includes(chatToUpdate) ? 1 : 0);
-
-            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
-            if (groupToUpdate) {
-              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
+            if (chatToUpdate) {
+              chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
             }
-          }
-
-          this.showNewMessageNotification(chatToUpdate);
-          this.onListScroll();
+          });
         }
       });
 
@@ -340,6 +312,7 @@ export class IndexComponent implements OnInit {
   userProfile: any = '';
   urlPublicacion: any = ''; // "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f"
   message: any;
+
   showChat(event: any, id: any) { // alert("este es el id seleccionado: "+id);
     var removeClass = document.querySelectorAll('.chat-user-list li');
     removeClass.forEach((element: any) => {
@@ -395,7 +368,7 @@ export class IndexComponent implements OnInit {
     this.idDistribuidor = data[0].IdDistribuidor;
     this.nombreDistribuidor = data[0].NombreGrupo;
 
-    this.enviadoaseekop=true;
+    this.enviadoaseekop = true;
 
     this.userStatus = "En línea"
     this.userProfile = '';
@@ -404,12 +377,12 @@ export class IndexComponent implements OnInit {
     this.onListScroll();
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
-    if(this.enviadoaseekop==true){
+    if (this.enviadoaseekop == true) {
       // Deshabilitar el botón de enviar seekop #btnEnviarSeekop
       btnEnviarSeekop?.setAttribute('disabled', 'true');
 
     }
-    else{
+    else {
       // Llamar function de envió de prospecto hacia sicop
 
     }
@@ -696,88 +669,69 @@ export class IndexComponent implements OnInit {
     })
   }
 
-  loadRecuperacionMensajes(socketData = null): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const userName = this.senderName ? this.senderName : this.usuarioCorreo;
-      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?usuario=' + userName).subscribe(
-        res => {
-          let prospects = res.body;
+ // Método para cargar los mensajes recuperados
+loadRecuperacionMensajes(socketData = null): Promise<void> {
+  return new Promise((resolve, reject) => {
+      // Obtener el nombre del usuario remitente o usar el correo del usuario como respaldo
+      const userName = this.senderName || this.usuarioCorreo;
 
-          prospects.forEach(prospect => {
-            prospect.unreadCount = 0;  // Añadimos un contador de mensajes no leídos
-            if (prospect.Conversacion && prospect.Conversacion.length > 0) {
-              // Aseguramos que todos los mensajes tengan la propiedad 'ultimoMensaje'
-              prospect.Conversacion.forEach(message => {
-                message.ultimoMensaje = false;
+      // Realizar una petición GET al servidor para recuperar los mensajes del usuario
+      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs', { params: { usuario: userName } }).subscribe(
+          res => {
+              const prospects = res.body;
+
+              // Procesar cada 'prospect' (interlocutor del chat)
+              prospects.forEach(prospect => {
+                  if (prospect.Conversacion && prospect.Conversacion.length > 0) {
+                      // Marcar el último mensaje de la conversación como 'ultimoMensaje'
+                      prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
+                  }
               });
 
-              // Marcamos el último mensaje como tal
-              prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
+              // Agrupar los prospectos por distribuidor
+              const grouped = prospects.reduce((groups, prospect) => {
+                  const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
+                  groups[grupo] = groups[grupo] || [];
+                  groups[grupo].push(prospect);
+                  return groups;
+              }, {});
 
-              // Se asigna el ultimo idmensaje para el envió de datos hacia sicop
-              console.log("este es el ultimo idmsj: " + prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje);
-              // this.idMensajeLeads.push({"if idmensaje": prospect.Conversacion[prospect.Conversacion.length - 1].id});
-
-            }
-          });
-
-          // Agrupar prospectos por distribuidor
-          const grouped = prospects.reduce((groups, prospect) => {
-            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
-            groups[grupo] = groups[grupo] || [];
-            groups[grupo].push(prospect);
-
-            return groups;
-          }, {});
-
-          this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
-
-          if (socketData) {
-            const chatToUpdate = this.chat
-              .map(group => group.prospects)
-              .reduce((a, b) => a.concat(b), [])
-              .find(prospect => prospect.idPregunta === socketData.idMensaje);
-
-            const groupToUpdate = this.chat.find(group => group.prospects.includes(chatToUpdate));
-
-            if (groupToUpdate) {
-              groupToUpdate.prospects.sort((a, b) => a === chatToUpdate ? -1 : b === chatToUpdate ? 1 : 0);
-            }
-
-            this.showNewMessageNotification(chatToUpdate);
+              // Actualizar la estructura 'chat' para reflejar los grupos y prospectos
+              this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
+              resolve();
+          },
+          error => {
+              // En caso de error, imprimir el error y rechazar la promesa
+              console.error(error);
+              reject(error);
           }
+      );
+  });
+}
+
+
+loadGrupos(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Define el nombre de usuario basado en las propiedades de clase
+    const userName = this.senderName || this.usuarioCorreo;
+
+    // Realiza la solicitud GET al API usando template strings para construir la URL
+    this.http.get<Grupos[]>(`https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/${userName}`)
+      .subscribe(
+        res => {
+          this.groups = res;
           resolve();
         },
+        // Proporciona información más descriptiva en caso de error
         error => {
-          console.log(error);
+          console.error('Error al cargar los grupos:', error);
           reject(error);
         }
       );
-    });
-  }
+  });
+}
 
-
-  loadGrupos(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const userName = this.senderName ? this.senderName : this.usuarioCorreo;
-      this.http.get<Grupos[]>('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/' + userName)
-        .subscribe(
-          res => {
-            this.groups = res;
-            console.log("Estos son los grupos", this.groups);
-            console.log("Estos son los grupos de", this.usuarioCorreo);
-            console.log("Estos son los grupos o de", this.senderName);
-            resolve();
-          },
-          error => {
-            console.log(error);
-            reject(error);
-          }
-        );
-    });
-  }
-
-  validarProspectoEnviadoSeekop(){
+  validarProspectoEnviadoSeekop() {
 
   }
 
@@ -863,65 +817,65 @@ export class IndexComponent implements OnInit {
         this.http.post<any>(url, data, { headers }).subscribe(
           response => {
 
-              // console.log("esta es la respuesta: "+response.status);
-              console.log("esta es la respuesta: "+response);
-              if(response==null){
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                  confirmButtonText: 'Ok'
-                });
+            // console.log("esta es la respuesta: "+response.status);
+            console.log("esta es la respuesta: " + response);
+            if (response == null) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
+                confirmButtonText: 'Ok'
+              });
 
-                this.modalDatos.close('Close click');
-              }
-              else{
-                Swal.fire({
-                  icon: 'success',
-                  title: '¡Éxito!',
-                  text: 'Se enviaron correctamente los datos a Seekop',
-                  confirmButtonText: 'Ok'
-                });
-
-                this.addNewProspecto();
-                this.modalDatos.close('Close click');
-              }
-            },
-            error => {
-              console.error(error);
-              // Muestra una alerta de error
-              if(error=="El Lead ya existe"){
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Ya existe el leads en Seekop...',
-                  confirmButtonText: 'Entendido'
-                });
-              }
-              else{
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                  confirmButtonText: 'Entendido'
-                });
-              }
+              this.modalDatos.close('Close click');
             }
-          );
+            else {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Se enviaron correctamente los datos a Seekop',
+                confirmButtonText: 'Ok'
+              });
+
+              this.addNewProspecto();
+              this.modalDatos.close('Close click');
+            }
+          },
+          error => {
+            console.error(error);
+            // Muestra una alerta de error
+            if (error == "El Lead ya existe") {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe el leads en Seekop...',
+                confirmButtonText: 'Entendido'
+              });
+            }
+            else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
+                confirmButtonText: 'Entendido'
+              });
+            }
+          }
+        );
 
       }
 
     });
   }
 
-  addNewProspecto(){
+  addNewProspecto() {
     // enviarprospecto,idpublicacion,idmensaje,idDistribuidor,idredsocial
-    const data={
-      "enviarprospecto":this.idMensajeLeads,
-      "idpublicacion":this.IdPublicacionLead,
-      "idmensaje":this.idMensajeLeads,
-      "idDistribuidor":this.idDistribuidor,
-      "idredsocial":this.idMensajeLeads,
+    const data = {
+      "enviarprospecto": this.idMensajeLeads,
+      "idpublicacion": this.IdPublicacionLead,
+      "idmensaje": this.idMensajeLeads,
+      "idDistribuidor": this.idDistribuidor,
+      "idredsocial": this.idMensajeLeads,
     };
 
     const url = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs';

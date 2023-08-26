@@ -14,6 +14,7 @@ export class NotificacionesService {
       this.ws.onopen = event => {
         console.log('Web Socket abierto');
         this.send({ accion: 'setApp', nombreApp: 'proveedoresDigitales' });
+        this.keepAlive();
       };
       this.ws.onmessage = obs.next.bind(obs);
       this.ws.onerror = obs.error.bind(obs);
@@ -46,4 +47,14 @@ export class NotificacionesService {
   public close(): void {
     this.ws.close();
   }
+
+  // En tu servicio NotificacionesService
+  public keepAlive(): void {
+    setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.send({ accion: 'keepAlive' });
+      }
+    }, 300000); // 5 minutos
+  }
+
 }
