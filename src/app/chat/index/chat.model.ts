@@ -10,6 +10,8 @@ export interface Conversacion {
   imageContent?: any,
   replayName?: any,
   replaymsg?: any,
+  fechaCreacion?: any,
+  fechaRespuesta?:any,
 }
 
 export interface GroupedResponseItem {
@@ -20,6 +22,7 @@ export interface GroupedResponseItem {
 export interface ResponseItem {
   IdPublicacion: string;
   idPregunta: string;
+  fechaRespuestaUltimoMensaje?: string;
   IdDistribuidor: string;
   NombreGrupo: string;
   idRed: string;

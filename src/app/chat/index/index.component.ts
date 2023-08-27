@@ -169,18 +169,15 @@ export class IndexComponent implements OnInit {
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
 
-        // Si la conexión al WebSocket se abre con éxito
+        // Si la conexión al WebSocket se abre con éxito, se establece la aplicación
         if (event.type === 'open') {
           this.notificacionService.send({
             accion: 'setApp',
             nombreApp: 'proveedoresDigitales'
           });
-        }
-        // En caso de recibir un mensaje a través del WebSocket
-        else if (event.type === 'message') {
-          // Recargar los mensajes al recibir un nuevo mensaje
+        } else if (event.type === 'message') {
           this.loadRecuperacionMensajes(data).then(() => {
-            // Buscar y actualizar el contador de mensajes no leídos del prospecto relevante
+            // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
             const chatToUpdate = [].concat(...this.chat
               .map(group => group.prospects))
               .find(prospect => prospect.idPregunta === data.idMensaje + "");
@@ -188,9 +185,20 @@ export class IndexComponent implements OnInit {
             if (chatToUpdate) {
               chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
             }
+
+            // Vuelve a ordenar los chats después de actualizar el contador
+            // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
+            this.chat.sort((a, b) => {
+              const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
+              const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
+              const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
+              const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
+              return lastMsgDateB - lastMsgDateA;
+            });
           });
         }
       });
+
 
 
 
@@ -390,25 +398,62 @@ export class IndexComponent implements OnInit {
     // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
   }
 
-  // Contact Search
   ContactSearch() {
-    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
-    input = document.getElementById("searchContact") as HTMLAreaElement;
-    filter = input.value.toUpperCase();
-    ul = document.querySelectorAll(".chat-user-list");
-    ul.forEach((item: any) => {
-      li = item.getElementsByTagName("li");
-      for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName("h5")[0];
-        txtValue = a?.innerText;
-        if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-          li[i].style.display = "";
-        } else {
-          li[i].style.display = "none";
-        }
+    const input = document.getElementById("searchContact") as HTMLInputElement;
+    const filter = input.value.toUpperCase();
+    const chatUserList = document.querySelectorAll(".chat-user-list li");
+    const groupDivs = document.querySelectorAll(".chat-user-list .font-weight-bold.text-primary");
+
+    chatUserList.forEach((li) => {
+      if (!(li instanceof HTMLElement)) {
+        return;
       }
-    })
+
+      let groupName = '';
+      let previousElement: Element | null = li.previousElementSibling;
+      while (previousElement) {
+        if (previousElement.classList.contains("font-weight-bold") && previousElement.classList.contains("text-primary")) {
+          groupName = previousElement.textContent || "";
+          break;
+        }
+        previousElement = previousElement.previousElementSibling;
+      }
+
+      const userName = li.querySelector('h5')?.textContent || "";
+      const userMessage = li.querySelector('p.chat-user-message')?.textContent || "";
+
+      if (groupName.toUpperCase().includes(filter) || userName.toUpperCase().includes(filter) || userMessage.toUpperCase().includes(filter)) {
+        li.style.display = "";
+      } else {
+        li.style.display = "none";
+      }
+    });
+
+    groupDivs.forEach((div) => {
+      if (!(div instanceof HTMLElement)) {
+        return;
+      }
+
+      let hasVisibleChild = false;
+      let nextElement: Element | null = div.nextElementSibling;
+      while (nextElement && !nextElement.classList.contains("font-weight-bold")) {
+        if (nextElement instanceof HTMLElement && nextElement.style.display !== "none") {
+          hasVisibleChild = true;
+          break;
+        }
+        nextElement = nextElement.nextElementSibling;
+      }
+
+      if (hasVisibleChild) {
+        div.style.display = "";
+      } else {
+        div.style.display = "none";
+      }
+    });
   }
+
+
+
 
   // Message Search
   MessageSearch() {
@@ -698,23 +743,20 @@ export class IndexComponent implements OnInit {
   // Método para cargar los mensajes recuperados
   loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
-      // Obtener el nombre del usuario remitente o usar el correo del usuario como respaldo
       const userName = this.senderName || this.usuarioCorreo;
 
-      // Realizar una petición GET al servidor para recuperar los mensajes del usuario
       this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs', { params: { usuario: userName } }).subscribe(
         res => {
           const prospects = res.body;
 
-          // Procesar cada 'prospect' (interlocutor del chat)
+          // Marcar el último mensaje de cada conversación
           prospects.forEach(prospect => {
             if (prospect.Conversacion && prospect.Conversacion.length > 0) {
-              // Marcar el último mensaje de la conversación como 'ultimoMensaje'
               prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
             }
           });
 
-          // Agrupar los prospectos por distribuidor
+          // Agrupa los prospectos por distribuidor
           const grouped = prospects.reduce((groups, prospect) => {
             const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
             groups[grupo] = groups[grupo] || [];
@@ -722,12 +764,24 @@ export class IndexComponent implements OnInit {
             return groups;
           }, {});
 
-          // Actualizar la estructura 'chat' para reflejar los grupos y prospectos
           this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
+
+          // Ordena los grupos por la fecha del último mensaje en la conversación
+          // Esto garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
+          // Ordena los grupos por la fecha más reciente entre FechaCreacion y FechaRespuesta del último mensaje en la conversación
+          this.chat.sort((a, b) => {
+            const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
+            const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
+
+            const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
+            const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
+
+            return lastMsgDateB - lastMsgDateA; // Orden descendente
+          });
+
           resolve();
         },
         error => {
-          // En caso de error, imprimir el error y rechazar la promesa
           console.error(error);
           reject(error);
         }
