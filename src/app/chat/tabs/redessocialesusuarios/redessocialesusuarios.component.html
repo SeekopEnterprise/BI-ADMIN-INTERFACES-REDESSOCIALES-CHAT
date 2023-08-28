@@ -127,7 +127,7 @@
                    
               <div class="mb-3">
                 <label for="nombreRedSocial">Red social*</label>
-                <select formControlName="idred" id="idrededit" (change)="selectRedSocialEdit($event)"
+                <select [(ngModel)]='newRedesUsuariosEdit.idred' formControlName="idred" id="idrededit" (change)="selectRedSocialEdit($event)"
                 class="form-select" required>
                   <option [value]="''" selected>Seleccione...</option>
                   <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
@@ -140,7 +140,7 @@
               
               <div class="mb-3">
                 <label for="usuario">Distribuidor*</label>
-                <select formControlName="iddistribuidor" id="iddistribuidoredit" (change)="changeDistribuidorEdit($event)"
+                <select [(ngModel)]='newRedesUsuariosEdit.iddistribuidor' formControlName="iddistribuidor" id="iddistribuidoredit" (change)="changeDistribuidorEdit($event)"
                 class="form-select" required>
                   <option [value]="''">Seleccione...</option>
                   <option *ngFor="let listdistribuidores of distribuidoresSelect" [value]="listdistribuidores.iddistribuidor">{{listdistribuidores.nombredistribuidor}}</option>
@@ -322,7 +322,8 @@
                       usuario.nombre,
                       usuario.idredusuario,
                       usuario.idcliente,
-                      usuario.nombrepagina);" href="javascript:void(0);">Editar <i
+                      usuario.nombrepagina,
+                      usuario.iddistribuidor);" href="javascript:void(0);">Editar <i
                           class="ri-edit-2-fill float-end text-muted"></i></a>  
                 </div>
               </div>

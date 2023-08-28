@@ -147,9 +147,9 @@ export class RedessocialesusuariosComponent implements OnInit {
 
     this.redesusuariosEditForm = this.fb.group({
       idred: ['', Validators.required],
-      iddistribuidor: ['', Validators.required],
-      idcliente: ['', [Validators.required, Validators.pattern('[A-Za-z0-9\s]*')]],
-      nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
+      iddistribuidor: ['', Validators.required]
+      // idcliente: ['', [Validators.required, Validators.pattern('[A-Za-z0-9\s]*')]],
+      // nombrepagina: ['', [Validators.required, Validators.pattern('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$')]],
     });
 
     
@@ -185,13 +185,20 @@ export class RedessocialesusuariosComponent implements OnInit {
     }
   }
 
-  openRedSocialUsuariosEditModal(content_edit,idred,nombre,idredusuario,idcliente,nombrepagina){
+  openRedSocialUsuariosEditModal(content_edit,idred,nombre,idredusuario,
+    idcliente,nombrepagina,iddistribuidor){
 
     this.redesusuariosEditForm.get('idcliente')?.setValue(idcliente);
     this.redesusuariosEditForm.get('nombrepagina')?.setValue(nombrepagina);
 
     this.idredusuario=idredusuario;
-    // alert(idredusuario);
+    // alert(iddistribuidor);
+
+    this.newRedesUsuariosEdit = {
+      idred: idred,
+      iddistribuidor: iddistribuidor
+    }
+
     this.modalService.open(this.modalEditRef, { ariaLabelledBy: 'modal-basic-title' }).result.then(
       (result) => {
         this.closeResult = `Closed with: ${result}`;
@@ -394,6 +401,11 @@ export class RedessocialesusuariosComponent implements OnInit {
       this.http.post('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios', datos).subscribe(
         response => {
           // console.log(response);
+          this.newRedesUsuarios = {
+            idred: "",
+            iddistribuidor: ""
+          }
+
           this.modal.close('Cross click');
           this.loadRedesSocialesUsuarios();
           const iddistribuidor = this.redesusuariosForm.get('iddistribuidor').value;
@@ -670,7 +682,7 @@ export class RedessocialesusuariosComponent implements OnInit {
   deleteUsuarioRedSocial(event: any, id: any){
     const val=id.idredusuario;
     // alert(id.idredusuario); 
-    
+    console.log(" id => "+id.idredusuario);
     this.http.delete('https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/redesusuarios/redusuario/'+val)
     .subscribe({
         next: data => {
