@@ -35,6 +35,7 @@ export interface ResponseItem {
   Telefono: string;
   Conversacion: Conversacion[];
   unreadCount?: number;
+  ultimoMensaje?: UltimoMensaje;
 }
 
 export interface ApiResponse {
@@ -70,5 +71,21 @@ export interface Grupos {
   iddistribuidor: string;
   nombredistribuidor: string;
   descripcion?: string;
+}
+
+export interface UltimoMensaje {
+  id: any;
+  texto: string;
+  align: string;
+  ultimoMensaje: boolean;
+  name?: string,
+  profile?: any,
+  time?: any,
+  isimage?: any,
+  imageContent?: any,
+  replayName?: any,
+  replaymsg?: any,
+  fechaCreacion?: any,
+  fechaRespuesta?:any,
 }
 

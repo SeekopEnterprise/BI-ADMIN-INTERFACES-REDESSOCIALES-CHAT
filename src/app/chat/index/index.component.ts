@@ -381,7 +381,7 @@ export class IndexComponent implements OnInit {
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
-    this.selectedChatId = data[0].idPregunta;
+    this.selectedChatId = data[0].ultimoMensaje.id;
     this.onListScroll();
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
