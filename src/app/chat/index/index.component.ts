@@ -183,7 +183,7 @@ export class IndexComponent implements OnInit {
             // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
             const chatToUpdate = [].concat(...this.chat
               .map(group => group.prospects))
-              .find(prospect => prospect.idPregunta === data.idMensaje + "");
+              .find(prospect => prospect.ultimoMensaje.id  === data.idMensaje + "");
 
             if (chatToUpdate) {
               chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
@@ -362,7 +362,7 @@ export class IndexComponent implements OnInit {
       .filter((prospect: any) => {
 
         let val = "";
-        if (prospect.idPregunta === id) {
+        if (prospect.ultimoMensaje.id === id) {
           // console.log("=========> "+JSON.stringify(prospect.Conversacion[0].id));
           IdUltimoMensaje.push(prospect.Conversacion);
         }
@@ -547,10 +547,12 @@ export class IndexComponent implements OnInit {
     };
 
     // Busca la conversación correspondiente para este mensaje.
+    console.log("id actual: ", this.selectedChatId);
+    console.log("chat: ", this.chat);
     const chatToUpdate = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
-      .find(prospect => prospect.idPregunta === this.selectedChatId);
+      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId+"");
 
     // Si encontramos la conversación, añade el nuevo mensaje y actualiza los metadatos.
     if (chatToUpdate) {
