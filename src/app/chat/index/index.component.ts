@@ -72,6 +72,9 @@ export class IndexComponent implements OnInit {
   public hideMenu: boolean;
   public enviadoaseekop: boolean;
 
+  public activeChatId: string | null = null;
+
+
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
@@ -311,6 +314,21 @@ export class IndexComponent implements OnInit {
     this.modalDatos = this.modalService.open(videoContent, { centered: true });
   }
 
+  onInputFocus() {
+    if (this.activeChatId) {
+        const activeChat = [].concat(...this.chat.map(group => group.prospects))
+            .find(prospect => prospect.idPregunta === this.activeChatId);
+
+        if (activeChat) {
+            // Marca el mensaje como leído
+            activeChat.unreadCount = 0;
+            // Adicionalmente, lógica para comunicar al backend
+            // que el mensaje ha sido leído, mover aquí
+        }
+    }
+}
+
+
   /**
    * Show user chat
    */
@@ -322,6 +340,7 @@ export class IndexComponent implements OnInit {
   message: any;
 
   showChat(event: any, id: any) { // alert("este es el id seleccionado: "+id);
+    this.activeChatId = id;
     var removeClass = document.querySelectorAll('.chat-user-list li');
     removeClass.forEach((element: any) => {
       element.classList.remove('active');

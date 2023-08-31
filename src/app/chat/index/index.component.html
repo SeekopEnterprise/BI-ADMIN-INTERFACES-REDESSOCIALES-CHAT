@@ -17,7 +17,7 @@
     <!-- end navbar-brand-box -->
 
     <!-- Start side-menu nav -->
-    <div class="flex-lg-column my-auto" >
+    <div class="flex-lg-column my-auto">
       <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
         <li class="nav-item" ngbTooltip="Perfil">
           <a class="nav-link" id="pills-user-tab" (click)="showTabMetodos('1')" (click)="activetab=1"
@@ -264,17 +264,17 @@
                               <span class="dot ms-1"></span>
                               <span class="dot ms-1"></span>
                             </span></p>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                              <p class="chat-user-message text-truncate mb-0"
-                                 *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
-                                 style="flex: 1; margin-right: 20px;">
-                                  {{getLastMessage(user.Conversacion)?.texto}}
-                              </p>
-                              <div class="unread-message" style="margin-left: 20px;">
-                                  <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
-                                      {{user.unreadCount}}
-                                  </span>
-                              </div>
+                          <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p class="chat-user-message text-truncate mb-0"
+                              *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
+                              style="flex: 1; margin-right: 20px;">
+                              {{getLastMessage(user.Conversacion)?.texto}}
+                            </p>
+                            <div class="unread-message" style="margin-left: 20px;">
+                              <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
+                                {{user.unreadCount}}
+                              </span>
+                            </div>
                           </div>
 
 
@@ -800,8 +800,9 @@
                   </div>
                 </ng-template>
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" id="btnEnviarSeekop" class="btn nav-btn" data-bs-toggle="modal" data-bs-target="#videocallModal"
-                    ngbTooltip="Enviar a Seekop" (click)="openVideoModal(videoContent)">
+                  <button type="button" id="btnEnviarSeekop" class="btn nav-btn" data-bs-toggle="modal"
+                    data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
+                    (click)="openVideoModal(videoContent)">
                     <i class="ri-send-plane-fill"></i>
                   </button>
                 </li>
@@ -1085,7 +1086,7 @@
                 <div>
                   <input type="text" class="form-control form-control-lg bg-light border-light"
                     placeholder="Escribir mensaje..." formControlName="message" [(ngModel)]="emoji" (blur)="onBlur()"
-                    (focus)="onFocus()">
+                    (focus)="onInputFocus()">
                 </div>
               </div>
               <div class="col-auto">
