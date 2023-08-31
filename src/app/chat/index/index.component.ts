@@ -185,9 +185,9 @@ export class IndexComponent implements OnInit {
               .map(group => group.prospects))
               .find(prospect => prospect.ultimoMensaje.id  === data.idMensaje + "");
 
-            if (chatToUpdate) {
+         /*    if (chatToUpdate) {
               chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-            }
+            } */
 
             // Vuelve a ordenar los chats después de actualizar el contador
             // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
