@@ -340,6 +340,7 @@ export class IndexComponent implements OnInit {
   message: any;
 
   showChat(event: any, id: any) { // alert("este es el id seleccionado: "+id);
+    console.log(id);
     this.activeChatId = id;
     var removeClass = document.querySelectorAll('.chat-user-list li');
     removeClass.forEach((element: any) => {
@@ -367,7 +368,7 @@ export class IndexComponent implements OnInit {
           IdUltimoMensaje.push(prospect.Conversacion);
         }
 
-        return prospect.idPregunta === id;
+        return prospect.ultimoMensaje.id === id;
       });
 
     for (let key in IdUltimoMensaje[0]) {
