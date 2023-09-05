@@ -68,9 +68,11 @@ export class IndexComponent implements OnInit {
   public yaEstaSeteado = false;
   public usuarioCorreo: string;
   public AutoDeInteres = "Sentra";
+  public idRedSocial: string;
+  public idMensaje: string;
 
   public hideMenu: boolean;
-  public enviadoaseekop: boolean;
+  public enviadoaseekop: boolean = false;
 
   public activeChatId: string | null = null;
 
@@ -198,6 +200,9 @@ export class IndexComponent implements OnInit {
               const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
               return lastMsgDateB - lastMsgDateA;
             });
+
+            
+
           });
         }
       });
@@ -396,13 +401,17 @@ export class IndexComponent implements OnInit {
     this.idDistribuidor = data[0].IdDistribuidor;
     this.nombreDistribuidor = data[0].NombreGrupo;
 
-    this.enviadoaseekop = true;
+    this.idRedSocial = data[0]['idred'];
+    // console.log("data: "+data[0]['idred']);
+
+    // this.enviadoaseekop = true;
 
     this.userStatus = "En línea"
     this.userProfile = '';
     this.message = data[0].Conversacion
     this.selectedChatId = data[0].ultimoMensaje.id;
     this.onListScroll();
+
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     if (this.enviadoaseekop == true) {
@@ -413,7 +422,7 @@ export class IndexComponent implements OnInit {
     else {
       // Llamar function de envió de prospecto hacia sicop
 
-    }
+    } 
 
     // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
   }
@@ -902,21 +911,28 @@ export class IndexComponent implements OnInit {
       }
     };
 
-
+    
+    
+    if(this.enviadoaseekop==false){
+      //alert("alert");
+      //this.enviadoaseekop=true;
+      
     Swal.fire({
-      title: '¿Seguro que deseas enviarlos?',
+      title: '¿Desea enviar los datos hacia Seekop?',
       showDenyButton: true,
       confirmButtonText: `Enviar`,
       denyButtonText: `Cancelar`,
     }).then((result) => {
 
       if (result.isConfirmed) {
-
-        console.log("Estos son los datos a enviar: " + data);
+        // this.addNewProspecto();
+        // alert("alerta");
+        console.log("Estos son los datos a enviar: " + JSON.stringify(data));
         const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
 
+        // if(this.enviadoaseekop==false){
 
-        this.http.post<any>(url, data, { headers }).subscribe(
+          this.http.post<any>(url, data, { headers }).subscribe(
           response => {
 
             // console.log("esta es la respuesta: "+response.status);
@@ -932,27 +948,38 @@ export class IndexComponent implements OnInit {
               this.modalDatos.close('Close click');
             }
             else {
+              this.enviadoaseekop=true;
+              // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
+              // btnEnviarSeekop?.setAttribute('disabled', 'true');
+              this.addNewProspecto();
+
               Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
                 text: 'Se enviaron correctamente los datos a Seekop',
                 confirmButtonText: 'Ok'
+                
               });
 
-              this.addNewProspecto();
               this.modalDatos.close('Close click');
+              this.modalService.dismissAll();
             }
           },
           error => {
             console.error(error);
+            this.addNewProspecto();
             // Muestra una alerta de error
             if (error == "El Lead ya existe") {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Ya existe el leads en Seekop...',
+                text: 'El leads ya existe en Seekop ...',
                 confirmButtonText: 'Entendido'
               });
+
+              this.modalDatos.close('Close click');
+              this.modalService.dismissAll();
+
             }
             else {
               Swal.fire({
@@ -961,13 +988,31 @@ export class IndexComponent implements OnInit {
                 text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
                 confirmButtonText: 'Entendido'
               });
+              
+              this.modalDatos.close('Close click');
+              this.modalService.dismissAll();
             }
           }
-        );
-
+        ); 
       }
 
-    });
+    });   
+
+    }
+    else{
+      // alert("else");
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El leads ya existe en Seekop...',
+        confirmButtonText: 'Entendido'
+      });
+
+      this.modalDatos.close('Close click');
+      this.modalService.dismissAll();
+    }
+
   }
 
   addNewProspecto() {
@@ -977,34 +1022,25 @@ export class IndexComponent implements OnInit {
       "idpublicacion": this.IdPublicacionLead,
       "idmensaje": this.idMensajeLeads,
       "idDistribuidor": this.idDistribuidor,
-      "idredsocial": this.idMensajeLeads,
+      "idredsocial": this.idRedSocial
     };
 
-    const url = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs';
-    // https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=2838348&idpublicacion=kasdjlf&idmensaje=45455&idDistribuidor=237237&idredsocial=1828
+    // console.log("data: "+JSON.stringify(data));
 
-    this.http.post<any>(url, data).subscribe(
-      response => {
-        // Muestra una alerta de éxito y cierra el modal
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'El propecto se agregó correctamente!',
-          confirmButtonText: 'Ok'
-        });
-        this.modalService.dismissAll();
-      },
-      error => {
-        console.log(error);
-        // Muestra una alerta de error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al agregar el propecto. Por favor, inténtalo más tarde.',
-          confirmButtonText: 'Entendido'
-        });
-      }
-    );
+    this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
+        .subscribe(
+          res => {
+            
+            this.enviadoaseekop=JSON.parse(res.body.enviadoaseekop);
+            console.log("res: "+this.enviadoaseekop);
+
+          },
+          // Proporciona información más descriptiva en caso de error
+          error => {
+            console.error('Error al a:', error);
+            
+          }
+        );    
 
   }
 
