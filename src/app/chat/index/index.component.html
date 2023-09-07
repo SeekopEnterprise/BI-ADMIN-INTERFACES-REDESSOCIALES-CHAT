@@ -830,20 +830,22 @@
                       <p class="text-center">¿Desea continuar?</p>
                       <div class="mt-5">
                         <ul class="list-inline mb-1">
-                          <li class="list-inline-item px-2 me-2 ms-0">
-                            <button type="button" class="btn btn-danger avatar-sm rounded-circle"
-                              (click)="modal.minimize()">
+                          <li class="list-inline-item px-2 me-2 ms-0"> <!-- avatar-sm rounded-circle -->
+                            <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')"
+                            >Cancelar 
+                              <!--
                               <span class="avatar-title bg-transparent font-size-20">
-                                <i class="ri-thumb-down-fill"></i>
-                              </span>
+                                <i class="ri-thumb-down-fill"></i> 
+                              </span> -->
                             </button>
                           </li>
                           <li class="list-inline-item px-2">
-                            <button type="button" class="btn btn-success avatar-sm rounded-circle"
-                              (click)="confirmSend()">
+                            <button type="button" class="btn btn-primary"
+                              (click)="confirmSend()"> Enviar
+                              <!-- btn btn-success avatar-sm rounded-circle
                               <span class="avatar-title bg-transparent font-size-20">
                                 <i class="ri-thumb-up-fill"></i>
-                              </span>
+                              </span> -->
                             </button>
                           </li>
                         </ul>
