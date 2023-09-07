@@ -185,11 +185,11 @@ export class IndexComponent implements OnInit {
             // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
             const chatToUpdate = [].concat(...this.chat
               .map(group => group.prospects))
-              .find(prospect => prospect.ultimoMensaje.id  === data.idMensaje + "");
+              .find(prospect => prospect.ultimoMensaje.id === data.idMensaje + "");
 
-         /*    if (chatToUpdate) {
-              chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-            } */
+            /*    if (chatToUpdate) {
+                 chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+               } */
 
             // Vuelve a ordenar los chats después de actualizar el contador
             // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
@@ -201,7 +201,7 @@ export class IndexComponent implements OnInit {
               return lastMsgDateB - lastMsgDateA;
             });
 
-            
+
 
           });
         }
@@ -321,17 +321,17 @@ export class IndexComponent implements OnInit {
 
   onInputFocus() {
     if (this.activeChatId) {
-        const activeChat = [].concat(...this.chat.map(group => group.prospects))
-            .find(prospect => prospect.idPregunta === this.activeChatId);
+      const activeChat = [].concat(...this.chat.map(group => group.prospects))
+        .find(prospect => prospect.idPregunta === this.activeChatId);
 
-        if (activeChat) {
-            // Marca el mensaje como leído
-            activeChat.unreadCount = 0;
-            // Adicionalmente, lógica para comunicar al backend
-            // que el mensaje ha sido leído, mover aquí
-        }
+      if (activeChat) {
+        // Marca el mensaje como leído
+        activeChat.unreadCount = 0;
+        // Adicionalmente, lógica para comunicar al backend
+        // que el mensaje ha sido leído, mover aquí
+      }
     }
-}
+  }
 
 
   /**
@@ -345,6 +345,7 @@ export class IndexComponent implements OnInit {
   message: any;
 
   showChat(event: any, id: any) { // alert("este es el id seleccionado: "+id);
+    this.enviadoaseekop == false
     console.log(id);
     this.activeChatId = id;
     var removeClass = document.querySelectorAll('.chat-user-list li');
@@ -414,15 +415,22 @@ export class IndexComponent implements OnInit {
 
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
-    if (this.enviadoaseekop == true) {
-      // Deshabilitar el botón de enviar seekop #btnEnviarSeekop
-      btnEnviarSeekop?.setAttribute('disabled', 'true');
+    const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}&existe=true`;
 
-    }
-    else {
-      // Llamar function de envió de prospecto hacia sicop
+    this.http.get(apiUrl).subscribe(response => {
+      if (response && response['body'] ) {
+        this.enviadoaseekop = response['body']['exists'];
 
-    } 
+        if (this.enviadoaseekop) {
+          // Deshabilitar el botón de enviar seekop
+          btnEnviarSeekop?.setAttribute('disabled', 'true');
+        } else {
+          btnEnviarSeekop?.removeAttribute('disabled');
+        }
+      }
+    }, error => {
+      console.error("Hubo un error al obtener los datos de la API:", error);
+    });
 
     // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
   }
@@ -562,7 +570,7 @@ export class IndexComponent implements OnInit {
     const chatToUpdate = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
-      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId+"");
+      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId + "");
 
     // Si encontramos la conversación, añade el nuevo mensaje y actualiza los metadatos.
     if (chatToUpdate) {
@@ -911,97 +919,97 @@ export class IndexComponent implements OnInit {
       }
     };
 
-    
-    
-    if(this.enviadoaseekop==false){
+
+
+    if (this.enviadoaseekop == false) {
       //alert("alert");
       //this.enviadoaseekop=true;
-      
-    Swal.fire({
-      title: '¿Desea enviar los datos hacia Seekop?',
-      showDenyButton: true,
-      confirmButtonText: `Enviar`,
-      denyButtonText: `Cancelar`,
-    }).then((result) => {
 
-      if (result.isConfirmed) {
-        // this.addNewProspecto();
-        // alert("alerta");
-        console.log("Estos son los datos a enviar: " + JSON.stringify(data));
-        const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
+      Swal.fire({
+        title: '¿Desea enviar los datos hacia Seekop?',
+        showDenyButton: true,
+        confirmButtonText: `Enviar`,
+        denyButtonText: `Cancelar`,
+      }).then((result) => {
 
-        // if(this.enviadoaseekop==false){
+        if (result.isConfirmed) {
+          // this.addNewProspecto();
+          // alert("alerta");
+          console.log("Estos son los datos a enviar: " + JSON.stringify(data));
+          const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
+
+          // if(this.enviadoaseekop==false){
 
           this.http.post<any>(url, data, { headers }).subscribe(
-          response => {
+            response => {
 
-            // console.log("esta es la respuesta: "+response.status);
-            console.log("esta es la respuesta: " + response);
-            if (response == null) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                confirmButtonText: 'Ok'
-              });
+              // console.log("esta es la respuesta: "+response.status);
+              console.log("esta es la respuesta: " + response);
+              if (response == null) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
+                  confirmButtonText: 'Ok'
+                });
 
-              this.modalDatos.close('Close click');
-            }
-            else {
-              this.enviadoaseekop=true;
-              // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
-              // btnEnviarSeekop?.setAttribute('disabled', 'true');
+                this.modalDatos.close('Close click');
+              }
+              else {
+                this.enviadoaseekop = true;
+                // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
+                // btnEnviarSeekop?.setAttribute('disabled', 'true');
+                this.addNewProspecto();
+
+                Swal.fire({
+                  icon: 'success',
+                  title: '¡Éxito!',
+                  text: 'Se enviaron correctamente los datos a Seekop',
+                  confirmButtonText: 'Ok'
+
+                });
+
+                this.modalDatos.close('Close click');
+                this.modalService.dismissAll();
+              }
+            },
+            error => {
+              console.error(error);
               this.addNewProspecto();
+              // Muestra una alerta de error
+              if (error == "El Lead ya existe") {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'El leads ya existe en Seekop ...',
+                  confirmButtonText: 'Entendido'
+                });
 
-              Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: 'Se enviaron correctamente los datos a Seekop',
-                confirmButtonText: 'Ok'
-                
-              });
+                this.modalDatos.close('Close click');
+                this.modalService.dismissAll();
 
-              this.modalDatos.close('Close click');
-              this.modalService.dismissAll();
+              }
+              else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
+                  confirmButtonText: 'Entendido'
+                });
+
+                this.modalDatos.close('Close click');
+                this.modalService.dismissAll();
+              }
             }
-          },
-          error => {
-            console.error(error);
-            this.addNewProspecto();
-            // Muestra una alerta de error
-            if (error == "El Lead ya existe") {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'El leads ya existe en Seekop ...',
-                confirmButtonText: 'Entendido'
-              });
+          );
+        }
 
-              this.modalDatos.close('Close click');
-              this.modalService.dismissAll();
-
-            }
-            else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                confirmButtonText: 'Entendido'
-              });
-              
-              this.modalDatos.close('Close click');
-              this.modalService.dismissAll();
-            }
-          }
-        ); 
-      }
-
-    });   
+      });
 
     }
-    else{
+    else {
       // alert("else");
-      
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -1017,7 +1025,7 @@ export class IndexComponent implements OnInit {
 
   addNewProspecto() {
     // enviarprospecto,idpublicacion,idmensaje,idDistribuidor,idredsocial
-    const data = {
+    let data = {
       "enviarprospecto": this.idMensajeLeads,
       "idpublicacion": this.IdPublicacionLead,
       "idmensaje": this.idMensajeLeads,
@@ -1026,23 +1034,18 @@ export class IndexComponent implements OnInit {
     };
 
     // console.log("data: "+JSON.stringify(data));
-
+     console.log("esta es la url",`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
     this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
-        .subscribe(
-          res => {
-            
-            this.enviadoaseekop=JSON.parse(res.body.enviadoaseekop);
-            console.log("res: "+this.enviadoaseekop);
+      .toPromise()
+      .then(res => {
+          this.enviadoaseekop = JSON.parse(res.body.enviadoaseekop);
+          console.log("res: " + this.enviadoaseekop);
+      })
+      .catch(error => {
+          console.error('Error al a:', error);
+      });
+}
 
-          },
-          // Proporciona información más descriptiva en caso de error
-          error => {
-            console.error('Error al a:', error);
-            
-          }
-        );    
-
-  }
 
 }
 
