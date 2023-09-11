@@ -395,7 +395,7 @@ export class IndexComponent implements OnInit {
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
-    this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPublicacion);
+    this.LinkPublicacion =  this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
     this.Telefono = data[0].Telefono;
     this.LastName = data[0].Apellido;
     // this.idMensajeLeads.push(data[0].IdProspecto);
