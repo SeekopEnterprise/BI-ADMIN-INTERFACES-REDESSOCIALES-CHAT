@@ -7,7 +7,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 // import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DomSanitizer, SafeResourceUrl , SafeHtml, SafeStyle, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { chat, groups } from './data';
 import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem } from './chat.model';
@@ -117,6 +117,7 @@ export class IndexComponent implements OnInit {
     this.formData = this.formBuilder.group({
       message: ['', [Validators.required]],
     });
+    
 
   }
 
