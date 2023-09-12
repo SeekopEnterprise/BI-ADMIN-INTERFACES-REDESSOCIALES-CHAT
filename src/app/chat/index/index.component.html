@@ -759,20 +759,16 @@
                   <div class="modal-body">
                     <div class="text-center p-4">
                       <div class="col-sm-12">
-                        <!-- <img src="{{userProfile}}" alt="" class="img-thumbnail rounded-circle"> -->
                         <h4>{{RedSocial + ' - ' + Distribuidor}}</h4>
                         <a href="{{urlPublicacion}}" target="_blank">
-                          Visitar la publicación
+                            Visitar la publicación
                         </a>
-                      </div>
-                      <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
-
-                      <div class="container container-lg container-md container-sm container-xs">
-                        <iframe class="responsive-iframe" id="iframePub" frameborder="0" [src]="LinkPublicacion"
-                          webkitallowfullscreen mozallowfullscreen allowfullscreen
-                          style="position:absolute; top:0; left: 0">
-                        </iframe>
-                      </div>
+                    </div>
+                    <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
+                    <div class="container container-lg container-md container-sm container-xs">
+                        <!-- Aquí está el cambio para usar screenshotlayer -->
+                        <img src="https://api.screenshotlayer.com/api/capture?access_key=3c7737bcc6852526ad08f776e80773e4&url={{urlPublicacion}}&viewport=1440x900&width=500" alt="Vista previa del sitio" class="img-fluid">
+                    </div>
                       <!--
                       <img src="../../../assets/images/publicacion.png" class="img-fluid"> -->
 
@@ -832,10 +828,10 @@
                         <ul class="list-inline mb-1">
                           <li class="list-inline-item px-2 me-2 ms-0"> <!-- avatar-sm rounded-circle -->
                             <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')"
-                            >Cancelar 
+                            >Cancelar
                               <!--
                               <span class="avatar-title bg-transparent font-size-20">
-                                <i class="ri-thumb-down-fill"></i> 
+                                <i class="ri-thumb-down-fill"></i>
                               </span> -->
                             </button>
                           </li>
