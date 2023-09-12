@@ -6,7 +6,9 @@ import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+// import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl , SafeHtml, SafeStyle, SafeUrl } from '@angular/platform-browser';
+
 import { chat, groups } from './data';
 import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem } from './chat.model';
 
@@ -56,7 +58,7 @@ export class IndexComponent implements OnInit {
   public RedSocial: string;
   public Email: string;
   public IdPublicacionLead: string;
-  public LinkPublicacion: SafeResourceUrl;  // string;
+  public LinkPublicacion: SafeResourceUrl | undefined;  // string;
   public modalDatos: any;
 
   public Telefono: string;
@@ -396,7 +398,7 @@ export class IndexComponent implements OnInit {
     this.urlPublicacion = data[0].urlpublicacion;
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
     this.LinkPublicacion =  this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
-    this.Telefono = data[0].Telefono;
+    this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
     this.LastName = data[0].Apellido;
     // this.idMensajeLeads.push(data[0].IdProspecto);
     this.idDistribuidor = data[0].IdDistribuidor;
