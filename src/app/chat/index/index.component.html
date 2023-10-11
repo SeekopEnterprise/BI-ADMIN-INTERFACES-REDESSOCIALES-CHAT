@@ -796,10 +796,11 @@
                   </div>
                 </ng-template>
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" id="btnEnviarSeekop" class="btn nav-btn" data-bs-toggle="modal"
+                  <button type="button" id="btnEnviarSeekop_{{idMensajeLeads}}" class="btn nav-btn" data-bs-toggle="modal"
                     data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
                     (click)="openVideoModal(videoContent)">
-                    <i class="ri-send-plane-fill"></i>
+                    <i class="ri-send-plane-fill" id="btnenviarleads_{{idMensajeLeads}}"></i>
+                    <i class="ri-check-line" id="btnenviadoleads_{{idMensajeLeads}}" style="color:#14A44D;font-size: 1.2rem;display: none;"></i>
                   </button>
                 </li>
                 <ng-template #videoContent let-modal>

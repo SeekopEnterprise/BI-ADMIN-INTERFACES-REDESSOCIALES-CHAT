@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Renderer2  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -113,7 +113,7 @@ export class IndexComponent implements OnInit {
 
   constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer) {
+    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2) {
     this.formData = this.formBuilder.group({
       message: ['', [Validators.required]],
     });
@@ -417,7 +417,7 @@ export class IndexComponent implements OnInit {
     this.onListScroll();
 
 
-    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
+    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_"+this.idMensajeLeads);
     const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}&existe=true`;
 
     this.http.get(apiUrl).subscribe(response => {
@@ -427,6 +427,20 @@ export class IndexComponent implements OnInit {
         if (this.enviadoaseekop) {
           // Deshabilitar el botón de enviar seekop
           btnEnviarSeekop?.setAttribute('disabled', 'true');
+          // btnEnviarSeekop?.removeAttribute('tooltip');
+          // btnEnviarSeekop?.setAttribute('title', 'Hello...');
+          // btnEnviarSeekop?.setAttribute('title', 'This is a tooltip text.');
+          document.getElementById('btnenviarleads_'+this.idMensajeLeads).style.display='none';
+          document.getElementById('btnenviadoleads_'+this.idMensajeLeads).style.display='block';
+
+        /* let clickTooltip: Tooltip = new Tooltip({
+            opensOn: 'Click',
+            content: 'Tooltip from click'
+        });
+        clickTooltip.appendTo('#'+btnEnviarSeekop);
+        */
+
+
         } else {
           btnEnviarSeekop?.removeAttribute('disabled');
         }
