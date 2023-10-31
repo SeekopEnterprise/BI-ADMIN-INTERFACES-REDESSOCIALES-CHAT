@@ -233,58 +233,131 @@
           <!-- Start chat-message-list -->
           <div class="px-2">
             <h5 class="mb-3 px-3 font-size-16">Recientes</h5>
+            <button type="button" class="btn nav-btn" (click)="vistaPorDistribuidor = !vistaPorDistribuidor">
+              <i class="ri-shuffle-line"></i>
+              {{ vistaPorDistribuidor ? 'Ver por Red Social' : 'Ver por Distribuidor' }}
+            </button>
+
 
             <perfect-scrollbar class="chat-message-list">
               <ul class="list-unstyled chat-list chat-user-list">
-                <ng-container *ngFor="let group of chat">
-                  <div class="p-3 font-weight-bold text-primary">
-                    <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ group.key }}
-                  </div>
-                  <!-- <li class="group-name">{{ group.key }}</li> -->
-                  <li *ngFor="let user of group.prospects" [ngClass]="{'typing': user.isTyping}"
-                    (click)="showChat($event, user.ultimoMensaje['id'])">
-                    <a href="javascript:void(0);">
-                      <div class="d-flex">
-                        <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
-                          <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
-                            class="rounded-circle avatar-xs" alt="">
-                          <div class="avatar-xs" *ngIf="!user.profilePicture">
-                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                              {{(user.Nombre | translate).charAt(0)}}
-                            </span>
-                          </div>
-                          <span *ngIf="user" class="user-status"></span>
-                        </div>
 
-                        <div class="flex-grow-1 overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
-                          <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing<span
-                              class="animate-typing">
-                              <span class="dot ms-1"></span>
-                              <span class="dot ms-1"></span>
-                              <span class="dot ms-1"></span>
-                            </span></p>
-                          <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p class="chat-user-message text-truncate mb-0"
-                              *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
-                              style="flex: 1; margin-right: 20px;">
-                              {{getLastMessage(user.Conversacion)?.texto}}
-                            </p>
-                            <div class="unread-message" style="margin-left: 20px;">
-                              <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
-                                {{user.unreadCount}}
-                              </span>
-                            </div>
-                          </div>
+                <!-- Vista por Red Social -->
+                <ng-container *ngIf="!vistaPorDistribuidor">
+                  <ng-container *ngFor="let redSocial of chatByRedSocial | keyvalue">
 
 
-                        </div>
-                        <div class="font-size-11">{{user.time | translate}}</div>
+                    <div class="p-3 font-weight-bold text-primary">
+                      <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ redSocial.key }}
+                    </div>
 
+                    <ng-container *ngFor="let group of redSocial.value | keyvalue">
+
+
+                      <div class="p-3 font-weight-bold text-info">
+
+                        <i class="ri-share-line"></i>&nbsp;&nbsp;{{ group.key }}
                       </div>
-                    </a>
-                  </li>
+                      <li *ngFor="let user of group.value" [ngClass]="{'typing': user.isTyping}"
+                        (click)="showChat($event, user.ultimoMensaje['id'])">
+                        <!-- Código que muestra la información del usuario y sus mensajes -->
+                        <a href="javascript:void(0);">
+                          <div class="d-flex">
+                            <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
+                              <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
+                                class="rounded-circle avatar-xs" alt="">
+                              <div class="avatar-xs" *ngIf="!user.profilePicture">
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                  {{(user.Nombre | translate).charAt(0)}}
+                                </span>
+                              </div>
+                              <span *ngIf="user" class="user-status"></span>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                              <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
+                              <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing
+                                <span class="animate-typing">
+                                  <span class="dot ms-1"></span>
+                                  <span class="dot ms-1"></span>
+                                  <span class="dot ms-1"></span>
+                                </span>
+                              </p>
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p class="chat-user-message text-truncate mb-0"
+                                  *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
+                                  style="flex: 1; margin-right: 20px;">
+                                  {{getLastMessage(user.Conversacion)?.texto}}
+                                </p>
+                                <div class="unread-message" style="margin-left: 20px;">
+                                  <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
+                                    {{user.unreadCount}}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="font-size-11">{{user.time | translate}}</div>
+                          </div>
+                        </a>
+                      </li>
+                    </ng-container>
+                  </ng-container>
                 </ng-container>
+
+                <!-- Vista por Distribuidor -->
+                <ng-container *ngIf="vistaPorDistribuidor">
+                  <ng-container *ngFor="let distribuidorGroup of chatByDistributorThenRedSocial | keyvalue">
+                    <div class="p-3 font-weight-bold text-primary">
+                      <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ distribuidorGroup.key }}
+                    </div>
+                    <ng-container *ngFor="let redSocialGroup of distribuidorGroup.value | keyvalue">
+                      <div class="p-3 font-weight-bold text-info">
+
+                        <i class="ri-share-line"></i>&nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div>
+                      <li *ngFor="let user of redSocialGroup.value" [ngClass]="{'typing': user.isTyping}"
+                        (click)="showChat($event, user.ultimoMensaje['id'])">
+                        <a href="javascript:void(0);">
+                          <div class="d-flex">
+                            <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
+                              <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
+                                class="rounded-circle avatar-xs" alt="">
+                              <div class="avatar-xs" *ngIf="!user.profilePicture">
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                  {{(user.Nombre | translate).charAt(0)}}
+                                </span>
+                              </div>
+                              <span *ngIf="user" class="user-status"></span>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                              <h5 class="text-truncate font-size-15 mb-1">{{user.Nombre | translate}}</h5>
+                              <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">typing<span
+                                  class="animate-typing">
+                                  <span class="dot ms-1"></span>
+                                  <span class="dot ms-1"></span>
+                                  <span class="dot ms-1"></span>
+                                </span></p>
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p class="chat-user-message text-truncate mb-0"
+                                  *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
+                                  style="flex: 1; margin-right: 20px;">
+                                  {{getLastMessage(user.Conversacion)?.texto}}
+                                </p>
+                                <div class="unread-message" style="margin-left: 20px;">
+                                  <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
+                                    {{user.unreadCount}}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="font-size-11">{{user.time | translate}}</div>
+                          </div>
+                        </a>
+                      </li>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+
+
               </ul>
             </perfect-scrollbar>
 
@@ -761,14 +834,16 @@
                       <div class="col-sm-12">
                         <h4>{{RedSocial + ' - ' + Distribuidor}}</h4>
                         <a href="{{urlPublicacion}}" target="_blank">
-                            Visitar la publicación
+                          Visitar la publicación
                         </a>
-                    </div>
-                    <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
-                    <div class="container container-lg container-md container-sm container-xs">
+                      </div>
+                      <p class="text-muted">Id Publicación: {{IdPublicacionLead}}</p>
+                      <div class="container container-lg container-md container-sm container-xs">
                         <!-- Aquí está el cambio para usar screenshotlayer -->
-                        <img src="https://api.screenshotlayer.com/api/capture?access_key=3c7737bcc6852526ad08f776e80773e4&url={{urlPublicacion}}&viewport=1440x900&width=500" alt="Vista previa del sitio" style="max-width: 115%; height: 100%;">
-                    </div>
+                        <img
+                          src="https://api.screenshotlayer.com/api/capture?access_key=3c7737bcc6852526ad08f776e80773e4&url={{urlPublicacion}}&viewport=1440x900&width=500"
+                          alt="Vista previa del sitio" style="max-width: 115%; height: 100%;">
+                      </div>
                       <!--
                       <img src="../../../assets/images/publicacion.png" class="img-fluid"> -->
 
@@ -796,11 +871,12 @@
                   </div>
                 </ng-template>
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" id="btnEnviarSeekop_{{idMensajeLeads}}" class="btn nav-btn" data-bs-toggle="modal"
-                    data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
+                  <button type="button" id="btnEnviarSeekop_{{idMensajeLeads}}" class="btn nav-btn"
+                    data-bs-toggle="modal" data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
                     (click)="openVideoModal(videoContent)">
                     <i class="ri-send-plane-fill" id="btnenviarleads_{{idMensajeLeads}}"></i>
-                    <i class="ri-check-line" id="btnenviadoleads_{{idMensajeLeads}}" style="color:#14A44D;font-size: 1.2rem;display: none;"></i>
+                    <i class="ri-check-line" id="btnenviadoleads_{{idMensajeLeads}}"
+                      style="color:#14A44D;font-size: 1.2rem;display: none;"></i>
                   </button>
                 </li>
                 <ng-template #videoContent let-modal>
@@ -828,8 +904,7 @@
                       <div class="mt-5">
                         <ul class="list-inline mb-1">
                           <li class="list-inline-item px-2 me-2 ms-0"> <!-- avatar-sm rounded-circle -->
-                            <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')"
-                            >Cancelar
+                            <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar
                               <!--
                               <span class="avatar-title bg-transparent font-size-20">
                                 <i class="ri-thumb-down-fill"></i>
@@ -837,8 +912,7 @@
                             </button>
                           </li>
                           <li class="list-inline-item px-2">
-                            <button type="button" class="btn btn-primary"
-                              (click)="confirmSend()"> Enviar
+                            <button type="button" class="btn btn-primary" (click)="confirmSend()"> Enviar
                               <!-- btn btn-success avatar-sm rounded-circle
                               <span class="avatar-title bg-transparent font-size-20">
                                 <i class="ri-thumb-up-fill"></i>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, Renderer2  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Renderer2 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -77,7 +77,9 @@ export class IndexComponent implements OnInit {
   public enviadoaseekop: boolean = false;
 
   public activeChatId: string | null = null;
-
+  public chatByRedSocial: any = {}
+  public vistaPorDistribuidor: boolean = true;
+  public chatByDistributorThenRedSocial: any;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -117,7 +119,7 @@ export class IndexComponent implements OnInit {
     this.formData = this.formBuilder.group({
       message: ['', [Validators.required]],
     });
-    
+
 
   }
 
@@ -393,12 +395,12 @@ export class IndexComponent implements OnInit {
     data[0].unreadCount = 0;
     this.userName = data[0].Nombre;
     this.Distribuidor = data[0].NombreGrupo;
-    this.RedSocial = "Mercado Libre"
+    this.RedSocial = data[0].redSocial
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
-    this.LinkPublicacion =  this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
+    this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
     this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
     this.LastName = data[0].Apellido;
     // this.idMensajeLeads.push(data[0].IdProspecto);
@@ -417,11 +419,11 @@ export class IndexComponent implements OnInit {
     this.onListScroll();
 
 
-    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_"+this.idMensajeLeads);
+    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_" + this.idMensajeLeads);
     const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}&existe=true`;
 
     this.http.get(apiUrl).subscribe(response => {
-      if (response && response['body'] ) {
+      if (response && response['body']) {
         this.enviadoaseekop = response['body']['exists'];
 
         if (this.enviadoaseekop) {
@@ -430,15 +432,15 @@ export class IndexComponent implements OnInit {
           // btnEnviarSeekop?.removeAttribute('tooltip');
           // btnEnviarSeekop?.setAttribute('title', 'Hello...');
           // btnEnviarSeekop?.setAttribute('title', 'This is a tooltip text.');
-          document.getElementById('btnenviarleads_'+this.idMensajeLeads).style.display='none';
-          document.getElementById('btnenviadoleads_'+this.idMensajeLeads).style.display='block';
+          document.getElementById('btnenviarleads_' + this.idMensajeLeads).style.display = 'none';
+          document.getElementById('btnenviadoleads_' + this.idMensajeLeads).style.display = 'block';
 
-        /* let clickTooltip: Tooltip = new Tooltip({
-            opensOn: 'Click',
-            content: 'Tooltip from click'
-        });
-        clickTooltip.appendTo('#'+btnEnviarSeekop);
-        */
+          /* let clickTooltip: Tooltip = new Tooltip({
+              opensOn: 'Click',
+              content: 'Tooltip from click'
+          });
+          clickTooltip.appendTo('#'+btnEnviarSeekop);
+          */
 
 
         } else {
@@ -812,7 +814,41 @@ export class IndexComponent implements OnInit {
             }
           });
 
-          // Agrupa los prospectos por distribuidor
+          // Agrupar por red social y distribuidor
+          const groupedByRedSocial = prospects.reduce((groups, prospect) => {
+            const red = prospect.redSocial;
+            if (!groups[red]) {
+              groups[red] = {};
+            }
+            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
+            if (!groups[red][grupo]) {
+              groups[red][grupo] = [];
+            }
+            groups[red][grupo].push(prospect);
+            return groups;
+          }, {});
+
+          this.chatByRedSocial = groupedByRedSocial;
+
+          // Agrupar por distribuidor, luego por red social
+          const groupedByDistributorThenRedSocial = prospects.reduce((groups, prospect) => {
+            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
+            const red = prospect.redSocial;
+
+            if (!groups[grupo]) {
+              groups[grupo] = {};
+            }
+            if (!groups[grupo][red]) {
+              groups[grupo][red] = [];
+            }
+
+            groups[grupo][red].push(prospect);
+            return groups;
+          }, {});
+
+          this.chatByDistributorThenRedSocial = groupedByDistributorThenRedSocial;
+
+          // El código anterior para agrupar solo por distribuidor
           const grouped = prospects.reduce((groups, prospect) => {
             const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
             groups[grupo] = groups[grupo] || [];
@@ -822,9 +858,7 @@ export class IndexComponent implements OnInit {
 
           this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
 
-          // Ordena los grupos por la fecha del último mensaje en la conversación
-          // Esto garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
-          // Ordena los grupos por la fecha más reciente entre FechaCreacion y FechaRespuesta del último mensaje en la conversación
+          // Ordena los grupos por fecha
           this.chat.sort((a, b) => {
             const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
             const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
@@ -844,6 +878,7 @@ export class IndexComponent implements OnInit {
       );
     });
   }
+
 
 
   loadGrupos(): Promise<void> {
@@ -1051,17 +1086,17 @@ export class IndexComponent implements OnInit {
     };
 
     // console.log("data: "+JSON.stringify(data));
-     console.log("esta es la url",`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
+    console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
     this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
       .toPromise()
       .then(res => {
-          this.enviadoaseekop = JSON.parse(res.body.enviadoaseekop);
-          console.log("res: " + this.enviadoaseekop);
+        this.enviadoaseekop = JSON.parse(res.body.enviadoaseekop);
+        console.log("res: " + this.enviadoaseekop);
       })
       .catch(error => {
-          console.error('Error al a:', error);
+        console.error('Error al a:', error);
       });
-}
+  }
 
 
 }
