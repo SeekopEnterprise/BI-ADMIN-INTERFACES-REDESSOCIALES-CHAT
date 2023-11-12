@@ -391,7 +391,7 @@ export class IndexComponent implements OnInit {
     }
 
     // console.log(Object.values(IdUltimoMensaje[0][0]))
-
+    //
     data[0].unreadCount = 0;
     this.userName = data[0].Nombre;
     this.Distribuidor = data[0].NombreGrupo;
