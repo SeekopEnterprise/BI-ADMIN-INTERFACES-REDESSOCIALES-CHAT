@@ -158,12 +158,12 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
       
       console.log("red init: "+this.nombreRed);
-      if(this.nombreRed=='Facebook'){
+      if(this.nombreRed=='Facebook' ||this.nombreRed=='Instagram'){
         this.selectionChange(value);
       }else{
         this.redesusuariosForm.removeControl('idcliente');
         this.redesusuariosForm.removeControl('nombrepagina');
-      }
+      } 
       // this.selectionChange(value);
     }) 
     
@@ -461,6 +461,10 @@ export class RedessocialesusuariosComponent implements OnInit {
           nombrepagina:""
         };
       }
+      else if(idred_select=="Instagram"){ // Instagram
+        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
+        datos = this.redesusuariosForm.value;
+      }
       else{ // Instagram
         
       }
@@ -518,7 +522,12 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `http://auth.mercadolibre.com.mx/authorization?response_type=code&client_id=7024360621079096&redirect_uri=https://06qe3dt50i.execute-api.us-west-1.amazonaws.com/dev&state=${iddistribuidor}`;
           
       }
-      else{ // Instagram
+      else if(idred_select=="Instagram"){ // Instagram
+        // alert("Instagram");
+        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
+        
+      }
+      else{
         
       }
 
@@ -649,7 +658,13 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
-      else{ // Instagram
+      else if(idred_select=="Instagram"){ // Instagram
+        // alert("probar conection con Instagram");
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
+      else{ // 
         
       }
 
@@ -762,7 +777,13 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
-      else{ // Instagram
+      else if(idred_select=="Instagram"){ // Mercado L
+        
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
+      else{ // 
         
       }
 

@@ -51,7 +51,7 @@
 
               
 
-              <div class="mb-3" *ngIf="nombreRed=='Facebook'"> 
+              <div class="mb-3" *ngIf="nombreRed=='Facebook' || nombreRed=='Instagram'"> 
                 <label for="noCliente">No. de Cliente/Usuario*</label>
                 <input (keyup)="onKeyUp($event)" id="idcliente" formControlName="idcliente" type="text"
                 class="form-control" id="idcliente"
@@ -65,7 +65,7 @@
                  -->
               </div>
 
-              <div class="mb-3" *ngIf="nombreRed=='Facebook'"> 
+              <div class="mb-3" *ngIf="nombreRed=='Facebook' || nombreRed=='Instagram'"> 
                 <label for="pagina">Pagina (Nombre)*</label>
                 <input (keyup)="onKeyUp($event)" id="nombrepagina" formControlName="nombrepagina" type="text"
                 class="form-control"
