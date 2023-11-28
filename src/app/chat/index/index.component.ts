@@ -961,18 +961,18 @@ export class IndexComponent implements OnInit {
           "comments": " Prospecto enviado desde Mercado Libre de Comunity Manager  "
         },
         "vendor": {
-          "source": "MERCADOLIBRE",
+          "source": this.RedSocial, // "MERCADOLIBRE",
           "id": this.idDistribuidor, // this.idDistribuidor,// 158814  "609024", // id distribuidor al que se asigan el prospecto
           "name": this.nombreDistribuidor,// "Suzuki Queretaro" // Nombre del distribuior
         }
       },
       "provider": {
-        "name": "MERCADOLIBRE"
+        "name": (this.RedSocial.replace(/\s/g, '')) // "MERCADOLIBRE"
       }
     };
 
-
-
+    // console.log("Estos son los datos a enviar: " + JSON.stringify(data));
+    
     if (this.enviadoaseekop == false) {
       //alert("alert");
       //this.enviadoaseekop=true;
@@ -1071,7 +1071,7 @@ export class IndexComponent implements OnInit {
 
       this.modalDatos.close('Close click');
       this.modalService.dismissAll();
-    }
+    } 
 
   }
 

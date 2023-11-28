@@ -158,7 +158,8 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
       
       console.log("red init: "+this.nombreRed);
-      if(this.nombreRed=='Facebook' ||this.nombreRed=='Instagram'){
+      if(this.nombreRed=='Facebook' || this.nombreRed=='Instagram' || this.nombreRed=='TikTok'
+      || this.nombreRed=='Pinterest'){
         this.selectionChange(value);
       }else{
         this.redesusuariosForm.removeControl('idcliente');
@@ -465,6 +466,14 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
         datos = this.redesusuariosForm.value;
       }
+      else if(idred_select=="TikTok"){ // TikTok
+        url = `https://business-api.tiktok.com/portal/auth?app_id=7247688267519246337&state=${iddistribuidor}&redirect_uri=https%3A%2F%2Fapi.sicopweb.com%2Ftiktok%2Fdev%2Fauth`;
+        datos = this.redesusuariosForm.value;
+      }
+      else if(idred_select=="Pinterest"){ // Pinterest
+        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
+        datos = this.redesusuariosForm.value;
+      }
       else{ // Instagram
         
       }
@@ -494,7 +503,7 @@ export class RedessocialesusuariosComponent implements OnInit {
           console.log(error);
         }
       ); 
-    }
+    } 
   }
 
   asociarCuenta_EditarUsuario() { 
@@ -524,6 +533,16 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
       else if(idred_select=="Instagram"){ // Instagram
         // alert("Instagram");
+        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
+        
+      }
+      else if(idred_select=="TikTok"){ // Instagram
+        
+        url = `https://business-api.tiktok.com/portal/auth?app_id=7247688267519246337&state=${iddistribuidor}&redirect_uri=https%3A%2F%2Fapi.sicopweb.com%2Ftiktok%2Fdev%2Fauth`;
+        
+      }
+      else if(idred_select=="Pinterest"){ // Pinterest
+        
         url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
         
       }
@@ -664,6 +683,20 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
+      else if(idred_select=="TikTok"){ // TikTok
+        // alert("probar conection con Instagram");
+       
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
+      else if(idred_select=="Pinterest"){ // Pinterest
+        // alert("probar conection con Instagram");
+        
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
       else{ // 
         
       }
@@ -777,7 +810,19 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
-      else if(idred_select=="Instagram"){ // Mercado L
+      else if(idred_select=="Instagram"){ // Instagram
+        
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
+      else if(idred_select=="TikTok"){ // TikTok
+        
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+          
+      }
+      else if(idred_select=="Pinterest"){ // Pinterest
         
         const token = 'APP_UR4158433912938780-041117-';
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
