@@ -1232,10 +1232,22 @@
   <div class="offcanvas-body profile-offcanvas p-0">
     <div class="text-center p-4 border-bottom">
       <div class="mb-4">
-        <img
+        <!-- Si idRedSocial es 12, muestra la imagen de Facebook -->
+        <img *ngIf="idRedSocial === 12"
+          src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Facebook">
+
+        <!-- Si idRedSocial es 16, muestra la imagen de Mercado Libre, que es la default -->
+        <img *ngIf="idRedSocial === 16"
           src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
-          class="rounded-circle avatar-lg img-thumbnail" alt="">
+          class="rounded-circle avatar-lg img-thumbnail" alt="Mercado Libre">
+
+        <!-- Si idRedSocial no es ni 12 ni 16, también muestra la imagen de Mercado Libre -->
+        <img *ngIf="idRedSocial !== 12 && idRedSocial !== 16"
+          src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Default Image">
       </div>
+
       <h5 class="font-size-16 mb-1 text-truncate">{{RedSocial + ' - ' +Distribuidor}}</h5>
       <p class="text-muted text-truncate mb-1"><i class="ri-record-circle-fill font-size-10 me-1"
           [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
