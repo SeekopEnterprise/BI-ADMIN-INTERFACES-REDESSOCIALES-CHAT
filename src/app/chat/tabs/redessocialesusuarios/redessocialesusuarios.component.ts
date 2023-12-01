@@ -157,14 +157,15 @@ export class RedessocialesusuariosComponent implements OnInit {
         this.nombreRed=filterred[0]['nombre'];
       }
       
+      /*
       console.log("red init: "+this.nombreRed);
       if(this.nombreRed=='Facebook' || this.nombreRed=='Instagram' || this.nombreRed=='TikTok'
       || this.nombreRed=='Pinterest'){
         this.selectionChange(value);
-      }else{
+      }else{ */
         this.redesusuariosForm.removeControl('idcliente');
         this.redesusuariosForm.removeControl('nombrepagina');
-      } 
+      // } 
       // this.selectionChange(value);
     }) 
     
@@ -451,7 +452,13 @@ export class RedessocialesusuariosComponent implements OnInit {
       console.log("datos form: "+JSON.stringify(this.redesusuariosForm.value));
       if(idred_select=="Facebook"){ // Facebook
         url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
-        datos = this.redesusuariosForm.value;
+        // datos = this.redesusuariosForm.value;
+        datos={
+          idred:this.redesusuariosForm.value.idred,
+          iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+          idcliente:"",
+          nombrepagina:""
+        };
       }
       else if(idred_select=="Mercado Libre"){ // Mercado L
         url = `http://auth.mercadolibre.com.mx/authorization?response_type=code&client_id=7024360621079096&redirect_uri=https://06qe3dt50i.execute-api.us-west-1.amazonaws.com/dev&state=${iddistribuidor}`;
@@ -464,15 +471,33 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
       else if(idred_select=="Instagram"){ // Instagram
         url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
-        datos = this.redesusuariosForm.value;
+        // datos = this.redesusuariosForm.value;
+        datos={
+          idred:this.redesusuariosForm.value.idred,
+          iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+          idcliente:"",
+          nombrepagina:""
+        };
       }
       else if(idred_select=="TikTok"){ // TikTok
         url = `https://business-api.tiktok.com/portal/auth?app_id=7247688267519246337&state=${iddistribuidor}&redirect_uri=https%3A%2F%2Fapi.sicopweb.com%2Ftiktok%2Fdev%2Fauth`;
-        datos = this.redesusuariosForm.value;
+        // datos = this.redesusuariosForm.value;
+        datos={
+          idred:this.redesusuariosForm.value.idred,
+          iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+          idcliente:"",
+          nombrepagina:""
+        };
       }
       else if(idred_select=="Pinterest"){ // Pinterest
         url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
-        datos = this.redesusuariosForm.value;
+        // datos = this.redesusuariosForm.value;
+        datos={
+          idred:this.redesusuariosForm.value.idred,
+          iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+          idcliente:"",
+          nombrepagina:""
+        };
       }
       else{ // Instagram
         
