@@ -387,6 +387,7 @@ export class IndexComponent implements OnInit {
       if (IdUltimoMensaje[0][key].ultimoMensaje == true) {
         // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
         this.idMensajeLeads = IdUltimoMensaje[0][key].id;
+        
       }
     }
 
@@ -425,7 +426,7 @@ export class IndexComponent implements OnInit {
     this.http.get(apiUrl).subscribe(response => {
       if (response && response['body']) {
         this.enviadoaseekop = response['body']['exists'];
-
+        console.log("estatus envio: "+this.enviadoaseekop);
         if (this.enviadoaseekop) {
           // Deshabilitar el botón de enviar seekop
           btnEnviarSeekop?.setAttribute('disabled', 'true');
@@ -914,10 +915,11 @@ export class IndexComponent implements OnInit {
                 "Apellido: "+this.LastName+
                 "Email: "+this.Email+
                 "Telefono: "+this.Telefono+
-                "idMsj: "+this.idMensaje+
+                "idMsj: "+this.idMensajeLeads+
                 "idDistribuidor: "+this.idDistribuidor+
-                "Distribuidor: "+this.nombreDistribuidor); */
-
+                "Distribuidor: "+this.nombreDistribuidor); 
+    */
+    // this.addNewProspecto();
     // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
@@ -1008,7 +1010,7 @@ export class IndexComponent implements OnInit {
                 this.modalDatos.close('Close click');
               }
               else {
-                this.enviadoaseekop = true;
+                // this.enviadoaseekop = true;
                 // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
                 // btnEnviarSeekop?.setAttribute('disabled', 'true');
                 this.addNewProspecto();
@@ -1084,9 +1086,9 @@ export class IndexComponent implements OnInit {
       "idDistribuidor": this.idDistribuidor,
       "idredsocial": this.idRedSocial
     };
-
-    // console.log("data: "+JSON.stringify(data));
-    console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
+    
+    console.log("data: "+JSON.stringify(data));
+    // console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
     this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
       .toPromise()
       .then(res => {

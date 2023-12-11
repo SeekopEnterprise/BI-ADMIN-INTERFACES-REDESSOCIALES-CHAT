@@ -492,7 +492,7 @@ export class RedessocialesusuariosComponent implements OnInit {
         };
       }
       else if(idred_select=="Pinterest"){ // Pinterest
-        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
+        url = `https://www.pinterest.com/oauth/?response_type=code&redirect_uri=https%3A%2F%2Fwebhook.site%2F8db655f9-8647-4ef5-8f2c-fda260c781f9&client_id=1493135&scope=boards:read,pins:read,user_accounts:read&state=${iddistribuidor}`;
         // datos = this.redesusuariosForm.value;
         datos={
           idred:this.redesusuariosForm.value.idred,
@@ -570,8 +570,7 @@ export class RedessocialesusuariosComponent implements OnInit {
       }
       else if(idred_select=="Pinterest"){ // Pinterest
         
-        url = `https://www.facebook.com/v14.0/dialog/oauth?client_id=501368951544804&redirect_uri=https%3A%2F%2Fwww.sicopweb.com%2Fapiseekop%2Fresources%2Frest%2Ffb%2Fcallback&state=${iddistribuidor}&auth_type=rerequest&scope=pages_show_list%2Cpages_read_engagement%2Cads_management%2Cpages_manage_ads%2Cbusiness_management%2Cleads_retrieval%2Cpages_manage_metadata%2Cpages_read_user_content%2Cpages_read_user_content`;
-        
+        url = `https://www.pinterest.com/oauth/?response_type=code&redirect_uri=https%3A%2F%2Fwebhook.site%2F8db655f9-8647-4ef5-8f2c-fda260c781f9&client_id=1493135&scope=boards:read,pins:read,user_accounts:read&state=${iddistribuidor}`;
       }
       else{
         
