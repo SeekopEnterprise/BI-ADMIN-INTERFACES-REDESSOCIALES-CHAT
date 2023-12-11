@@ -83,6 +83,10 @@ export class IndexComponent implements OnInit {
   public lastSentMessage = '';
 
 
+  public par_IdPublicacionLead:string;
+  public par_idDistribuidor:string;
+  public par_idRedSocial:string;
+
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
@@ -389,6 +393,7 @@ export class IndexComponent implements OnInit {
       if (IdUltimoMensaje[0][key].ultimoMensaje == true) {
         // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
         this.idMensajeLeads = IdUltimoMensaje[0][key].id;
+        
       }
     }
 
@@ -422,12 +427,31 @@ export class IndexComponent implements OnInit {
 
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_" + this.idMensajeLeads);
-    const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}&existe=true`;
+
+    
+
+    if(this.IdPublicacionLead==''){
+      this.par_IdPublicacionLead=null;
+    }else{
+      this.par_IdPublicacionLead=this.IdPublicacionLead;
+    }
+    if(this.idDistribuidor==''){
+      this.par_idDistribuidor=null;
+    }else{
+      this.par_idDistribuidor=this.idDistribuidor;
+    }
+    if(this.idRedSocial==''){
+      this.par_idRedSocial=null;
+    }else{
+      this.par_idRedSocial=this.idRedSocial;
+    }
+    
+    const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}&existe=true`;
 
     this.http.get(apiUrl).subscribe(response => {
       if (response && response['body']) {
         this.enviadoaseekop = response['body']['exists'];
-
+        console.log("estatus envio: "+this.enviadoaseekop);
         if (this.enviadoaseekop) {
           // Deshabilitar el botón de enviar seekop
           btnEnviarSeekop?.setAttribute('disabled', 'true');
@@ -924,10 +948,11 @@ export class IndexComponent implements OnInit {
                 "Apellido: "+this.LastName+
                 "Email: "+this.Email+
                 "Telefono: "+this.Telefono+
-                "idMsj: "+this.idMensaje+
+                "idMsj: "+this.idMensajeLeads+
                 "idDistribuidor: "+this.idDistribuidor+
-                "Distribuidor: "+this.nombreDistribuidor); */
-
+                "Distribuidor: "+this.nombreDistribuidor); 
+    */
+    // this.addNewProspecto();
     // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
@@ -963,7 +988,7 @@ export class IndexComponent implements OnInit {
                 "value": "" // "Chavez"
               }
             ],
-            "email": this.Email, // "marino@gmail.com",
+            "email": "test@gmail.com", // this.Email, // "marino@gmail.com",
             "phone": [
               this.Telefono // "5511223344"
             ]
@@ -1018,7 +1043,7 @@ export class IndexComponent implements OnInit {
                 this.modalDatos.close('Close click');
               }
               else {
-                this.enviadoaseekop = true;
+                // this.enviadoaseekop = true;
                 // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
                 // btnEnviarSeekop?.setAttribute('disabled', 'true');
                 this.addNewProspecto();
@@ -1094,10 +1119,10 @@ export class IndexComponent implements OnInit {
       "idDistribuidor": this.idDistribuidor,
       "idredsocial": this.idRedSocial
     };
-
-    // console.log("data: "+JSON.stringify(data));
-    console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
-    this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
+    
+    console.log("data: "+JSON.stringify(data));
+    // console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
+    this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}`)
       .toPromise()
       .then(res => {
         this.enviadoaseekop = JSON.parse(res.body.enviadoaseekop);
