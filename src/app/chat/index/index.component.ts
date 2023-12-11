@@ -80,6 +80,8 @@ export class IndexComponent implements OnInit {
   public chatByRedSocial: any = {}
   public vistaPorDistribuidor: boolean = true;
   public chatByDistributorThenRedSocial: any;
+  public lastSentMessage = '';
+
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -554,6 +556,12 @@ export class IndexComponent implements OnInit {
     // Obtiene el contenido del mensaje del formulario.
     const message = this.formData.get('message')!.value;
 
+    // Verifica si el mensaje está vacío o es un duplicado del último mensaje enviado
+    if (!message || message === this.lastSentMessage) {
+      console.log("Mensaje duplicado o vacío, no se enviará.");
+      return; // No continuar si el mensaje está vacío o es un duplicado
+    }
+
     // Muestra el mensaje en la lista de chat si no hay ningún grupo de chat activo.
     if (!groupMsg) {
       document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img;
@@ -612,6 +620,8 @@ export class IndexComponent implements OnInit {
         IdPregunta: this.selectedChatId,
         Mensaje: message
       }).toPromise();
+
+      this.lastSentMessage = message; // Actualiza el último mensaje enviado
 
       // Después de guardar con éxito, recarga la conversación para reflejar cualquier cambio.
       await this.loadRecuperacionMensajes();
@@ -972,7 +982,7 @@ export class IndexComponent implements OnInit {
     };
 
     // console.log("Estos son los datos a enviar: " + JSON.stringify(data));
-    
+
     if (this.enviadoaseekop == false) {
       //alert("alert");
       //this.enviadoaseekop=true;
@@ -1071,7 +1081,7 @@ export class IndexComponent implements OnInit {
 
       this.modalDatos.close('Close click');
       this.modalService.dismissAll();
-    } 
+    }
 
   }
 
