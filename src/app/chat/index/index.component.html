@@ -1242,11 +1242,21 @@
           src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
           class="rounded-circle avatar-lg img-thumbnail" alt="Mercado Libre">
 
-        <!-- Si idRedSocial no es ni 12 ni 16, también muestra la imagen de Mercado Libre -->
-        <img *ngIf="idRedSocial !== 12 && idRedSocial !== 16"
-          src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
-          class="rounded-circle avatar-lg img-thumbnail" alt="Default Image">
-      </div>
+           <!-- Si idRedSocial es 16, muestra la imagen de Instagram -->
+        <img *ngIf="idRedSocial === 17"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+        class="rounded-circle avatar-lg img-thumbnail" alt="Instagram">
+
+            <!-- Si idRedSocial es 16, muestra la imagen de Tiktok -->
+            <img *ngIf="idRedSocial === 18"
+            src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
+            class="rounded-circle avatar-lg img-thumbnail" alt="Tiktok">
+
+            <img *ngIf="idRedSocial === 19"
+            src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
+            class="rounded-circle avatar-lg img-thumbnail" alt="Pinterest">
+
+
 
       <h5 class="font-size-16 mb-1 text-truncate">{{RedSocial + ' - ' +Distribuidor}}</h5>
       <p class="text-muted text-truncate mb-1"><i class="ri-record-circle-fill font-size-10 me-1"
