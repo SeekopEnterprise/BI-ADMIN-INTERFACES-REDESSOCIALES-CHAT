@@ -1,4 +1,4 @@
-// 
+//
 // user chat.scss
 //
 
@@ -58,9 +58,9 @@
     }
 
     .chat-avatar {
-        
+
         margin: 0 16px 0 0/*rtl:0 0 0 16px*/;
-        
+
         img {
             width: 36px;
             height: 36px;
@@ -122,10 +122,32 @@
                 position: absolute;
                 border: 5px solid transparent;
                 border-left-color: $chat-primary-bg;
-                border-top-color: $chat-primary-bg;                
-                left: 0/*rtl:auto*/;                
+                border-top-color: $chat-primary-bg;
+                left: 0/*rtl:auto*/;
                 right: auto/*rtl:0*/;
                 bottom: -10px;
+            }
+
+            &.sentimiento-neutral {
+              // cambiar el color para el estado neutral, de lo contrario déjalo vacío
+            }
+
+            &.sentimiento-positive:before {
+              border-left-color: #155724 !important;
+              border-top-color: #155724 !important;
+            }
+
+            &.sentimiento-positive {
+              background-color: #155724; // Verde oscuro
+            }
+
+            &.sentimiento-negative:before {
+              border-left-color: #c62d1f !important;
+              border-top-color: #c62d1f !important;
+            }
+
+            &.sentimiento-negative {
+              background-color: #c62d1f; // Rojo oscuro
             }
 
             .attached-file{
@@ -229,7 +251,7 @@
                         left: auto;
                         right: 0px;
                     }
-                    
+
                 }
             }
 

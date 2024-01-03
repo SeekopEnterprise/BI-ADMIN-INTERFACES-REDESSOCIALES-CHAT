@@ -83,9 +83,9 @@ export class IndexComponent implements OnInit {
   public lastSentMessage = '';
 
 
-  public par_IdPublicacionLead:string;
-  public par_idDistribuidor:string;
-  public par_idRedSocial:string;
+  public par_IdPublicacionLead: string;
+  public par_idDistribuidor: string;
+  public par_idRedSocial: string;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -192,27 +192,28 @@ export class IndexComponent implements OnInit {
             nombreApp: 'proveedoresDigitales'
           });
         } else if (event.type === 'message') {
-          this.loadRecuperacionMensajes(data).then(() => {
-            // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
-            const chatToUpdate = [].concat(...this.chat
-              .map(group => group.prospects))
-              .find(prospect => prospect.ultimoMensaje.id === data.idMensaje + "");
+          this.detectarSentimiento(data.idMensaje).then(() => {
+            this.loadRecuperacionMensajes(data).then(() => {
+              // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
+              const chatToUpdate = [].concat(...this.chat
+                .map(group => group.prospects))
+                .find(prospect => prospect.ultimoMensaje.id === data.idMensaje + "");
 
-            /*    if (chatToUpdate) {
-                 chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-               } */
+              /*    if (chatToUpdate) {
+                   chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+                 } */
 
-            // Vuelve a ordenar los chats después de actualizar el contador
-            // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
-            this.chat.sort((a, b) => {
-              const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
-              const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
-              const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
-              const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
-              return lastMsgDateB - lastMsgDateA;
+              // Vuelve a ordenar los chats después de actualizar el contador
+              // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
+              this.chat.sort((a, b) => {
+                const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
+                const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
+                const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
+                const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
+                return lastMsgDateB - lastMsgDateA;
+              });
+
             });
-
-
 
           });
         }
@@ -393,7 +394,7 @@ export class IndexComponent implements OnInit {
       if (IdUltimoMensaje[0][key].ultimoMensaje == true) {
         // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
         this.idMensajeLeads = IdUltimoMensaje[0][key].id;
-        
+
       }
     }
 
@@ -428,30 +429,30 @@ export class IndexComponent implements OnInit {
 
     const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_" + this.idMensajeLeads);
 
-    
 
-    if(this.IdPublicacionLead==''){
-      this.par_IdPublicacionLead=null;
-    }else{
-      this.par_IdPublicacionLead=this.IdPublicacionLead;
+
+    if (this.IdPublicacionLead == '') {
+      this.par_IdPublicacionLead = null;
+    } else {
+      this.par_IdPublicacionLead = this.IdPublicacionLead;
     }
-    if(this.idDistribuidor==''){
-      this.par_idDistribuidor=null;
-    }else{
-      this.par_idDistribuidor=this.idDistribuidor;
+    if (this.idDistribuidor == '') {
+      this.par_idDistribuidor = null;
+    } else {
+      this.par_idDistribuidor = this.idDistribuidor;
     }
-    if(this.idRedSocial==''){
-      this.par_idRedSocial=null;
-    }else{
-      this.par_idRedSocial=this.idRedSocial;
+    if (this.idRedSocial == '') {
+      this.par_idRedSocial = null;
+    } else {
+      this.par_idRedSocial = this.idRedSocial;
     }
-    
+
     const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}&existe=true`;
 
     this.http.get(apiUrl).subscribe(response => {
       if (response && response['body']) {
         this.enviadoaseekop = response['body']['exists'];
-        console.log("estatus envio: "+this.enviadoaseekop);
+        console.log("estatus envio: " + this.enviadoaseekop);
         if (this.enviadoaseekop) {
           // Deshabilitar el botón de enviar seekop
           btnEnviarSeekop?.setAttribute('disabled', 'true');
@@ -950,7 +951,7 @@ export class IndexComponent implements OnInit {
                 "Telefono: "+this.Telefono+
                 "idMsj: "+this.idMensajeLeads+
                 "idDistribuidor: "+this.idDistribuidor+
-                "Distribuidor: "+this.nombreDistribuidor); 
+                "Distribuidor: "+this.nombreDistribuidor);
     */
     // this.addNewProspecto();
     // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
@@ -1119,8 +1120,8 @@ export class IndexComponent implements OnInit {
       "idDistribuidor": this.idDistribuidor,
       "idredsocial": this.idRedSocial
     };
-    
-    console.log("data: "+JSON.stringify(data));
+
+    console.log("data: " + JSON.stringify(data));
     // console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
     this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}`)
       .toPromise()
@@ -1132,6 +1133,24 @@ export class IndexComponent implements OnInit {
         console.error('Error al a:', error);
       });
   }
+
+
+  detectarSentimiento(idMensaje): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const url = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/detectarsentimiento?idPregunta=${idMensaje}`;
+      this.http.get(url).subscribe(
+        response => {
+          console.log('Sentimiento detectado:', response);
+          resolve();
+        },
+        error => {
+          console.error('Error al detectar sentimiento:', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
 
 
 }

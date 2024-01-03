@@ -976,7 +976,12 @@
 
                   <div class="user-chat-content">
                     <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
+                      <div class="ctext-wrap-content" [ngClass]="{
+                        'sentimiento-neutral': data.align === 'left' && data.sentimiento === 0,
+                        'sentimiento-positive': data.align === 'left' && data.sentimiento === 1,
+                        'sentimiento-negative': data.align === 'left' && data.sentimiento === 2
+                      }">
+
                         <div class="replymessage-block mb-0 d-flex align-items-start" *ngIf="data.replayName">
                           <div class="flex-grow-1">
                             <h5 class="conversation-name">{{data.replayName}}</h5>
@@ -1105,7 +1110,7 @@
                     <div class="ctext-wrap" *ngIf="data.message2">
                       <div class="ctext-wrap-content">
                         <p class="mb-0">
-                          {{data.message2 | translate}}
+                          {{data.message2 | translate}sssss}
                         </p>
                         <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span
                             class="align-middle">{{data.time | translate}}</span></p>
