@@ -192,7 +192,10 @@ export class IndexComponent implements OnInit {
             nombreApp: 'proveedoresDigitales'
           });
         } else if (event.type === 'message') {
-          this.detectarSentimiento(data.idMensaje).then(() => {
+          // Primero verifica si data.idMensaje existe para llamar a detectarSentimiento.
+          const promesaSentimiento = data.idMensaje ? this.detectarSentimiento(data.idMensaje) : Promise.resolve();
+
+          promesaSentimiento.then(() => {
             this.loadRecuperacionMensajes(data).then(() => {
               // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
               const chatToUpdate = [].concat(...this.chat
