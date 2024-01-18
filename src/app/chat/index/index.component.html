@@ -689,6 +689,7 @@
 
   </div>
 
+
   <div class="chat-welcome-section" id="chat-welcome-section" *ngIf="activetab !== 7">
     <div class="row w-100 justify-content-center">
       <div class="col-xxl-5 col-md-7">
@@ -768,6 +769,9 @@
       </div>
     </div>
   </div>
+
+
+
 
 
 
@@ -949,6 +953,12 @@
                           class="ri-delete-bin-line float-end text-muted"></i></a>
                     </div>
                   </div>
+                </li>
+                <li class="list-inline-item d-none d-lg-inline-block">
+                  <button type="button" class="btn nav-btn user-profile-show" (click)="toggleContainerVisibility()"
+                    ngbTooltip="Performance KPI">
+                    <i class="ri-pie-chart-2-fill"></i>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1222,6 +1232,13 @@
 
       </div>
       <!-- end chat conversation section -->
+
+      <div *ngIf="isContainerVisible" class="  w-50 user-chat-show">
+        <div class="row w-100 justify-content-center">
+
+        </div>
+      </div>
+
 
       <!-- <app-profile-detail></app-profile-detail> -->
     </div>
