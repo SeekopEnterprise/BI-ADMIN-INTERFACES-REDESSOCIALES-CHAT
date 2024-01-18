@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Renderer2, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -23,6 +23,8 @@ import { GlobalUserService } from '../../services/global-user.service';
 import Swal from 'sweetalert2';
 // Date Format
 import { DatePipe } from '@angular/common';
+
+declare var Highcharts: any;
 
 @Component({
   selector: 'app-index',
@@ -122,7 +124,7 @@ export class IndexComponent implements OnInit {
 
   constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2) {
+    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2, private el: ElementRef) {
     this.formData = this.formBuilder.group({
       message: ['', [Validators.required]],
     });
@@ -231,7 +233,327 @@ export class IndexComponent implements OnInit {
 
     this.lang = this.translate.currentLang;
     this.onListScroll();
+    this.loadScripts();
   }
+
+  initiateChart() {
+    // Función que se llama en el evento de renderizado del gráfico
+    if (typeof Highcharts !== 'undefined') {
+      function renderIcons() {
+        this.series.forEach(series => {
+          if (!series.icon) {
+            series.icon = this.renderer
+              .text(
+                `<i class="fa fa-${series.options.custom.icon}"></i>`,
+                0,
+                0,
+                true
+              )
+              .attr({
+                zIndex: 10
+              })
+              .css({
+                color: series.options.custom.iconColor,
+                fontSize: '1.5em'
+              })
+              .add(this.series[2].group);
+          }
+          series.icon.attr({
+            x: this.chartWidth / 2 - 15,
+            y: this.plotHeight / 2 -
+              series.points[0].shapeArgs.innerR -
+              (
+                series.points[0].shapeArgs.r -
+                series.points[0].shapeArgs.innerR
+              ) / 2 +
+              8
+          });
+        });
+      }
+
+      // La configuración de colores y opacidad de las pistas del gráfico
+      const trackColors = Highcharts.getOptions().colors.map(color =>
+        new Highcharts.Color(color).setOpacity(0.3).get()
+      );
+
+
+      // Creación del gráfico
+      Highcharts.chart('container', {
+
+        chart: {
+          type: 'solidgauge',
+          height: '110%',
+          events: {
+            render: renderIcons
+          }
+        },
+
+        title: {
+          text: 'Perfomance Del Día',
+          style: {
+            fontSize: '24px'
+          }
+        },
+
+        tooltip: {
+          borderWidth: 0,
+          backgroundColor: 'none',
+          shadow: false,
+          style: {
+            fontSize: '16px'
+          },
+          valueSuffix: '%',
+          pointFormat: '{series.name}<br>' +
+            '<span style="font-size: 2em; color: {point.color}; ' +
+            'font-weight: bold">{point.y}</span>',
+          positioner: function (labelWidth) {
+            return {
+              x: (this.chart.chartWidth - labelWidth) / 2,
+              y: (this.chart.plotHeight / 2) + 15
+            };
+          }
+        },
+
+        pane: {
+          startAngle: 0,
+          endAngle: 360,
+          background: [
+            {
+              outerRadius: '100%',
+              innerRadius: '90%',
+              backgroundColor: Highcharts.color("#2caffe").setOpacity(1).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '90%',
+              innerRadius: '80%',
+              backgroundColor: Highcharts.color("#544fc5").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '80%',
+              innerRadius: '70%',
+              backgroundColor: Highcharts.color("#BC2866").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '70%',
+              innerRadius: '60%',
+              backgroundColor: Highcharts.color("#fe6a35").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '60%',
+              innerRadius: '50%',
+              backgroundColor: Highcharts.color("#f7f022").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '50%',
+              innerRadius: '40%',
+              backgroundColor: Highcharts.color("#d568fb").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '40%',
+              innerRadius: '30%',
+              backgroundColor: Highcharts.color("#2ee0ca").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            },
+            {
+              outerRadius: '30%',
+              innerRadius: '20%',
+              backgroundColor: Highcharts.color("#1e191b").setOpacity(0.10).get(), // Más transparente
+              borderWidth: 0
+            }
+          ]
+        },
+
+        yAxis: {
+          min: 0,
+          max: 100,
+          lineWidth: 0,
+          tickPositions: []
+        },
+
+        plotOptions: {
+          solidgauge: {
+            dataLabels: {
+              enabled: false
+            },
+            linecap: 'round',
+            stickyTracking: false,
+            rounded: true
+          }
+        },
+        legend: {
+          verticalAlign: "middle",
+          position: 'relative',
+          margingTop: 50,
+          margin: 10,
+          top: 100,
+          paddingTop: 100,
+          align: 'right',
+          layout: 'vertical',
+          useHTML: true,
+          color: 'black',
+          labelFormatter: function () {
+            return '<span style="border:1px; text-weight:bold;color:' + this.userOptions.color + ';">' + this.name + '</span>';
+          },
+          //symbolWidth:2
+        },
+
+        series: [
+          {
+            color: "#2caffe", // Azul para mensajes recibidos
+            name: 'Mensajes Recibidos',
+            data: [{
+              color: "#2caffe",
+              radius: '100%',
+              innerRadius: '90%',
+              y: 100 // Ejemplo: 200 mensajes recibidos
+            }],
+            custom: {
+              icon: 'envelope',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#544fc5", // Verde para mensajes contestados
+            name: 'Mensajes Contestados',
+            data: [{
+              color: "#544fc5",
+              radius: '90%',
+              innerRadius: '80%',
+              y: 60 // Ejemplo: 180 mensajes contestados
+            }],
+            custom: {
+              icon: 'comments-o',
+              iconColor: '#ffffff'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#BC2866", // Rojo para mensajes no contestados
+            name: 'Mensajes No Contestados',
+            data: [{
+              color: "#BC2866",
+              radius: '80%',
+              innerRadius: '70%',
+              y: 40 // Ejemplo: 20 mensajes no contestados
+            }],
+            custom: {
+              icon: 'commenting-o',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#fe6a35", // Naranja para mensajes negativos
+            name: 'Mensajes Negativos',
+            data: [{
+              color: "#544fc5",
+              radius: '70%',
+              innerRadius: '60%',
+              y: 20 // Ejemplo: 10 mensajes negativos
+            }],
+            custom: {
+              icon: 'thumbs-down',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#f7f022", // Amarillo para mensajes positivos
+            name: 'Mensajes Positivos',
+            data: [{
+              color: "#f7f022",
+              radius: '60%',
+              innerRadius: '50%',
+              y: 67 // Ejemplo: 170 mensajes positivos
+            }],
+            custom: {
+              icon: 'thumbs-up',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#d568fb", // Púrpura para tiempo de respuesta
+            name: 'Tiempo Promedio de Respuesta',
+            data: [{
+              color: "#d568fb",
+              radius: '50%',
+              innerRadius: '40%',
+              y: 30 // Ejemplo: 30 minutos de tiempo de respuesta promedio
+            }],
+            custom: {
+              icon: 'hourglass-half',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#2ee0ca", // Rosa para leads del día
+            name: 'Leads Generados (Día)',
+            data: [{
+              color: "#2ee0ca",
+              radius: '40%',
+              innerRadius: '30%',
+              y: 15 // Ejemplo: 15 leads generados en el día
+            }],
+            custom: {
+              icon: 'chart-line',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          },
+          {
+            color: "#1e191b", // Gris para leads acumulados
+            name: 'Leads Generados (Acumulado)',
+            data: [{
+              color: "#1e191",
+              radius: '30%',
+              innerRadius: '20%',
+              y: 35 // Ejemplo: 300 leads generados acumulados
+            }],
+            custom: {
+              icon: 'chart-bar',
+              iconColor: '#303030'
+            },
+            showInLegend: true
+          }
+        ]
+        // ... (otras configuraciones)
+      });
+
+    } else {
+      console.error('Highcharts no está definido');
+    }
+  }
+
+  loadScripts() {
+    this.loadScript('https://code.highcharts.com/highcharts.js', () => {
+      this.loadScript('https://code.highcharts.com/highcharts-more.js', () => {
+        this.loadScript('https://code.highcharts.com/modules/solid-gauge.js', () => {
+          this.loadScript('https://code.highcharts.com/modules/exporting.js', () => {
+            this.loadScript('https://code.highcharts.com/modules/export-data.js', () => {
+              this.loadScript('https://code.highcharts.com/modules/accessibility.js', this.initiateChart);
+            });
+          });
+        });
+      });
+    });
+  }
+
+  loadScript(src: string, onLoad: () => void) {
+    const script = this.renderer.createElement('script');
+    script.src = src;
+    script.onload = onLoad;
+    this.renderer.appendChild(this.el.nativeElement, script);
+  }
+
 
   ngAfterViewInit() {
     // Escucha los mensajes que llegan del padre
@@ -1157,6 +1479,7 @@ export class IndexComponent implements OnInit {
 
   toggleContainerVisibility() {
     this.isContainerVisible = !this.isContainerVisible;
+    this.loadScripts();
   }
 
 
