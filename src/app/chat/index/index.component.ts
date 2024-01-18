@@ -88,7 +88,7 @@ export class IndexComponent implements OnInit {
   public par_IdPublicacionLead: string;
   public par_idDistribuidor: string;
   public par_idRedSocial: string;
-  public isContainerVisible: boolean = true;
+  public isContainerVisible: boolean = false;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
