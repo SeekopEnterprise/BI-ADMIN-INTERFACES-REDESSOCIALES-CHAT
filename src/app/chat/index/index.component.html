@@ -960,6 +960,13 @@
                     <i class="ri-pie-chart-2-fill"></i>
                   </button>
                 </li>
+                <li class="list-inline-item d-none d-lg-inline-block">
+                  <button type="button" class="btn nav-btn user-profile-show" (click)="toggleContainerVisibilityKPIs()"
+                    ngbTooltip="KPIs Details">
+                    <i class="ri-bar-chart-fill"></i>
+                  </button>
+                </li>
+
               </ul>
             </div>
           </div>
@@ -1234,8 +1241,155 @@
       <!-- end chat conversation section -->
 
       <div *ngIf="isContainerVisible" class="  w-100 user-chat-show">
-        <div  id="container" class="row w-100 justify-content-center">
 
+        <div class="w-100 position-relative">
+          <div class="p-3 p-lg-4 border-bottom">
+            <div class="row align-items-center">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Leads Generados (Mes)</h5>
+                      <br>
+                      <p class="card-text">105</p>
+                      <br>
+                      <p class="small-detail"><i
+                          class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Crecimiento: 5%
+                          este mes</small></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="card ">
+                    <div class="card-body">
+                      <h5 class="card-title"> Leads Acumulados (Mes)</h5>
+                      <br>
+                      <p class="card-text">300</p>
+                      <br>
+                      <p class="small-detail"><i
+                          class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Incremento: 1%
+                          este mes</small></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Promedio de Respuesta</h5>
+                      <br>
+                      <p class="card-text">2.1</p>
+                      <br>
+                      <p class="small-detail"><i
+                          class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Reducción: 2%
+                          este mes</small></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="container" class="row w-60 justify-content-center" style="height: 30%;">
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isContainerVisibleKPIs" class="  w-100 user-chat-show">
+
+        <div class="w-100 position-relative">
+          <div class="p-3 p-lg-4 border-bottom">
+            <div class="row align-items-center">
+              <div class="title-container">
+                <h3 class="title">Análisis de Impacto en Redes Sociales - KPIs Mensuales</h3>
+              </div>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <div class="row">
+                <!-- Me Gusta -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Me Gusta (Mes)</h5>
+                      <p class="card-text">1,250</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Incremento: 15% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- No Me Gusta -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">No Me Gusta (Mes)</h5>
+                      <p class="card-text">300</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Cambio: -5% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Me Enoja -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Me Enoja (Mes)</h5>
+                      <p class="card-text">150</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Cambio: 10% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Me Encanta -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Me Encanta (Mes)</h5>
+                      <p class="card-text">2,000</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Incremento: 20% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Visualizaciones -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Visualizaciones (Mes)</h5>
+                      <p class="card-text">8,000</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Cambio: 25% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Número de Comentarios -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Comentarios (Mes)</h5>
+                      <p class="card-text">500</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Cambio: -2% este mes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Compartidos -->
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Compartidos (Mes)</h5>
+                      <p class="card-text">1,100</p>
+                      <p class="small-detail"><i class="ri-arrow-right-fill icono-personalizado"></i> Incremento: 5% este mes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1255,8 +1409,7 @@
     <div class="text-center p-4 border-bottom">
       <div class="mb-4">
         <!-- Si idRedSocial es 12, muestra la imagen de Facebook -->
-        <img *ngIf="idRedSocial === 12"
-          src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
+        <img *ngIf="idRedSocial === 12" src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
           class="rounded-circle avatar-lg img-thumbnail" alt="Facebook">
 
         <!-- Si idRedSocial es 16, muestra la imagen de Mercado Libre, que es la default -->
@@ -1265,20 +1418,18 @@
           class="rounded-circle avatar-lg img-thumbnail" alt="Mercado Libre">
 
 
-                    <!-- Si idRedSocial es 16, muestra la imagen de Instagram -->
+        <!-- Si idRedSocial es 16, muestra la imagen de Instagram -->
         <img *ngIf="idRedSocial === 17"
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-        class="rounded-circle avatar-lg img-thumbnail" alt="Instagram">
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Instagram">
 
-            <!-- Si idRedSocial es 16, muestra la imagen de Tiktok -->
-            <img *ngIf="idRedSocial === 18"
-            src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
-            class="rounded-circle avatar-lg img-thumbnail" alt="Tiktok">
+        <!-- Si idRedSocial es 16, muestra la imagen de Tiktok -->
+        <img *ngIf="idRedSocial === 18" src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Tiktok">
 
-              <!-- Si idRedSocial es 16, muestra la imagen de PInterest -->
-            <img *ngIf="idRedSocial === 19"
-            src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
-            class="rounded-circle avatar-lg img-thumbnail" alt="Pinterest">
+        <!-- Si idRedSocial es 16, muestra la imagen de PInterest -->
+        <img *ngIf="idRedSocial === 19" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Pinterest">
 
         <!-- Si idRedSocial no es ni 12 ni 16, también muestra la imagen de Mercado Libre -->
 

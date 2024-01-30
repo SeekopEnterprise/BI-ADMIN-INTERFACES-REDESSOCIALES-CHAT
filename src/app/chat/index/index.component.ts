@@ -89,6 +89,7 @@ export class IndexComponent implements OnInit {
   public par_idDistribuidor: string;
   public par_idRedSocial: string;
   public isContainerVisible: boolean = false;
+  public isContainerVisibleKPIs: boolean = false;
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -347,24 +348,6 @@ export class IndexComponent implements OnInit {
               innerRadius: '50%',
               backgroundColor: Highcharts.color("#f7f022").setOpacity(0.10).get(), // Más transparente
               borderWidth: 0
-            },
-            {
-              outerRadius: '50%',
-              innerRadius: '40%',
-              backgroundColor: Highcharts.color("#d568fb").setOpacity(0.10).get(), // Más transparente
-              borderWidth: 0
-            },
-            {
-              outerRadius: '40%',
-              innerRadius: '30%',
-              backgroundColor: Highcharts.color("#2ee0ca").setOpacity(0.10).get(), // Más transparente
-              borderWidth: 0
-            },
-            {
-              outerRadius: '30%',
-              innerRadius: '20%',
-              backgroundColor: Highcharts.color("#1e191b").setOpacity(0.10).get(), // Más transparente
-              borderWidth: 0
             }
           ]
         },
@@ -475,51 +458,6 @@ export class IndexComponent implements OnInit {
             }],
             custom: {
               icon: 'thumbs-up',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: "#d568fb", // Púrpura para tiempo de respuesta
-            name: 'Tiempo Promedio de Respuesta',
-            data: [{
-              color: "#d568fb",
-              radius: '50%',
-              innerRadius: '40%',
-              y: 30 // Ejemplo: 30 minutos de tiempo de respuesta promedio
-            }],
-            custom: {
-              icon: 'hourglass-half',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: "#2ee0ca", // Rosa para leads del día
-            name: 'Leads Generados (Día)',
-            data: [{
-              color: "#2ee0ca",
-              radius: '40%',
-              innerRadius: '30%',
-              y: 15 // Ejemplo: 15 leads generados en el día
-            }],
-            custom: {
-              icon: 'chart-line',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: "#1e191b", // Gris para leads acumulados
-            name: 'Leads Generados (Acumulado)',
-            data: [{
-              color: "#1e191",
-              radius: '30%',
-              innerRadius: '20%',
-              y: 35 // Ejemplo: 300 leads generados acumulados
-            }],
-            custom: {
-              icon: 'chart-bar',
               iconColor: '#303030'
             },
             showInLegend: true
@@ -1478,10 +1416,19 @@ export class IndexComponent implements OnInit {
   }
 
   toggleContainerVisibility() {
+    if (this.isContainerVisibleKPIs) {
+      this.isContainerVisibleKPIs = false;
+    }
     this.isContainerVisible = !this.isContainerVisible;
     this.loadScripts();
   }
 
+  toggleContainerVisibilityKPIs() {
+    if (this.isContainerVisible) {
+      this.isContainerVisible = false;
+    }
+    this.isContainerVisibleKPIs = !this.isContainerVisibleKPIs;
+  }
 
 
 
