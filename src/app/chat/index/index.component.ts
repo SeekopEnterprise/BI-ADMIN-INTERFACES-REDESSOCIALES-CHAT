@@ -283,7 +283,7 @@ export class IndexComponent implements OnInit {
 
         chart: {
           type: 'solidgauge',
-          height: '110%',
+          height: '80%',
           events: {
             render: renderIcons
           }
@@ -370,20 +370,33 @@ export class IndexComponent implements OnInit {
           }
         },
         legend: {
+          with: "90px",
           verticalAlign: "middle",
           position: 'relative',
-          margingTop: 50,
+          margingTop: 10,
           margin: 10,
           top: 100,
-          paddingTop: 100,
-          align: 'right',
+          paddingTop: 50,
+          align: 'left',
           layout: 'vertical',
           useHTML: true,
           color: 'black',
           labelFormatter: function () {
             return '<span style="border:1px; text-weight:bold;color:' + this.userOptions.color + ';">' + this.name + '</span>';
           },
-          //symbolWidth:2
+          itemHiddenStyle: { "color": "#a3bd36" },
+          symbolWidth: 60,
+          //itemStyle:{"display": "none"},
+          //itemCheckboxStyle:{"width": "13px", "height": "13px", "position":"absolute", "color": "#a3bd36"}
+
+
+        },
+
+        navigation: {
+          buttonOptions: {
+            symbolFill: "#a3bd36",
+            symbolStroke: "#a3bd36"
+          }
         },
 
         series: [
