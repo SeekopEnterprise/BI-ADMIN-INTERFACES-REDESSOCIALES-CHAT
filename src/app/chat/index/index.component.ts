@@ -309,7 +309,7 @@ export class IndexComponent implements OnInit {
             'font-weight: bold">{point.y}</span>',
           positioner: function (labelWidth) {
             return {
-              x: (this.chart.chartWidth - labelWidth) / 2,
+              x: (this.chart.chartWidth - labelWidth) - 115 ,
               y: (this.chart.plotHeight / 2) + 15
             };
           }
