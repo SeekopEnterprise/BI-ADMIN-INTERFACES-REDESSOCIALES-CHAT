@@ -386,10 +386,6 @@ export class IndexComponent implements OnInit {
           },
           itemHiddenStyle: { "color": "#a3bd36" },
           symbolWidth: 60,
-          //itemStyle:{"display": "none"},
-          //itemCheckboxStyle:{"width": "13px", "height": "13px", "position":"absolute", "color": "#a3bd36"}
-
-
         },
 
         navigation: {
