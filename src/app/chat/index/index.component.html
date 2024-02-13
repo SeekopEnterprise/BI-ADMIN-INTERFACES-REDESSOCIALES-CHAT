@@ -885,17 +885,18 @@
                 </li>
                 <ng-template #videoContent let-modal>
                   <div class="modal-body">
-                    <div class="text-center p-4">
+                    <div class="text-left p-4">
                       <div class="avatar-lg mx-auto">
                         <img src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png" alt="Seekop"
                           class="img-thumbnail rounded-circle">
                       </div>
-                      <p class="text-center"> IdProspecto: {{idMensajeLeads}}</p>
+                      <!-- <p class="text-center"> IdProspecto: {{idMensajeLeads}}</p>
                       <p class="text-center"> Nombre: {{userName}}</p>
                       <p class="text-center"> Apellido(s): {{LastName}}</p>
                       <p class="text-center"> Teléfono/correo: {{Telefono}}/{{Email}}</p>
                       <p class="text-center"> Publicación/Auto de interés: {{AutoDeInteres}}</p>
                       <p class="text-center"> Distribuidor que atenderá al prospecto: {{Distribuidor}}</p>
+                    -->
                       <!--
                       <p class="text-center"> Red Social: {{RedSocial}}</p>
                       <p class="text-center"> Email: {{Email}}</p>
@@ -903,31 +904,300 @@
                       <p class="text-center"> Distribuidor: {{Distribuidor}}</p>
                       <p class="text-center">Los datos del interesado se enviarán correctamente al distribuidor:
                         {{Distribuidor}} </p> -->
+                      
+                        <form [formGroup]="interesadoForm" (ngSubmit)="validateForm()">
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">IdProspecto: </label>
+                            <input 
+                            
+                            type="text" [value]="idMensajeLeads"
+                            class="form-control" readonly>
+                            
+                          </div>
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">Publicación/Auto de interés: </label>
+                            <input 
+                            
+                            type="text" [value]="AutoDeInteres"
+                            class="form-control" readonly>
+                          </div>
 
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">Distribuidor que atenderá al prospecto: </label>
+                            <input 
+                            
+                            type="text" [value]="Distribuidor"
+                            class="form-control" readonly>
+                          </div>
+
+
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">Nombre *</label>
+                            <input 
+                            formControlName="nombre"
+                            [ngClass]="{'is-invalid': submitted && f.nombre.errors }" type="text" 
+                            class="form-control" [(ngModel)]="newInteresadoForm.nombre"
+                            placeholder="">
+              
+                            <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
+                                <div *ngIf="f.nombre.errors.required">
+                                  EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.nombre.errors.maxlength">
+                                  Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                                </div>
+              
+                            </div>
+                          </div> 
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="apellidoP">Apellido paterno*</label>
+                            <input 
+                            formControlName="apellidoP"
+                            [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text" 
+                            class="form-control" [(ngModel)]="newInteresadoForm.apellidop"
+                            placeholder="">
+              
+                            <div *ngIf="submitted && f.apellidoP.errors" class="invalid-feedback">
+                                <div *ngIf="f.apellidoP.errors.required">
+                                  EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.apellidoP.errors.maxlength">
+                                  Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                                </div>
+              
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="apellidoM">Apellido materno*</label>
+                            <input 
+                            formControlName="apellidoM"
+                            [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }" type="text" 
+                            class="form-control" [(ngModel)]="newInteresadoForm.apellidom"
+                            placeholder="">
+              
+                            <div *ngIf="submitted && f.apellidoM.errors" class="invalid-feedback">
+                                <div *ngIf="f.apellidoM.errors.required">
+                                  EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.apellidoM.errors.maxlength">
+                                  Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                                </div>
+              
+                            </div>
+                          </div> 
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="telefono">Telefono *</label>
+                            <input 
+                            formControlName="telefono"
+                            [ngClass]="{'is-invalid': submitted && f.telefono.errors }" type="number" 
+                            class="form-control" [(ngModel)]="newInteresadoForm.telefono"
+                            placeholder="5522123456" minlength="10" maxlength="10" (input)="onInputChange($event)">
+              
+                            <div *ngIf="submitted && f.telefono.errors" class="invalid-feedback">
+                                <div *ngIf="f.telefono.errors.required">
+                                  EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.telefono.errors.maxlength">
+                                  Ingresa un valor con una longitud igual a 10 carácteres!
+                                </div>
+              
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="email">Email *</label>
+                            <input 
+                            formControlName="email"
+                            [ngClass]="{'is-invalid': submitted && f.email.errors}" type="email" 
+                            class="form-control" [(ngModel)]="newInteresadoForm.email"
+                            placeholder="Facebook">
+              
+                            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                                <div *ngIf="f.email.errors.required">
+                                  EL campo es requerido!
+                                </div><!--
+                                <div *ngIf="f.email.errors.maxlength">
+                                  Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                                </div> -->
+
+                                <div *ngIf="interesadoForm.get('email').hasError('email')">
+                                  Por favor, introduce un correo electrónico válido.
+                                </div>
+              
+                            </div>
+                          </div>
+
+                          
+                          <div class="mb-3">
+                            <label class="form-label" for="comentarios">Comentarios *</label>
+                            
+                            <textarea rows="3" cols="70" 
+                            formControlName="comentarios"
+                            [ngClass]="{'is-invalid': submitted && f.comentarios.errors }" type="text"
+                            class="form-control" [(ngModel)]="newInteresadoForm.comentarios"
+                            style="background-color: #f9f9f9;text-align: left;" 
+                            placeholder="Agrega un comentario..."></textarea>
+              
+                            <div *ngIf="submitted && f.comentarios.errors" class="invalid-feedback">
+                                <div *ngIf="f.comentarios.errors.required">
+                                  EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.comentarios.errors.maxlength">
+                                  Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                                </div>
+              
+                            </div> 
+                          </div> 
+          
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-link" (click)="resetForm(); modal.dismiss('Cross click')">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" >Enviar</button> 
+                          </div>
+                        </form>  
+                      
+                      <!-- 
                       <p class="text-center">¿Desea continuar?</p>
                       <div class="mt-5">
                         <ul class="list-inline mb-1">
-                          <li class="list-inline-item px-2 me-2 ms-0"> <!-- avatar-sm rounded-circle -->
+                          <li class="list-inline-item px-2 me-2 ms-0"> <!- avatar-sm rounded-circle ->
                             <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar
-                              <!--
+                              <!-
                               <span class="avatar-title bg-transparent font-size-20">
                                 <i class="ri-thumb-down-fill"></i>
-                              </span> -->
+                              </span> ->
                             </button>
                           </li>
                           <li class="list-inline-item px-2">
-                            <button type="button" class="btn btn-primary" (click)="confirmSend()"> Enviar
-                              <!-- btn btn-success avatar-sm rounded-circle
+                            <button type="button" class="btn btn-primary" (click)="confirmSend()"> Enviar </button>
+                              <- 
+                              <button type="button" class="btn btn-primary" (click)="confirmSend()"> Enviar </button>
+                                btn btn-success avatar-sm rounded-circle
                               <span class="avatar-title bg-transparent font-size-20">
                                 <i class="ri-thumb-up-fill"></i>
-                              </span> -->
-                            </button>
+                              </span> ->
+                            
                           </li>
                         </ul>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </ng-template>
+
+                <!--
+                <ng-template #contentInteresado let-modal>
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title font-size-16" id="addInteresado-exampleModalLabel">Enviar interesado a Seekop</h5>
+                      <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+                      </button>
+                    </div>
+                    <div class="modal-body p-4">
+          
+                      <form [formGroup]="interesadoForm" (ngSubmit)="validateForm()">
+          
+                        <div class="mb-3">
+                          <label class="form-label" for="Nombre">Nombre *</label>
+                          <input 
+                          formControlName="nombreInteresado"
+                          [ngClass]="{'is-invalid': submitted && f.nombreInteresado.errors }" type="text" 
+                          class="form-control" [(ngModel)]="newRedSocial.nombre"
+                          placeholder="">
+            
+                          <div *ngIf="submitted && f.nombreInteresado.errors" class="invalid-feedback">
+                              <div *ngIf="f.nombreInteresado.errors.required">
+                                EL campo es requerido!
+                              </div>
+                              <div *ngIf="f.nombreInteresado.errors.maxlength">
+                                Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                              </div>
+            
+                          </div>
+                        </div> 
+
+                        <div class="mb-3">
+                          <label class="form-label" for="Apellido">Apellido *</label>
+                          <input 
+                          formControlName="Apellido"
+                          [ngClass]="{'is-invalid': submitted && f.Apellido.errors }" type="text" 
+                          class="form-control" [(ngModel)]="newRedSocial.nombre"
+                          placeholder="">
+            
+                          <div *ngIf="submitted && f.Apellido.errors" class="invalid-feedback">
+                              <div *ngIf="f.Apellido.errors.required">
+                                EL campo es requerido!
+                              </div>
+                              <div *ngIf="f.Apellido.errors.maxlength">
+                                Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                              </div>
+            
+                          </div>
+                        </div> 
+
+                        <div class="mb-3">
+                          <label class="form-label" for="Telefono">Telefono *</label>
+                          <input 
+                          formControlName="Telefono"
+                          [ngClass]="{'is-invalid': submitted && f.Telefono.errors }" type="text" 
+                          class="form-control" [(ngModel)]="newRedSocial.nombre"
+                          placeholder="5522123456">
+            
+                          <div *ngIf="submitted && f.Telefono.errors" class="invalid-feedback">
+                              <div *ngIf="f.Telefono.errors.required">
+                                EL campo es requerido!
+                              </div>
+                              <div *ngIf="f.Telefono.errors.maxlength">
+                                Ingresa un valor con una longitud igual a 10 carácteres!
+                              </div>
+            
+                          </div>
+                        </div>
+                        
+                        
+                        <div class="mb-3">
+                          <label class="form-label" for="Email">Email *</label>
+                          <input 
+                          formControlName="Email"
+                          [ngClass]="{'is-invalid': submitted && f.Email.errors }" type="text" 
+                          class="form-control" [(ngModel)]="newRedSocial.nombre"
+                          placeholder="Facebook">
+            
+                          <div *ngIf="submitted && f.Email.errors" class="invalid-feedback">
+                              <div *ngIf="f.Email.errors.required">
+                                EL campo es requerido!
+                              </div>
+                              <div *ngIf="f.Email.errors.maxlength">
+                                Ingresa un valor con una longitud menor o igual a 20 carácteres!
+                              </div>
+            
+                          </div>
+                        </div>
+        
+                        <div class="modal-footer">
+          
+                          <div class="row" id="rowmodalfooter">
+                              <div class="col-lg-3">
+                                <button type="button" id="testConnectionButton"
+                                (click)="testConexion()" class="btn btn-primary btn_redesusuarios"
+                                [disabled]="isButtonDisabled">Probar conexión</button>
+                                <small id="connectionMessage" class="form-text"></small>
+                              </div>
+                              <div class="col-lg-9">
+                                <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+                                <button type="submit" id="btnGuardarUsuario" class="btn btn-primary" (click)="asociarCuenta()" [disabled]="isButtonSaveDisabled">Agregar</button>
+                              </div>
+                          </div>
+          
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </ng-template> -->
+
+
                 <li class="list-inline-item d-none d-lg-inline-block">
                   <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)"
                     ngbTooltip="Información del interesado">

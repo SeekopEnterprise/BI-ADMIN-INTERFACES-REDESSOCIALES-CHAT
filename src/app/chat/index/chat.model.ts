@@ -89,3 +89,11 @@ export interface UltimoMensaje {
   fechaRespuesta?:any,
 }
 
+export interface Interesado {
+  nombre: string;
+  apellidop: string;
+  apellidom: string;
+  telefono: string;
+  email: string;
+  comentarios: string;
+}
