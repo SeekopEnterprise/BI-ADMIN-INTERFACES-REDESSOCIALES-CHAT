@@ -501,6 +501,16 @@ export class RedessocialesusuariosComponent implements OnInit {
           nombrepagina:""
         };
       }
+      else if(idred_select=="Youtube"){ // Youtube
+        url = `https://www.pinterest.com/oauth/?response_type=code&redirect_uri=https%3A%2F%2Fwebhook.site%2F8db655f9-8647-4ef5-8f2c-fda260c781f9&client_id=1493135&scope=boards:read,pins:read,user_accounts:read&state=${iddistribuidor}`;
+        // datos = this.redesusuariosForm.value;
+        datos={
+          idred:this.redesusuariosForm.value.idred,
+          iddistribuidor:this.redesusuariosForm.value.iddistribuidor,
+          idcliente:"",
+          nombrepagina:""
+        };
+      }
       else{ // Instagram
         
       }
@@ -723,6 +733,11 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
+      else if(idred_select=="Youtube"){ // Youtube
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
+        
+      }
       else{ // 
         
       }
@@ -854,8 +869,13 @@ export class RedessocialesusuariosComponent implements OnInit {
         url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
           
       }
-      else{ // 
+      else if(idred_select=="Youtube"){ // Youtube
+        const token = 'APP_UR4158433912938780-041117-';
+        url = `https://fzq9t36ec9.execute-api.us-west-1.amazonaws.com/dev/probarconexion?token=${token}`;
         
+      }
+      else{
+
       }
 
       const button = document.getElementById('testConnectionButtonEdit');
