@@ -948,12 +948,21 @@
                             formControlName="nombre"
                             [ngClass]="{'is-invalid': submitted && f.nombre.errors }" type="text" 
                             class="form-control" [(ngModel)]="newInteresadoForm.nombre"
-                            placeholder="">
+                            placeholder="" pattern="[A-Za-z\s]*">
               
                             <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
                                 <div *ngIf="f.nombre.errors.required">
                                   EL campo es requerido!
                                 </div>
+
+                                <div *ngIf="f.nombre.errors.pattern">
+                                  Ingresa un nombre válido (solo letras y sin espacios).
+                                </div>
+
+                                <div *ngIf="f.nombre.errors.minlength">
+                                  Ingresa un valor con una longitud mayor o igual a 5 carácteres!
+                                </div>
+
                                 <div *ngIf="f.nombre.errors.maxlength">
                                   Ingresa un valor con una longitud menor o igual a 20 carácteres!
                                 </div>
@@ -967,11 +976,14 @@
                             formControlName="apellidoP"
                             [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text" 
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidop"
-                            placeholder="">
+                            placeholder="" pattern="[A-Za-z\s]*">
               
                             <div *ngIf="submitted && f.apellidoP.errors" class="invalid-feedback">
                                 <div *ngIf="f.apellidoP.errors.required">
                                   EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.apellidoP.errors.pattern">
+                                  Ingresa un apellido válido (solo letras y sin espacios).
                                 </div>
                                 <div *ngIf="f.apellidoP.errors.maxlength">
                                   Ingresa un valor con una longitud menor o igual a 20 carácteres!
@@ -986,11 +998,14 @@
                             formControlName="apellidoM"
                             [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }" type="text" 
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidom"
-                            placeholder="">
+                            placeholder="" pattern="[A-Za-z\s]*">
               
                             <div *ngIf="submitted && f.apellidoM.errors" class="invalid-feedback">
                                 <div *ngIf="f.apellidoM.errors.required">
                                   EL campo es requerido!
+                                </div>
+                                <div *ngIf="f.apellidoM.errors.pattern">
+                                  Ingresa un apellido válido (solo letras y sin espacios).
                                 </div>
                                 <div *ngIf="f.apellidoM.errors.maxlength">
                                   Ingresa un valor con una longitud menor o igual a 20 carácteres!
@@ -1000,22 +1015,43 @@
                           </div> 
                           
                           <div class="mb-3">
+                            
                             <label class="form-label" for="telefono">Telefono *</label>
+                            <div class="input-group"> 
                             <input 
                             formControlName="telefono"
                             [ngClass]="{'is-invalid': submitted && f.telefono.errors }" type="number" 
                             class="form-control" [(ngModel)]="newInteresadoForm.telefono"
-                            placeholder="5522123456" minlength="10" maxlength="10" (input)="onInputChange($event)">
-              
+                            placeholder="5522123456"
+                            (input)="onInputChange($event)" pattern="[0-9\s]*"> <!-- (input)="onInputChange($event)" -->
+                              
+                            <i _ngcontent-vco-c34="" id="btnVerificado_{{idMensajeLeads}}" class="ri-user-follow-fill" style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"></i>
+                            <i _ngcontent-vco-c34="" id="btnNoVerificado_{{idMensajeLeads}}" class="ri-user-unfollow-fill" style="color: #ff4444; font-size: 1.5rem; display: none;"></i>
+                            
+                          <!-- </div> -->
                             <div *ngIf="submitted && f.telefono.errors" class="invalid-feedback">
                                 <div *ngIf="f.telefono.errors.required">
                                   EL campo es requerido!
                                 </div>
-                                <div *ngIf="f.telefono.errors.maxlength">
+                                <div *ngIf="f.telefono.errors.minLength">
                                   Ingresa un valor con una longitud igual a 10 carácteres!
                                 </div>
+                                <div *ngIf="f.telefono.errors.pattern">
+                                  Ingresa un teléfono válido (solo números y sin espacios).
+                                </div>
+
+                                <!--
+                                <div *ngIf="f.telefono.errors.min">
+                                  Ingresa un telefono válido!
+                                </div> -->
+                                
+                                <!--
+                                <div *ngIf="f.telefono.errors.maxlength">
+                                  Ingresa un valor con una longitud igual a 10 carácteres!
+                                </div>-->
               
                             </div>
+                          </div>
                           </div>
                           
                           <div class="mb-3">
@@ -1024,7 +1060,7 @@
                             formControlName="email"
                             [ngClass]="{'is-invalid': submitted && f.email.errors}" type="email" 
                             class="form-control" [(ngModel)]="newInteresadoForm.email"
-                            placeholder="Facebook">
+                            placeholder="prueba@gmail.com">
               
                             <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
                                 <div *ngIf="f.email.errors.required">
@@ -1043,15 +1079,16 @@
 
                           
                           <div class="mb-3">
-                            <label class="form-label" for="comentarios">Comentarios *</label>
+                            <label class="form-label" for="comentarios">Comentarios </label>
                             
                             <textarea rows="3" cols="70" 
                             formControlName="comentarios"
-                            [ngClass]="{'is-invalid': submitted && f.comentarios.errors }" type="text"
+                            type="text"
                             class="form-control" [(ngModel)]="newInteresadoForm.comentarios"
                             style="background-color: #f9f9f9;text-align: left;" 
                             placeholder="Agrega un comentario..."></textarea>
-              
+                            
+                            <!-- [ngClass]="{'is-invalid': submitted && f.comentarios.errors }"
                             <div *ngIf="submitted && f.comentarios.errors" class="invalid-feedback">
                                 <div *ngIf="f.comentarios.errors.required">
                                   EL campo es requerido!
@@ -1060,7 +1097,7 @@
                                   Ingresa un valor con una longitud menor o igual a 20 carácteres!
                                 </div>
               
-                            </div> 
+                            </div> -->
                           </div> 
           
                           <div class="modal-footer">
