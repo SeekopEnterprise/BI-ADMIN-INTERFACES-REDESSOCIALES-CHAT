@@ -1,0 +1,42 @@
+ <div class="p-4">
+  <div class="user-chat-nav float-end">
+    <div ngbTooltip="Agregar Publicacion">
+
+      <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
+        data-target="#addMetodos-exampleModal" (click)="openModal = !openModal" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, .5);">
+        <i class="ri-chat-new-fill" style="font-size: 30px;"></i>
+      </button>
+    </div>
+  </div>
+  <h4 class="mb-4 title">Publicacion</h4>
+
+  <!-- Modal -->
+  <div *ngIf="openModal" class="modal-container">
+    <div class="modal-content">
+      <form (submit)="submitForm()">
+      <div class="mb-3">
+        <label for="publicarEn">Publicar en:</label>
+        <select class="form-control" id="publicarEn" [(ngModel)]="selectedOption">
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="youtube">YouTube</option>
+          <option value="pinterest">Pinterest</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="textoEnlaces">Texto y Enlaces:</label>
+        <textarea class="form-control" id="textoEnlaces" [(ngModel)]="textoEnlaces" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="imagenes">Fotos:</label>
+        <input type="file" class="form-control-file" id="imagenes">
+      </div>
+      <!-- Agrega más campos según sea necesario para los puntos 4, 5 y 6 -->
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+  </div>
+</div>
+  
+  
+</div>
+

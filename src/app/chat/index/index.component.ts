@@ -3,14 +3,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
-import { FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 // import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { chat, groups } from './data';
-import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem, Interesado } from './chat.model';
+import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem } from './chat.model';
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -38,7 +38,7 @@ declare var Highcharts: any;
 export class IndexComponent implements OnInit {
 
   private chatSubscription: Subscription;
-  submitted= false;
+
   public activetab = 2;
   apiResponse: ApiResponse[];
   //chat: ResponseItem[];
@@ -120,26 +120,6 @@ export class IndexComponent implements OnInit {
 
   };
 
-  newInteresadoForm: Partial<Interesado> = {
-    nombre: '',
-    apellidop: '',
-    apellidom: '',
-    telefono: '',
-    email: '',
-    comentarios: ''
-  };
-
-  interesadoForm: FormGroup = new FormGroup({
-    nombre: new FormControl(''),
-    apellidoP: new FormControl(''),
-    apellidoM: new FormControl(''),
-    telefono: new FormControl(''),
-    email: new FormControl(''),
-    comentarios: new FormControl('')
-  }); 
-
-  telefonoInput: string = '';
-
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
@@ -150,14 +130,6 @@ export class IndexComponent implements OnInit {
       message: ['', [Validators.required]],
     });
 
-    this.interesadoForm= this.formBuilder.group({
-      nombre: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoP: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoM: ['', [Validators.required,Validators.maxLength(20)]],
-      telefono: ['', [Validators.required,Validators.minLength(10),Validators.maxLength(10)]],
-      email: ['', [Validators.required,Validators.email]],
-      comentarios: ['', [Validators.required,Validators.maxLength(20)]],
-    });
 
   }
 
@@ -1437,68 +1409,6 @@ export class IndexComponent implements OnInit {
       });
   }
 
-  validateForm(): void{
-    
-    this.submitted = true;
-    const var_inv= document.getElementsByClassName('ng-invalid');
-    
-    if (this.interesadoForm.valid) {
-
-      this.submitted = true;
-      // this.addNewSocial();
-      // return true;
-		}else {
-      return console.log(this.interesadoForm.value);
-		}
-  }
-
-  get f()  {
-    return this.interesadoForm.controls;
-  }
-
-  onInputChange(event: Event): void {
-    // Acceder al valor del input
-    const inputValue = (event.target as HTMLInputElement).value;
-    console.log('Valor del input:', inputValue);
-
-    // const fbylada = '52';
-    // const fbytelefono = '7226650170';
-
-    // const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      // 'Connection': 'keep-alive',
-      // 'Content-Length': '148',
-      // 'x-amzn-RequestId': '33b6bc0d-346a-444e-9f04-973116be1505',
-      // 'Host': '<calculated when request is sent>',
-      // 'User-Agent': 'PostmanRuntime/7.36.1',
-      // 'Accept': '*/*',
-      // 'Accept-Encoding': 'gzip, deflate, br',
-      // 'Connection': 'keep-alive',
-      // 'Origin': 'http://localhost:4200'
-      // 'x-amz-apigw-id': 'TCD2ZEDkyK4EDbg=',
-      // 'X-Amzn-Trace-Id': 'Root=1-65ca4cf5-72253dee179cea001b8a51b8;Parent=5286178c7cb2851d;Sampled=0;lineage=40f10397:0',
-    });
-
-    const fbylada = '52';
-    const fbytelefono = '7226650170';
-
-const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
-
-this.http.get(apiUrl).subscribe(
-  (data) => {
-    console.log('Datos recibidos:', data);
-  },
-  (error) => {
-    console.error('Error al obtener datos:', error);
-  }
-);
-
-
-  }
-
-  
 
   detectarSentimiento(idMensaje): Promise<void> {
     return new Promise((resolve, reject) => {
