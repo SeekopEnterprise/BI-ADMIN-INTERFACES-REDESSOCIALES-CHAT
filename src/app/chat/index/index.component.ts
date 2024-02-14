@@ -64,7 +64,8 @@ export class IndexComponent implements OnInit {
   public modalDatos: any;
 
   public Telefono: string;
-  public LastName: string;
+  public apellidoPaterno: string;
+  public apellidoMaterno: string;
   public idMensajeLeads;
   public idDistribuidor: string;
   public nombreDistribuidor: string;
@@ -151,12 +152,12 @@ export class IndexComponent implements OnInit {
     });
 
     this.interesadoForm= this.formBuilder.group({
-      nombre: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoP: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoM: ['', [Validators.required,Validators.maxLength(20)]],
-      telefono: ['', [Validators.required,Validators.minLength(10),Validators.maxLength(10)]],
-      email: ['', [Validators.required,Validators.email]],
-      comentarios: ['', [Validators.required,Validators.maxLength(20)]],
+      nombre: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
+      apellidoP: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
+      apellidoM: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
+      telefono: ['', [Validators.required,Validators.minLength(10),Validators.pattern('[0-9\s]*')]],
+      email: ['', [Validators.required,Validators.minLength(5),Validators.maxLength(50),Validators.email]],
+      comentarios: [''] // [Validators.required,Validators.maxLength(20)]
     });
 
   }
@@ -713,7 +714,7 @@ export class IndexComponent implements OnInit {
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
     this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
     this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
-    this.LastName = data[0].Apellido;
+    this.apellidoPaterno = data[0].Apellido;
     // this.idMensajeLeads.push(data[0].IdProspecto);
     this.idDistribuidor = data[0].IdDistribuidor;
     this.nombreDistribuidor = data[0].NombreGrupo;
@@ -1246,18 +1247,16 @@ export class IndexComponent implements OnInit {
 
   confirmSend() {
 
-    /*
-    console.log(
-                "Username: "+this.userName+
-                "Apellido: "+this.LastName+
-                "Email: "+this.Email+
-                "Telefono: "+this.Telefono+
-                "idMsj: "+this.idMensajeLeads+
-                "idDistribuidor: "+this.idDistribuidor+
-                "Distribuidor: "+this.nombreDistribuidor);
-    */
-    // this.addNewProspecto();
-    // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
+    // this.interesadoForm.value);
+    this.userName=JSON.stringify(this.interesadoForm.value.nombre);
+    this.apellidoPaterno=JSON.stringify(this.interesadoForm.value.apellidoP);
+    this.apellidoMaterno=JSON.stringify(this.interesadoForm.value.apellidoM);
+    this.Telefono=JSON.stringify(this.interesadoForm.value.telefono);
+    this.Email=JSON.stringify(this.interesadoForm.value.email);
+    const comentarios=JSON.stringify(this.interesadoForm.value.comentarios);
+
+    console.log("esto es lo que vas enviar: "+this.Telefono);
+    
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
       //'My-Custom-Header': 'foobar'
@@ -1285,19 +1284,19 @@ export class IndexComponent implements OnInit {
               },
               {
                 "part": "middle",
-                "value": this.LastName // "Vargas"
+                "value": this.apellidoPaterno // "Vargas"
               },
               {
                 "part": "last",
-                "value": "" // "Chavez"
+                "value": this.apellidoMaterno // "Chavez"
               }
             ],
-            "email": "test@gmail.com", // this.Email, // "marino@gmail.com",
+            "email": this.Email, // "test@gmail.com", // this.Email, // "marino@gmail.com",
             "phone": [
               this.Telefono // "5511223344"
             ]
           },
-          "comments": " Prospecto enviado desde Mercado Libre de Comunity Manager  "
+          "comments": comentarios // " Prospecto enviado desde Mercado Libre de Comunity Manager  "
         },
         "vendor": {
           "source": this.RedSocial, // "MERCADOLIBRE",
@@ -1360,6 +1359,15 @@ export class IndexComponent implements OnInit {
 
                 });
 
+                this.newInteresadoForm={
+                  nombre: "",
+                  apellidop: "",
+                  apellidom: "",
+                  telefono: "",
+                  email: "",
+                  comentarios: ""
+                }; 
+
                 this.modalDatos.close('Close click');
                 this.modalService.dismissAll();
               }
@@ -1411,7 +1419,7 @@ export class IndexComponent implements OnInit {
       this.modalDatos.close('Close click');
       this.modalService.dismissAll();
     }
-
+      
   }
 
   addNewProspecto() {
@@ -1445,6 +1453,7 @@ export class IndexComponent implements OnInit {
     if (this.interesadoForm.valid) {
 
       this.submitted = true;
+      this.confirmSend();
       // this.addNewSocial();
       // return true;
 		}else {
@@ -1461,40 +1470,37 @@ export class IndexComponent implements OnInit {
     const inputValue = (event.target as HTMLInputElement).value;
     console.log('Valor del input:', inputValue);
 
-    // const fbylada = '52';
-    // const fbytelefono = '7226650170';
-
     // const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      // 'Connection': 'keep-alive',
-      // 'Content-Length': '148',
-      // 'x-amzn-RequestId': '33b6bc0d-346a-444e-9f04-973116be1505',
-      // 'Host': '<calculated when request is sent>',
-      // 'User-Agent': 'PostmanRuntime/7.36.1',
-      // 'Accept': '*/*',
-      // 'Accept-Encoding': 'gzip, deflate, br',
-      // 'Connection': 'keep-alive',
-      // 'Origin': 'http://localhost:4200'
-      // 'x-amz-apigw-id': 'TCD2ZEDkyK4EDbg=',
-      // 'X-Amzn-Trace-Id': 'Root=1-65ca4cf5-72253dee179cea001b8a51b8;Parent=5286178c7cb2851d;Sampled=0;lineage=40f10397:0',
+      // 'Content-Type': 'application/json',
+      'Authorization': 'Bearer TCD2ZEDkyK4EDbg=',
+      accept: 'application/json',
     });
 
-    const fbylada = '52';
-    const fbytelefono = '7226650170';
 
-const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
+if(inputValue.length==10){
 
-this.http.get(apiUrl).subscribe(
-  (data) => {
-    console.log('Datos recibidos:', data);
-  },
-  (error) => {
-    console.error('Error al obtener datos:', error);
+  const fbylada = '52';
+  const fbytelefono = inputValue;
+  const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
+
+      this.http.get(apiUrl,{headers}).subscribe(
+        (data) => {
+          console.log(data +'         Datos recibidos:', data['correcto']);
+          if(data['correcto']==1){
+            document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'none';
+            document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'block';
+          }
+          else{
+            document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'none';
+            document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'block';
+          }
+        },
+        (error) => {
+          console.error('Error al obtener datos:', error);
+        }
+      );
   }
-);
-
 
   }
 
