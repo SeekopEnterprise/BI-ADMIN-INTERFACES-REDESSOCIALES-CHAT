@@ -308,12 +308,44 @@
                   <ng-container *ngFor="let distribuidorGroup of chatByDistributorThenRedSocial | keyvalue">
                     <div class="p-3 font-weight-bold text-primary">
                       <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ distribuidorGroup.key }}
-                    </div>
+                    </div> 
                     <ng-container *ngFor="let redSocialGroup of distribuidorGroup.value | keyvalue">
-                      <div class="p-3 font-weight-bold text-info">
-
+                      <!-- <div class="p-3 font-weight-bold text-info">
                         <i class="ri-share-line"></i>&nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div> -->
+                      <div *ngIf="redSocialGroup.key=='Facebook'" class="p-3 font-weight-bold text-info">             
+                        <img src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png" height="20" width="20" alt="Facebook" class="rounded-circle avatar-xs img-thumbnail">
+                        &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
+                      <div *ngIf="redSocialGroup.key=='Instagram'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-txw-c34="" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png" alt="Instagram" class="rounded-circle avatar-xs img-thumbnail">
+                        
+                        &nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div>
+
+                      <div *ngIf="redSocialGroup.key=='Mercado Libre'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-cbu-c34="" src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg" alt="Mercado Libre" class="rounded-circle avatar-xs img-thumbnail">
+                        
+                        &nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div>
+                      
+                      <div *ngIf="redSocialGroup.key=='Youtube'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-djh-c34="" src="https://w7.pngwing.com/pngs/982/799/png-transparent-youtube-logo-youtube-logo-internet-marketing-subscribe-television-label-text.png" alt="Pinterest" class="rounded-circle avatar-xs img-thumbnail">
+                        &nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div>
+
+                      <div *ngIf="redSocialGroup.key=='Pinterest'" class="p-3 font-weight-bold text-info">
+                      <img _ngcontent-djh-c34="" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" alt="Pinterest" class="rounded-circle avatar-xs img-thumbnail">
+                      &nbsp;&nbsp;{{ redSocialGroup.key }}
+                    </div>
+
+                      <div *ngIf="redSocialGroup.key=='TikTok'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-elt-c34="" src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png" alt="Tiktok" class="rounded-circle avatar-xs img-thumbnail">
+                        &nbsp;&nbsp;{{ redSocialGroup.key }}
+                      </div>
+
+                    
+
                       <li *ngFor="let user of redSocialGroup.value" [ngClass]="{'typing': user.isTyping}"
                         (click)="showChat($event, user.ultimoMensaje['id'])">
                         <a href="javascript:void(0);">
@@ -906,39 +938,23 @@
                         {{Distribuidor}} </p> -->
                       
                         <form [formGroup]="interesadoForm" (ngSubmit)="validateForm()">
+
                           <div class="mb-3">
-                            <label class="form-label" for="nombre">IdProspecto: </label>
+                            <label class="form-label" for="nombre">Id Prospecto: </label>
                             <input 
                             
                             type="text" [value]="idMensajeLeads"
                             class="form-control" readonly>
                             
                           </div>
-                          
-                          <div class="mb-3">
-                            <label class="form-label" for="nombre">Publicación/Auto de interés: </label>
-                            <input 
-                            
-                            type="text" [value]="AutoDeInteres"
-                            class="form-control" readonly>
-                          </div>
 
                           <div class="mb-3">
-                            <label class="form-label" for="nombre">Distribuidor que atenderá al prospecto: </label>
-                            <input 
-                            
-                            type="text" [value]="Distribuidor"
-                            class="form-control" readonly>
-                          </div>
-
-
-                          <div class="mb-3">
-                            <label class="form-label" for="nombre">Nombre *</label>
+                            <label class="form-label" for="nombre">Nombre *:</label>
                             <input 
                             formControlName="nombre"
                             [ngClass]="{'is-invalid': submitted && f.nombre.errors }" type="text" 
                             class="form-control" [(ngModel)]="newInteresadoForm.nombre"
-                            placeholder="" pattern="[A-Za-z\s]*">
+                            placeholder="" pattern="[A-Za-z\s]*" [value]="userName">
               
                             <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
                                 <div *ngIf="f.nombre.errors.required">
@@ -961,7 +977,7 @@
                           </div> 
                           
                           <div class="mb-3">
-                            <label class="form-label" for="apellidoP">Apellido paterno*</label>
+                            <label class="form-label" for="apellidoP">Apellido paterno *:</label>
                             <input 
                             formControlName="apellidoP"
                             [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text" 
@@ -983,7 +999,7 @@
                           </div>
                           
                           <div class="mb-3">
-                            <label class="form-label" for="apellidoM">Apellido materno*</label>
+                            <label class="form-label" for="apellidoM">Apellido materno *:</label>
                             <input 
                             formControlName="apellidoM"
                             [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }" type="text" 
@@ -1006,7 +1022,7 @@
                           
                           <div class="mb-3">
                             
-                            <label class="form-label" for="telefono">Telefono *</label>
+                            <label class="form-label" for="telefono">Telefono *:</label>
                             <div class="input-group"> 
                             <input 
                             formControlName="telefono"
@@ -1045,7 +1061,7 @@
                           </div>
                           
                           <div class="mb-3">
-                            <label class="form-label" for="email">Email *</label>
+                            <label class="form-label" for="email">Email *:</label>
                             <input 
                             formControlName="email"
                             [ngClass]="{'is-invalid': submitted && f.email.errors}" type="email" 
@@ -1067,9 +1083,24 @@
                             </div>
                           </div>
 
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">Publicación/Auto de interés: </label>
+                            <input 
+                            
+                            type="text" [value]="AutoDeInteres"
+                            class="form-control" readonly>
+                          </div>
+
+                          <div class="mb-3">
+                            <label class="form-label" for="nombre">Distribuidor: </label>
+                            <input 
+                            
+                            type="text" [value]="Distribuidor"
+                            class="form-control" readonly>
+                          </div>
                           
                           <div class="mb-3">
-                            <label class="form-label" for="comentarios">Comentarios </label>
+                            <label class="form-label" for="comentarios">Observaciones: </label>
                             
                             <textarea rows="3" cols="70" 
                             formControlName="comentarios"

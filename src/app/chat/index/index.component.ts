@@ -711,6 +711,21 @@ export class IndexComponent implements OnInit {
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
+    this.apellidoPaterno=data[0].Apellido;
+    this.Telefono=data[0].Telefono;
+    this.Email=data[0].Email;
+
+    
+    this.newInteresadoForm = {
+      nombre: this.userName,
+      apellidop: this.apellidoPaterno,
+      apellidom: this.apellidoMaterno,
+      telefono: this.Telefono,
+      email: this.Email,
+      comentarios: ''
+    };
+    console.log("data: "+JSON.stringify(data));
+    
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
     this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
     this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
