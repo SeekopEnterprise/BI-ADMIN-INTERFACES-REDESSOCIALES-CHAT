@@ -65,6 +65,12 @@
           </a>
         </li>
 
+        <li class="nav-item" ngbTooltip="Publicaciones" placement="top">
+          <a class="nav-link" id="pills-contacts-tab" (click)="showTabMetodos('9')" (click)="activetab=9"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 9}">
+            <i class="ri-edit-fill"></i>
+          </a>
+        </li>
 
 
 
@@ -712,6 +718,10 @@
         <app-metodos></app-metodos>
       </div>
 
+      <div id="pills-contacts" role="tabpanel" aria-labelledby="pills-contacts-tab" *ngIf="activetab === 9">
+        <app-publicaciones></app-publicaciones>
+      </div>
+      
       <!-- Start settings tab-pane -->
       <div id="pills-setting" role="tabpanel" aria-labelledby="pills-setting-tab" *ngIf="activetab === 5">
         <app-settings></app-settings>

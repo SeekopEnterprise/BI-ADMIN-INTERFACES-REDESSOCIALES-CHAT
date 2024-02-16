@@ -137,8 +137,8 @@ export class IndexComponent implements OnInit {
     telefono: new FormControl(''),
     email: new FormControl(''),
     comentarios: new FormControl('')
-  }); 
-
+  });
+ 
   telefonoInput: string = '';
 
   lang: string;
@@ -152,12 +152,12 @@ export class IndexComponent implements OnInit {
     });
 
     this.interesadoForm= this.formBuilder.group({
-      nombre: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
-      apellidoP: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
-      apellidoM: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(20),Validators.pattern('[A-Za-z\s]*')]],
-      telefono: ['', [Validators.required,Validators.minLength(10),Validators.pattern('[0-9\s]*')]],
-      email: ['', [Validators.required,Validators.minLength(5),Validators.maxLength(50),Validators.email]],
-      comentarios: [''] // [Validators.required,Validators.maxLength(20)]
+      nombre: ['', [Validators.required,Validators.maxLength(20)]],
+      apellidoP: ['', [Validators.required,Validators.maxLength(20)]],
+      apellidoM: ['', [Validators.required,Validators.maxLength(20)]],
+      telefono: ['', [Validators.required,Validators.minLength(10),Validators.maxLength(10)]],
+      email: ['', [Validators.required,Validators.email]],
+      comentarios: ['', [Validators.required,Validators.maxLength(20)]],
     });
 
   }
@@ -1468,7 +1468,6 @@ export class IndexComponent implements OnInit {
     if (this.interesadoForm.valid) {
 
       this.submitted = true;
-      this.confirmSend();
       // this.addNewSocial();
       // return true;
 		}else {
@@ -1485,37 +1484,40 @@ export class IndexComponent implements OnInit {
     const inputValue = (event.target as HTMLInputElement).value;
     console.log('Valor del input:', inputValue);
 
+    // const fbylada = '52';
+    // const fbytelefono = '7226650170';
+
     // const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
     const headers = new HttpHeaders({
-      // 'Content-Type': 'application/json',
-      'Authorization': 'Bearer TCD2ZEDkyK4EDbg=',
-      accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': 'http://localhost:4200',
+      // 'Connection': 'keep-alive',
+      // 'Content-Length': '148',
+      // 'x-amzn-RequestId': '33b6bc0d-346a-444e-9f04-973116be1505',
+      // 'Host': '<calculated when request is sent>',
+      // 'User-Agent': 'PostmanRuntime/7.36.1',
+      // 'Accept': '*/*',
+      // 'Accept-Encoding': 'gzip, deflate, br',
+      // 'Connection': 'keep-alive',
+      // 'Origin': 'http://localhost:4200'
+      // 'x-amz-apigw-id': 'TCD2ZEDkyK4EDbg=',
+      // 'X-Amzn-Trace-Id': 'Root=1-65ca4cf5-72253dee179cea001b8a51b8;Parent=5286178c7cb2851d;Sampled=0;lineage=40f10397:0',
     });
 
+    const fbylada = '52';
+    const fbytelefono = '7226650170';
 
-if(inputValue.length==10){
+const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
 
-  const fbylada = '52';
-  const fbytelefono = inputValue;
-  const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
-
-      this.http.get(apiUrl,{headers}).subscribe(
-        (data) => {
-          console.log(data +'         Datos recibidos:', data['correcto']);
-          if(data['correcto']==1){
-            document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'none';
-            document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'block';
-          }
-          else{
-            document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'none';
-            document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'block';
-          }
-        },
-        (error) => {
-          console.error('Error al obtener datos:', error);
-        }
-      );
+this.http.get(apiUrl).subscribe(
+  (data) => {
+    console.log('Datos recibidos:', data);
+  },
+  (error) => {
+    console.error('Error al obtener datos:', error);
   }
+);
+
 
   }
 
