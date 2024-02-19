@@ -1,42 +1,230 @@
- <div class="p-4">
-  <div class="user-chat-nav float-end">
-    <div ngbTooltip="Agregar Publicacion">
-
-      <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
-        data-target="#addMetodos-exampleModal" (click)="openModal = !openModal" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, .5);">
-        <i class="ri-chat-new-fill" style="font-size: 30px;"></i>
-      </button>
+<!-- Start Contact content -->
+<div>
+  <div class="p-4">
+    <div class="user-chat-nav float-end">
+      <div ngbTooltip="Agregar Publicación">
+        <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal"
+          data-target="#addPublicaciones-exampleModal" (click)="openPublicacionesModal(content)"
+          style="text-shadow: 2px 2px 4px rgba(0, 0, 0, .5);">
+          <i class="ri-chat-new-fill" style="font-size: 30px;"></i>
+        </button>
+      </div>
     </div>
-  </div>
-  <h4 class="mb-4 title">Publicacion</h4>
+    <h4 class="mb-4 title">Publicaciones</h4>
 
-  <!-- Modal -->
-  <div *ngIf="openModal" class="modal-container">
+    <ng-template #content let-modal>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-size-16" id="addPublicaciones-exampleModal">Agregar Nueva Publicación</h5>
+          <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+          </button>
+        </div>
+        <div class="modal-body p-4">
+
+          <form [formGroup]="publicacionForm" (ngSubmit)="validateForm()">
+
+            <div class="mb-3">
+              <label for="nombreRedSocial">Red social*</label>
+              <select formControlName="nombreRedSocial" required
+                [ngClass]="{ 'is-invalid': submitted && f.nombreRedSocial.errors || f.nombreRedSocial.value==='null'}"
+                (change)="changeRedSocial($event)" class="form-select" [(ngModel)]="newPublicacion.idred">
+                <option [value]="null">Seleccione...</option>
+                <option *ngFor="let title of redesSelect" [value]="title.idred">{{title.nombre}}</option>
+                {{newPublicacion.idred?.idred}}
+              </select>
+
+              <div *ngIf="submitted && f.nombreRedSocial.errors?.required || f.nombreRedSocial.value==='null'"
+                class="invalid-feedback">
+                Este campo es obligatorio!
+              </div>
+
+            </div>
+
+
+            <div class="mb-3">
+              <label for="tipoPublicacion">Tipo de publicación*</label>
+              <select formControlName="tipoPublicacion" class="form-select"
+                [ngClass]="{ 'is-invalid': submitted && f.tipoPublicacion.errors || f.tipoPublicacion.value==='null'}"
+                (change)="changeTipoPublicacion($event)" [(ngModel)]="newPublicacion.tipoPublicacion">
+                <option value="null">Seleccione...</option>
+                <option value="IMAGEN">IMAGEN</option>
+                <option value="VIDEO">VIDEO</option>
+                <option value="TEXTO">TEXTO</option>
+              </select>
+
+              <div *ngIf="submitted && f.tipoPublicacion.errors?.required || f.tipoPublicacion.value==='null'"
+                class="invalid-feedback">
+                El campo es requerido!
+              </div>
+
+            </div>
+
+
+            <div class="mb-3">
+              <label for="contenido">Contenido*</label>
+              <textarea formControlName="contenido" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.contenido.errors }" [(ngModel)]="newPublicacion.contenido"
+                required>
+            </textarea>
+              <div *ngIf="submitted && f.contenido.errors?.required" class="invalid-feedback">
+                El campo es requerido!
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Agregar</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </ng-template>
+    <!-- End Add contact Modal -->
+
+    <div class="search-box chat-search-box">
+      <div class="input-group bg-light input-group-lg rounded-3">
+        <div class="input-group-prepend">
+          <button class="btn btn-link text-decoration-none text-muted pr-1" type="button">
+            <i class="ri-search-line search-icon font-size-18"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End search-box -->
+  </div>
+  <!-- end p-4 -->
+
+  <!-- Start Add contact Modal -->
+  <ng-template #content_edit let-modal>
     <div class="modal-content">
-      <form (submit)="submitForm()">
-      <div class="mb-3">
-        <label for="publicarEn">Publicar en:</label>
-        <select class="form-control" id="publicarEn" [(ngModel)]="selectedOption">
-          <option value="facebook">Facebook</option>
-          <option value="instagram">Instagram</option>
-          <option value="youtube">YouTube</option>
-          <option value="pinterest">Pinterest</option>
-        </select>
+      <div class="modal-header">
+        <h5 class="modal-title font-size-16" id="editPublicaciones-exampleModalLabel">Editar Publicación</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+        </button>
       </div>
-      <div class="mb-3">
-        <label for="textoEnlaces">Texto y Enlaces:</label>
-        <textarea class="form-control" id="textoEnlaces" [(ngModel)]="textoEnlaces" rows="3"></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="imagenes">Fotos:</label>
-        <input type="file" class="form-control-file" id="imagenes">
-      </div>
-      <!-- Agrega más campos según sea necesario para los puntos 4, 5 y 6 -->
-      <button type="submit" class="btn btn-primary">Guardar</button>
-    </form>
-  </div>
-</div>
-  
-  
-</div>
+      <div class="modal-body p-4">
+        <form [formGroup]="publicacionEditForm" (ngSubmit)="validateUpdateForm($event)">
+          <div class="mb-3">
+            <label for="nombreRedSocial_edit">Red social*</label>
 
+            <select [(ngModel)]="editPub.idred" formControlName="nombreRedSocial_edit" class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && fe.nombreRedSocial_edit.errors }" required>
+              <option *ngFor="let option of redesSelect" [ngValue]="option.idred">
+                {{option.nombre}}
+              </option>
+              {{editPub.idred?.idred}}
+            </select>
+
+            <div *ngIf="submitted && fe.nombreRedSocial_edit.errors" class="invalid-feedback">
+              <div *ngIf="fe.nombreRedSocial_edit.errors.required">El campo es obligatorio!</div>
+            </div>
+
+          </div>
+
+          <div class="mb-3">
+            <label for="tipo_publicacion_edit">Tipo de publicación*</label>
+            <select id="tipo_publicacion_edit" formControlName="tipo_publicacion_edit" class="form-control"
+              [(ngModel)]="editPub.tipoPublicacion"
+              [ngClass]="{ 'is-invalid': submitted && fe.tipo_publicacion_edit.errors }" required>
+              <option value="IMAGEN">IMAGEN</option>
+              <option value="VIDEO">VIDEO</option>
+              <option value="TEXTO">TEXTO</option>
+            </select>
+
+            <div *ngIf="submitted && fe.tipo_publicacion_edit.errors" class="invalid-feedback">
+              <div *ngIf="fe.tipo_publicacion_edit.errors.required">El campo es obligatorio!</div>
+            </div>
+          </div>
+
+
+          <div class="mb-3">
+            <label for="contenido_edit">Contenido*</label>
+            <textarea id="contenido_edit" formControlName="contenido_edit" class="form-control"
+              [(ngModel)]="editPub.contenido" [ngClass]="{ 'is-invalid': submitted && fe.contenido_edit.errors }"
+              required>
+              </textarea>
+            <div *ngIf="submitted && fe.contenido_edit.errors" class="invalid-feedback">
+              <div *ngIf="fe.contenido_edit.errors.required">El campo es obligatorio!</div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+  <!-- End Add contact Modal -->
+
+
+  <!-- Modal Delete Publicaciones-->
+  <ng-template #content_eliminar let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title font-size-16" id="eliminarPublicaciones-exampleModalLabel">Eliminar Publicación</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')">
+        </button>
+      </div>
+      <div class="modal-body p-4">
+
+        <div class="mb-3">
+          <label for="nombreRedSocial_edit">¿Desea eliminar la publicación?</label>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">Cancelar</button>
+          <button type="button" class="btn btn-primary"
+            (click)="deletePublicacion($event,{idPublicacion})">Eliminar</button>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+  <!-- Fin modal delete -->
+
+
+
+  <!-- Start contact lists -->
+  <perfect-scrollbar class="p-4 chat-message-list chat-group-list" data-simplebar>
+    <ul class="list-unstyled publicaciones-list">
+
+      <li>
+
+        <div class="d-flex flex-row p-6">
+
+          <!--
+          <div class="d-flex flex-grow-2 align-items-center" style="width: 200px;">
+            <label class="font-size-14 m-0">{{item.nombrered | translate}}</label>
+          </div>
+
+          <div class="d-flex flex-grow-2 align-items-center" style="width: 100px;">
+            <label class="font-size-14 m-0">{{item.tipoPublicacion | translate}}</label>
+          </div>
+
+          <div class="dropdown" ngbDropdown>
+            <a href="javascript: void(0);" class="text-muted dropdown-toggle" ngbDropdownToggle data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              <i class="ri-more-2-fill"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+              <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item1' | translate}} <i
+                  class="ri-share-line float-end text-muted"></i></a>
+              <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item2' | translate}} <i
+                  class="ri-forbid-line float-end text-muted"></i></a>
+              <a class="dropdown-item" href="javascript:void(0);">{{'chat.tabs.contacts.list.dropdown.item3' | translate}} <i
+                  class="ri-delete-bin-line float-end text-muted"></i></a>
+            </div>
+          </div> -->
+
+        </div>
+      </li>
+    </ul>
+  </perfect-scrollbar>
+  <!-- end contact lists -->
+</div>
+<!-- Start Contact content -->

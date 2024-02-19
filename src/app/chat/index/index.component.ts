@@ -108,6 +108,7 @@ export class IndexComponent implements OnInit {
     'redes-sociales': 4,
     'distribuidores-redes-sociales': 6,
     'metodos': 7,
+    'publicaciones': 8
 
   };
 
@@ -118,6 +119,7 @@ export class IndexComponent implements OnInit {
     4: 'redes-sociales',
     6: 'distribuidores-redes-sociales',
     7: 'metodos',
+    8: 'publicaciones'
 
   };
 
@@ -138,7 +140,7 @@ export class IndexComponent implements OnInit {
     email: new FormControl(''),
     comentarios: new FormControl('')
   });
- 
+
   telefonoInput: string = '';
 
   lang: string;
@@ -715,7 +717,7 @@ export class IndexComponent implements OnInit {
     this.Telefono=data[0].Telefono;
     this.Email=data[0].Email;
 
-    
+
     this.newInteresadoForm = {
       nombre: this.userName,
       apellidop: this.apellidoPaterno,
@@ -725,7 +727,7 @@ export class IndexComponent implements OnInit {
       comentarios: ''
     };
     console.log("data: "+JSON.stringify(data));
-    
+
     // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
     this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
     this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
@@ -1271,7 +1273,7 @@ export class IndexComponent implements OnInit {
     const comentarios=JSON.stringify(this.interesadoForm.value.comentarios);
 
     console.log("esto es lo que vas enviar: "+this.Telefono);
-    
+
     const headers = {
       'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
       //'My-Custom-Header': 'foobar'
@@ -1381,7 +1383,7 @@ export class IndexComponent implements OnInit {
                   telefono: "",
                   email: "",
                   comentarios: ""
-                }; 
+                };
 
                 this.modalDatos.close('Close click');
                 this.modalService.dismissAll();
@@ -1434,7 +1436,7 @@ export class IndexComponent implements OnInit {
       this.modalDatos.close('Close click');
       this.modalService.dismissAll();
     }
-      
+
   }
 
   addNewProspecto() {
@@ -1461,10 +1463,10 @@ export class IndexComponent implements OnInit {
   }
 
   validateForm(): void{
-    
+
     this.submitted = true;
     const var_inv= document.getElementsByClassName('ng-invalid');
-    
+
     if (this.interesadoForm.valid) {
 
       this.submitted = true;
@@ -1521,7 +1523,7 @@ this.http.get(apiUrl).subscribe(
 
   }
 
-  
+
 
   detectarSentimiento(idMensaje): Promise<void> {
     return new Promise((resolve, reject) => {
