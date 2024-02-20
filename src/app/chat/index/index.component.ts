@@ -108,8 +108,8 @@ export class IndexComponent implements OnInit {
     'redes-sociales': 4,
     'distribuidores-redes-sociales': 6,
     'metodos': 7,
-    'publicaciones': 8
-
+    'publicaciones': 8,
+    'calendario-publicaciones': 9
   };
 
   ROUTES = {
@@ -119,8 +119,8 @@ export class IndexComponent implements OnInit {
     4: 'redes-sociales',
     6: 'distribuidores-redes-sociales',
     7: 'metodos',
-    8: 'publicaciones'
-
+    8: 'publicaciones',
+    9: 'calendario-publicaciones'
   };
 
   newInteresadoForm: Partial<Interesado> = {
@@ -1470,7 +1470,7 @@ export class IndexComponent implements OnInit {
     if (this.interesadoForm.valid) {
 
       this.submitted = true;
-      // this.addNewSocial();
+      this.confirmSend();
       // return true;
 		}else {
       return console.log(this.interesadoForm.value);
@@ -1507,13 +1507,22 @@ export class IndexComponent implements OnInit {
     });
 
     const fbylada = '52';
-    const fbytelefono = '7226650170';
+    const fbytelefono = inputValue;
 
 const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
 
 this.http.get(apiUrl).subscribe(
   (data) => {
-    console.log('Datos recibidos:', data);
+    console.log('Datos recibidos:', data['correcto']);
+    if(data['correcto']==1){
+      document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'block';
+      document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'none';
+    }
+    else{
+      document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'block';
+      document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'none';
+    }
+
   },
   (error) => {
     console.error('Error al obtener datos:', error);

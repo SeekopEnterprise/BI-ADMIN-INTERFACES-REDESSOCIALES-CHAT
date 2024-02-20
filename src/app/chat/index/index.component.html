@@ -72,7 +72,12 @@
           </a>
         </li>
 
-
+        <li class="nav-item" ngbTooltip="Calendario de publicaciones" placement="top">
+          <a class="nav-link" id="pills-calendar-tab" (click)="showTabMetodos('9')" (click)="activetab=9"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 9}">
+            <i class="ri-calendar-line"></i>
+          </a>
+        </li>
 
         <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none" ngbDropdown placement="top">
           <a class="nav-link dropdown-toggle" href="javascript: void(0);" role="button" data-toggle="dropdown"
@@ -722,6 +727,10 @@
         <app-publicaciones></app-publicaciones>
       </div>
 
+      <div id="pills-contacts" role="tabpanel" aria-labelledby="pills-contacts-tab" *ngIf="activetab === 9">
+        <app-calendariopublicaciones></app-calendariopublicaciones>
+      </div>
+
       <!-- Start settings tab-pane -->
       <div id="pills-setting" role="tabpanel" aria-labelledby="pills-setting-tab" *ngIf="activetab === 5">
         <app-settings></app-settings>
@@ -732,7 +741,7 @@
   </div>
 
 
-  <div class="chat-welcome-section" id="chat-welcome-section" *ngIf="activetab !== 7 && activetab!==8">
+  <div class="chat-welcome-section" id="chat-welcome-section" *ngIf="activetab !== 7 && activetab!==8 && activetab!==9">
     <div class="row w-100 justify-content-center">
       <div class="col-xxl-5 col-md-7">
         <div class="p-4 text-center">
@@ -820,6 +829,22 @@
 
 
           <h4 class=""> AQUÍ VA TODO LO DE LAS PUBLICACIONES</h4>
+          <hr>
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-welcome-section tabMetodos" id="tabMetodos" *ngIf="activetab === 9">
+    <div class="row w-100 justify-content-center">
+      <div class="col-xxl-12 col-md-12">
+        <div class="p-4 text-center">
+
+
+          <h4 class=""> AQUÍ VA TODO LO DE CALENDARIO DE PUBLICACIONES</h4>
           <hr>
 
 
@@ -981,7 +1006,8 @@
                             class="form-control" [(ngModel)]="newInteresadoForm.nombre"
                             placeholder="" pattern="[A-Za-z\s]*" [value]="userName">
 
-                            <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
+<!-- [ngClass]="{'is-invalid': f.nombre.errors }" *ngIf="redesusuariosForm.controls['idred'].invalid && (redesusuariosForm.controls['idred'].dirty || redesusuariosForm.controls['idred'].touched)" -->                            
+                            <div *ngIf="interesadoForm.controls['nombre'].invalid && (interesadoForm.controls['nombre'].dirty || interesadoForm.controls['nombre'].touched)" class="text-danger">
                                 <div *ngIf="f.nombre.errors.required">
                                   EL campo es requerido!
                                 </div>
@@ -1008,8 +1034,8 @@
                             [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text"
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidop"
                             placeholder="" pattern="[A-Za-z\s]*">
-
-                            <div *ngIf="submitted && f.apellidoP.errors" class="invalid-feedback">
+                            <!-- *ngIf="submitted && f.apellidoP.errors" class="invalid-feedback" -->
+                            <div *ngIf="interesadoForm.controls['apellidoP'].invalid && (interesadoForm.controls['apellidoP'].dirty || interesadoForm.controls['apellidoP'].touched)" class="text-danger">
                                 <div *ngIf="f.apellidoP.errors.required">
                                   EL campo es requerido!
                                 </div>
@@ -1031,7 +1057,8 @@
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidom"
                             placeholder="" pattern="[A-Za-z\s]*">
 
-                            <div *ngIf="submitted && f.apellidoM.errors" class="invalid-feedback">
+                            <!-- *ngIf="submitted && f.apellidoM.errors" class="invalid-feedback" -->
+                            <div *ngIf="interesadoForm.controls['apellidoM'].invalid && (interesadoForm.controls['apellidoM'].dirty || interesadoForm.controls['apellidoM'].touched)" class="text-danger">
                                 <div *ngIf="f.apellidoM.errors.required">
                                   EL campo es requerido!
                                 </div>
@@ -1059,8 +1086,9 @@
                             <i _ngcontent-vco-c34="" id="btnVerificado_{{idMensajeLeads}}" class="ri-user-follow-fill" style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"></i>
                             <i _ngcontent-vco-c34="" id="btnNoVerificado_{{idMensajeLeads}}" class="ri-user-unfollow-fill" style="color: #ff4444; font-size: 1.5rem; display: none;"></i>
 
-                          <!-- </div> -->
-                            <div *ngIf="submitted && f.telefono.errors" class="invalid-feedback">
+                          </div> 
+                          <!-- *ngIf="submitted && f.telefono.errors" class="invalid-feedback" -->
+                            <div *ngIf="interesadoForm.controls['telefono'].invalid && (interesadoForm.controls['telefono'].dirty || interesadoForm.controls['telefono'].touched)" class="text-danger">
                                 <div *ngIf="f.telefono.errors.required">
                                   EL campo es requerido!
                                 </div>
@@ -1081,7 +1109,7 @@
                                   Ingresa un valor con una longitud igual a 10 carácteres!
                                 </div>-->
 
-                            </div>
+                          <!--  </div> -->
                           </div>
                           </div>
 
@@ -1093,7 +1121,8 @@
                             class="form-control" [(ngModel)]="newInteresadoForm.email"
                             placeholder="prueba@gmail.com">
 
-                            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                            <!-- *ngIf="submitted && f.email.errors" class="invalid-feedback" -->
+                            <div *ngIf="interesadoForm.controls['email'].invalid && (interesadoForm.controls['email'].dirty || interesadoForm.controls['email'].touched)" class="text-danger">
                                 <div *ngIf="f.email.errors.required">
                                   EL campo es requerido!
                                 </div><!--

@@ -16,12 +16,13 @@ import { RedessocialesusuariosComponent } from './redessocialesusuarios/redessoc
 import { MetodosComponent } from './metodos/metodos.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PublicacionesComponent } from './publicaciones/publicaciones.component';
+import { CalendariopublicacionesComponent } from './calendariopublicaciones/calendariopublicaciones.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
 
 @NgModule({
-  declarations: [ProfileComponent, RedesSocialesComponent, SettingsComponent, RedessocialesusuariosComponent, MetodosComponent, PublicacionesComponent],
+  declarations: [ProfileComponent, RedesSocialesComponent, SettingsComponent, RedessocialesusuariosComponent, MetodosComponent, PublicacionesComponent, CalendariopublicacionesComponent],
   imports: [
     CarouselModule,
     CommonModule,
