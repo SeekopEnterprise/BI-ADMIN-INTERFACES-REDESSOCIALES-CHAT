@@ -17,7 +17,8 @@ import { ErrorInterceptor } from './core/helpers/error.interceptor';
 import { JwtInterceptor } from './core/helpers/jwt.interceptor';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule,ReactiveFormsModule} from '@angular/forms';
-
+import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 if (environment.defaultauth === 'firebase') {
   initFirebaseBackend(environment.firebaseConfig);
 } else {
@@ -49,7 +50,9 @@ export function createTranslateLoader(http: HttpClient): any {
     }),
     NgbModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

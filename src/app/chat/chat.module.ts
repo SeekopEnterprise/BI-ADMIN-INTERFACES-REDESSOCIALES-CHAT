@@ -24,7 +24,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NotificacionesComponent } from './notificaciones/notificaciones/notificaciones.component';
 
 import { NotificacionesService } from '../chat/notificaciones/notificaciones.service';
-
+import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 @NgModule({
   declarations: [IndexComponent, NotificacionesComponent],
   imports: [
@@ -42,7 +43,9 @@ import { NotificacionesService } from '../chat/notificaciones/notificaciones.ser
     NgbDropdownModule,
     TranslateModule,
     SimplebarAngularModule,
-    PickerModule
+    PickerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     DatePipe,

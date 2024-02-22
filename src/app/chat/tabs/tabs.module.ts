@@ -17,6 +17,10 @@ import { MetodosComponent } from './metodos/metodos.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PublicacionesComponent } from './publicaciones/publicaciones.component';
 import { CalendariopublicacionesComponent } from './calendariopublicaciones/calendariopublicaciones.component';
+
+import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
@@ -35,10 +39,12 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    MatDatepickerModule,
+    MatNativeDateModule
 
   ],
-  exports: [ProfileComponent, RedesSocialesComponent, SettingsComponent,RedessocialesusuariosComponent,MetodosComponent,PublicacionesComponent],
+  exports: [ProfileComponent, RedesSocialesComponent, SettingsComponent,RedessocialesusuariosComponent,MetodosComponent,PublicacionesComponent,CalendariopublicacionesComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
