@@ -70,6 +70,18 @@
   /* Agrega aquí cualquier otro estilo que desees para el título */
 }
 
+.nav-btn.active img {
+  filter: brightness(1.5);  // Aumenta el brillo del ícono cuando está activo
+}
+
+
+.send-msg .chat-input-links .btn img {
+  cursor: pointer;
+}
+
+.send-msg .chat-input-links .btn:hover img {
+  filter: brightness(1.2);
+}
 
 
 /* cambios 29-08-2023

@@ -44,6 +44,14 @@ export class IndexComponent implements OnInit {
   public chat: GroupedResponseItem[] = [];
   groups: Grupos[];
   formData!: FormGroup;
+
+  tooltipText: string = "Proponer mensaje";
+
+  botMessageSuggestions = {
+    default: "Este es un mensaje automático del bot.",
+    custom: "Aquí va una sugerencia personalizada."
+  };
+
   @ViewChild('scrollRef') scrollRef: any;
   emoji = '';
   isreplyMessage = false;
@@ -90,6 +98,14 @@ export class IndexComponent implements OnInit {
   public par_idRedSocial: string;
   public isContainerVisible: boolean = false;
   public isContainerVisibleKPIs: boolean = false;
+
+  selectedBot: string = '';  // Nueva propiedad para almacenar el bot seleccionado
+  bots = [  // Lista de bots disponibles
+    { value: 'bot1', name: 'Bot de Respuesta Rápida' },
+    { value: 'bot2', name: 'Bot de Seguimiento' },
+    { value: 'bot3', name: 'Bot de Ventas' }
+  ];
+  botActive: boolean = false;  // Propiedad para saber si un bot está activo
 
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -1564,6 +1580,38 @@ this.http.get(apiUrl).subscribe(
     this.isContainerVisibleKPIs = !this.isContainerVisibleKPIs;
   }
 
+ // Método para abrir el modal del bot
+ openBotModal(content: any) {
+  this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+}
+
+ // Método para activar el bot seleccionado
+ activateBot() {
+  if (this.selectedBot) {
+    this.botActive = true;  // Activar el bot
+    console.log('Bot activado:', this.selectedBot);
+
+    // Aquí puedes agregar la lógica para activar el bot en la aplicación.
+  } else {
+    console.log('No se ha seleccionado ningún bot');
+  }
+}
+
+proposeBotMessage() {
+  const currentMessage = this.formData.get('message')!.value;
+
+  if (!currentMessage) {
+    this.formData.patchValue({ message: this.botMessageSuggestions.default });
+  } else {
+    this.formData.patchValue({ message: `${currentMessage} ${this.botMessageSuggestions.custom}` });
+  }
+  this.updateTooltip();
+}
+
+updateTooltip() {
+  const currentMessage = this.formData.get('message')!.value;
+  this.tooltipText = currentMessage ? "Enriquecer mensaje" : "Proponer mensaje";
+}
 
 
 }

@@ -845,9 +845,9 @@
 
           <!-- <mat-card class="demo-inline-calendar-card">
             <mat-calendar [(selected)]="selected"></mat-calendar>
-          </mat-card> 
+          </mat-card>
           <p>Selected date: {{selected}}</p> -->
-                   
+
 
 
         </div>
@@ -1007,7 +1007,7 @@
                             class="form-control" [(ngModel)]="newInteresadoForm.nombre"
                             placeholder="" pattern="[A-Za-z\s]*">
 
-<!-- [ngClass]="{'is-invalid': f.nombre.errors }" *ngIf="redesusuariosForm.controls['idred'].invalid && (redesusuariosForm.controls['idred'].dirty || redesusuariosForm.controls['idred'].touched)" -->                            
+<!-- [ngClass]="{'is-invalid': f.nombre.errors }" *ngIf="redesusuariosForm.controls['idred'].invalid && (redesusuariosForm.controls['idred'].dirty || redesusuariosForm.controls['idred'].touched)" -->
                             <div *ngIf="interesadoForm.controls['nombre'].invalid && (interesadoForm.controls['nombre'].dirty || interesadoForm.controls['nombre'].touched)" class="text-danger">
                                 <div *ngIf="f.nombre.errors.required">
                                   EL campo es requerido!
@@ -1087,7 +1087,7 @@
                             <i _ngcontent-vco-c34="" id="btnVerificado_{{idMensajeLeads}}" class="ri-user-follow-fill" style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"></i>
                             <i _ngcontent-vco-c34="" id="btnNoVerificado_{{idMensajeLeads}}" class="ri-user-unfollow-fill" style="color: #ff4444; font-size: 1.5rem; display: none;"></i>
 
-                          </div> 
+                          </div>
                           <!-- *ngIf="submitted && f.telefono.errors" class="invalid-feedback" -->
                             <div *ngIf="interesadoForm.controls['telefono'].invalid && (interesadoForm.controls['telefono'].dirty || interesadoForm.controls['telefono'].touched)" class="text-danger">
                                 <div *ngIf="f.telefono.errors.required">
@@ -1209,6 +1209,35 @@
                     </div>
                   </div>
                 </ng-template>
+
+                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                  <button type="button" class="btn nav-btn" [ngClass]="{'active': botActive}"
+                      data-bs-toggle="modal" data-bs-target="#botModal"
+                      ngbTooltip="Bot Automático" (click)="openBotModal(botContent)">
+                      <img src="/assets/icons/mdi-robot.svg" alt="Bot Automático" width="24" height="24">
+                  </button>
+              </li>
+
+
+                <ng-template #botContent let-modal>
+                  <div class="modal-header">
+                      <h5 class="modal-title">Seleccionar Bot para Mensajes Automáticos</h5>
+                      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group">
+                          <label for="bot-select">Seleccionar Bot:</label>
+                          <select id="bot-select" class="form-control" [(ngModel)]="selectedBot">
+                              <option value="" disabled>Selecciona un Bot</option>
+                              <option *ngFor="let bot of bots" [value]="bot.value">{{ bot.name }}</option>
+                          </select>
+                      </div>
+                      <button type="button" class="btn btn-primary" (click)="activateBot()">Activar Bot</button>
+                  </div>
+              </ng-template>
+
+
+
 
                 <!--
                 <ng-template #contentInteresado let-modal>
@@ -1596,6 +1625,12 @@
                           (change)="fileChange($event)">
                       </label>
                     </li> -->
+                    <li class="list-inline-item">
+              <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect"
+                [ngbTooltip]="tooltipText" (click)="proposeBotMessage()">
+                <img src="/assets/icons/mdi-robot.svg" alt="Bot" width="24" height="24">
+              </button>
+            </li>
                     <li class="list-inline-item">
                       <button type="submit"
                         class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light">
