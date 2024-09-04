@@ -1210,13 +1210,13 @@
                   </div>
                 </ng-template>
 
-                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+              <!--   <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
                   <button type="button" class="btn nav-btn" [ngClass]="{'active': botActive}"
                       data-bs-toggle="modal" data-bs-target="#botModal"
                       ngbTooltip="Bot Automático" (click)="openBotModal(botContent)">
                       <img src="/assets/icons/mdi-robot.svg" alt="Bot Automático" width="24" height="24">
                   </button>
-              </li>
+              </li> -->
 
 
                 <ng-template #botContent let-modal>
@@ -1626,7 +1626,7 @@
                       </label>
                     </li> -->
                     <li class="list-inline-item">
-              <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect"
+                      <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect"
                 [ngbTooltip]="tooltipText" (click)="proposeBotMessage()">
                 <img src="/assets/icons/mdi-robot.svg" alt="Bot" width="24" height="24">
               </button>

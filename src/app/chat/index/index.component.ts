@@ -10,6 +10,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { chat, groups } from './data';
 import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem, Interesado } from './chat.model';
+import { ChatService } from '../../services/chat.service'; // Ajusta la ruta si es necesario
+
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -161,7 +163,7 @@ export class IndexComponent implements OnInit {
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
-  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
+  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService,  private chatService: ChatService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
     private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2, private el: ElementRef) {
     this.formData = this.formBuilder.group({
@@ -1600,18 +1602,77 @@ this.http.get(apiUrl).subscribe(
 proposeBotMessage() {
   const currentMessage = this.formData.get('message')!.value;
 
-  if (!currentMessage) {
-    this.formData.patchValue({ message: this.botMessageSuggestions.default });
-  } else {
-    this.formData.patchValue({ message: `${currentMessage} ${this.botMessageSuggestions.custom}` });
-  }
-  this.updateTooltip();
+  // Determinar el tipo (creación o mejora)
+  const tipo = currentMessage ? 'mejora' : 'creacion';
+  console.log('Tipo de mensaje:', tipo); // Depuración
+
+  // Llamar a la API para obtener el mensaje según el tipo
+  this.enviarUltimosMensajes(tipo).subscribe(
+    response => {
+      console.log('Respuesta de la API:', response); // Depuración
+      // Actualiza la caja de texto con el mensaje de la API
+      this.formData.patchValue({ message: response.mensaje });
+      this.updateTooltip(); // Actualiza el tooltip con el estado actual (creación/mejora)
+    },
+    error => {
+      console.error('Error al enviar los mensajes:', error); // Depuración
+      alert('Hubo un error al obtener el mensaje del bot');
+    }
+  );
 }
 
 updateTooltip() {
   const currentMessage = this.formData.get('message')!.value;
+  // Si no hay mensaje, es creación, si hay mensaje, es mejora
   this.tooltipText = currentMessage ? "Enriquecer mensaje" : "Proponer mensaje";
 }
+
+
+enviarUltimosMensajes(tipo: string) {
+  // Obtenemos los últimos 20 mensajes del chat, si hay menos de 20, tomamos todos los disponibles.
+  const mensajesAgrupados = this.chat.slice(-20);
+
+  // Construimos el objeto conversacion
+  const conversacion = {
+    idProspecto: '123456789', // Hardcodeado
+    idEjecutivo: '123456789', // Hardcodeado
+    idDistribuidor: '123456789', // Hardcodeado
+    messages: [] // Aquí se van a agregar los últimos 20 mensajes
+  };
+
+  // Iteramos sobre los últimos 20 mensajes y construimos el array de messages
+  mensajesAgrupados.forEach(group => {
+    group.prospects.forEach(prospect => {
+      prospect.Conversacion.forEach(conversacionItem => {
+        conversacion.messages.push({
+          role: conversacionItem.align === 'right' ? 'ejecutivo' : 'prospecto', // Determinamos el rol
+          name: conversacionItem.name || prospect.Nombre, // Nombre del prospecto o del ejecutivo
+          message: conversacionItem.texto // El contenido del mensaje
+        });
+      });
+    });
+  });
+
+  // Formamos el payload
+  const payload = {
+    conversacion, // Estructura correcta
+    mensaje: "", // Campo vacío
+    tipo: tipo // "mejora" o "creacion"
+  };
+
+  console.log('Payload enviado a la API:', payload); // Depuración para ver el payload
+
+  // Retornamos el observable para manejarlo en proposeBotMessage
+  return this.chatService.enviarMensajes(payload, tipo);
+}
+
+
+
+
+
+
+
+
 
 
 }
