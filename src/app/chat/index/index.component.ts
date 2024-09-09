@@ -16,7 +16,6 @@ import { ChatService } from '../../services/chat.service'; // Ajusta la ruta si 
 import { Lightbox } from 'ngx-lightbox';
 
 import { environment } from '../../../environments/environment';
-import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
 import { Subscription } from 'rxjs';
 import { NotificacionesService } from '../../chat/notificaciones/notificaciones.service';
@@ -163,7 +162,7 @@ export class IndexComponent implements OnInit {
   lang: string;
   images: { src: string; thumb: string; caption: string }[] = [];
 
-  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService,  private chatService: ChatService, private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
+  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService,  private chatService: ChatService, private authFackservice: AuthfakeauthenticationService,
     private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
     public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2, private el: ElementRef) {
     this.formData = this.formBuilder.group({
@@ -625,17 +624,6 @@ export class IndexComponent implements OnInit {
     document.getElementById('chat-room').classList.remove('user-chat-show');
   }
 
-  /**
-   * Logout the user
-   */
-  logout() {
-    if (environment.defaultauth === 'firebase') {
-      this.authService.logout();
-    } else if (environment.defaultauth === 'fackbackend') {
-      this.authFackservice.logout();
-    }
-    this.router.navigate(['/account/login']);
-  }
 
   /**
    * Set language

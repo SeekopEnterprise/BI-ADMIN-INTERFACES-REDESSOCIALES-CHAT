@@ -7,7 +7,6 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { LightboxModule } from 'ngx-lightbox';
 
-import { TabsModule } from './tabs/tabs.module';
 
 import { ChatRoutingModule } from './chat-routing.module';
 
@@ -38,7 +37,6 @@ import { MatNativeDateModule } from '@angular/material/core';
     FormsModule,
     ReactiveFormsModule,
     ChatRoutingModule,
-    TabsModule,
     NgbTooltipModule,
     NgbDropdownModule,
     TranslateModule,
