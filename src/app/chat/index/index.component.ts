@@ -1,17 +1,34 @@
-import { Component, OnInit, ViewChild, TemplateRef, Renderer2, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  TemplateRef,
+  Renderer2,
+  ElementRef
+} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
-import { FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
-// import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import {
+  FormBuilder,
+  Validators,
+  FormGroup,
+  FormControl
+} from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { chat, groups } from './data';
-import { Conversacion, ApiResponse, ResponseItem, Grupos, GroupedResponseItem, Interesado } from './chat.model';
+import {
+  Conversacion,
+  ApiResponse,
+  ResponseItem,
+  Grupos,
+  GroupedResponseItem,
+  Interesado
+} from './chat.model';
 import { ChatService } from '../../services/chat.service'; // Ajusta la ruta si es necesario
-
 
 import { Lightbox } from 'ngx-lightbox';
 
@@ -37,40 +54,53 @@ declare var Highcharts: any;
  */
 export class IndexComponent implements OnInit {
 
+  // Suscripción para WebSocket
   private chatSubscription: Subscription;
-  submitted= false;
-  public activetab = 2;
-  apiResponse: ApiResponse[];
-  //chat: ResponseItem[];
+
+  // Control del formulario
+  submitted = false;
+  public activetab = 2;        // Tab activo
+  apiResponse: ApiResponse[];  // Respuesta de la API
+
+  // Chat principal
   public chat: GroupedResponseItem[] = [];
   groups: Grupos[];
+
+  // Form principal para mensajes
   formData!: FormGroup;
 
+  // Tooltip para botón del Bot
   tooltipText: string = "Proponer mensaje";
 
+  // Sugerencias base de mensajes para el Bot
   botMessageSuggestions = {
     default: "Este es un mensaje automático del bot.",
     custom: "Aquí va una sugerencia personalizada."
   };
 
+  // Referencia para el scroll
   @ViewChild('scrollRef') scrollRef: any;
+
+  // Control de emojis
   emoji = '';
+  showEmojiPicker = false;
   isreplyMessage = false;
   isgroupMessage = false;
   mode: string | undefined;
   public isCollapsed = true;
 
+  // Control de nuevos mensajes
   public nuevoMensaje = false;
   public datosMensajeNuevo;
   public selectedChatId: any;
 
+  // Datos del usuario y la publicación
   public Distribuidor: string;
   public RedSocial: string;
   public Email: string;
   public IdPublicacionLead: string;
-  public LinkPublicacion: SafeResourceUrl | undefined;  // string;
+  public LinkPublicacion: SafeResourceUrl | undefined;
   public modalDatos: any;
-
   public Telefono: string;
   public apellidoPaterno: string;
   public apellidoMaterno: string;
@@ -83,31 +113,37 @@ export class IndexComponent implements OnInit {
   public AutoDeInteres = "Sentra";
   public idRedSocial: string;
   public idMensaje: string;
-
   public hideMenu: boolean;
   public enviadoaseekop: boolean = false;
-
   public activeChatId: string | null = null;
-  public chatByRedSocial: any = {}
+
+  // Variables para agrupar
+  public chatByRedSocial: any = {};
   public vistaPorDistribuidor: boolean = true;
   public chatByDistributorThenRedSocial: any;
+
+  // Control del último mensaje enviado (para evitar duplicados)
   public lastSentMessage = '';
 
-
+  // Parámetros usados para la API
   public par_IdPublicacionLead: string;
   public par_idDistribuidor: string;
   public par_idRedSocial: string;
+
+  // Control de contenedores para KPI
   public isContainerVisible: boolean = false;
   public isContainerVisibleKPIs: boolean = false;
 
-  selectedBot: string = '';  // Nueva propiedad para almacenar el bot seleccionado
-  bots = [  // Lista de bots disponibles
+  // Variables y listado de Bots
+  selectedBot: string = '';  // Bot seleccionado
+  bots = [
     { value: 'bot1', name: 'Bot de Respuesta Rápida' },
     { value: 'bot2', name: 'Bot de Seguimiento' },
     { value: 'bot3', name: 'Bot de Ventas' }
   ];
-  botActive: boolean = false;  // Propiedad para saber si un bot está activo
+  botActive: boolean = false; // Para saber si un bot está activo
 
+  // Lista de lenguajes
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
@@ -116,6 +152,7 @@ export class IndexComponent implements OnInit {
     { text: 'Russian', flag: 'assets/images/flags/russia.jpg', lang: 'ru' },
   ];
 
+  // Mapeo de tabs
   TABS = {
     '': 2,
     'perfil': 1,
@@ -128,6 +165,7 @@ export class IndexComponent implements OnInit {
     'calendario-publicaciones': 9
   };
 
+  // Mapeo de rutas
   ROUTES = {
     1: 'perfil',
     2: 'conversaciones',
@@ -139,6 +177,7 @@ export class IndexComponent implements OnInit {
     9: 'calendario-publicaciones'
   };
 
+  // Form de interesado
   newInteresadoForm: Partial<Interesado> = {
     nombre: '',
     apellidop: '',
@@ -159,42 +198,68 @@ export class IndexComponent implements OnInit {
 
   telefonoInput: string = '';
 
+  // Manejo de idioma
   lang: string;
+
+  // Control de imágenes en Lightbox
   images: { src: string; thumb: string; caption: string }[] = [];
 
-  constructor(private globalUserService: GlobalUserService, private notificacionService: NotificacionesService,  private chatService: ChatService, private authFackservice: AuthfakeauthenticationService,
-    private router: Router, private route: ActivatedRoute, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
-    public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox, private http: HttpClient, private sanitizer: DomSanitizer, private renderer: Renderer2, private el: ElementRef) {
+  // Varios
+  senderName: any;
+  senderProfile: any;
+
+  constructor(
+    private globalUserService: GlobalUserService,
+    private notificacionService: NotificacionesService,
+    private chatService: ChatService,
+    private authFackservice: AuthfakeauthenticationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    public translate: TranslateService,
+    private modalService: NgbModal,
+    private offcanvasService: NgbOffcanvas,
+    public formBuilder: FormBuilder,
+    private datePipe: DatePipe,
+    private lightbox: Lightbox,
+    private http: HttpClient,
+    private sanitizer: DomSanitizer,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {
+    // Form para mensajes
     this.formData = this.formBuilder.group({
-      message: ['', [Validators.required]],
+      message: ['', [Validators.required]]
     });
 
-    this.interesadoForm= this.formBuilder.group({
-      nombre: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoP: ['', [Validators.required,Validators.maxLength(20)]],
-      apellidoM: ['', [Validators.required,Validators.maxLength(20)]],
-      telefono: ['', [Validators.required,Validators.minLength(10),Validators.maxLength(10)]],
-      email: ['', [Validators.required,Validators.email]],
-      comentarios: ['', [Validators.required,Validators.maxLength(20)]],
+    // Form para interesado
+    this.interesadoForm = this.formBuilder.group({
+      nombre: ['', [Validators.required, Validators.maxLength(20)]],
+      apellidoP: ['', [Validators.required, Validators.maxLength(20)]],
+      apellidoM: ['', [Validators.required, Validators.maxLength(20)]],
+      telefono: [
+        '',
+        [Validators.required, Validators.minLength(10), Validators.maxLength(10)]
+      ],
+      email: ['', [Validators.required, Validators.email]],
+      comentarios: ['', [Validators.required, Validators.maxLength(20)]]
     });
-
   }
 
   /**
-  * Open lightbox
-  */
+   * Abre la imagen en Lightbox
+   */
   openImage(index: number, i: number): void {
     // open lightbox
     this.lightbox.open(this.message[index].imageContent, i, {
       showZoom: true
     });
-
   }
 
-  senderName: any;
-  senderProfile: any;
-
+  /**
+   * Inicialización del componente
+   */
   async ngOnInit() {
+    // Manejo de queryParams para establecer el tab activo
     this.route.queryParams.subscribe(params => {
       try {
         const tabId = params['tab'];
@@ -205,8 +270,15 @@ export class IndexComponent implements OnInit {
         this.hideMenu = false;
       }
     });
-    try {
 
+    // Aquí puedes poner la llamada a la API para que se ejecute al cargar el chat:
+    try {
+      await this.descargarMensajesIniciales();
+    } catch (error) {
+      console.error('Error al descargar mensajes iniciales:', error);
+    } 
+
+    try {
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
       if (!user) {
@@ -224,15 +296,14 @@ export class IndexComponent implements OnInit {
         await this.loadRecuperacionMensajes();
       }
 
-
-
     } catch (error) {
       console.log('Error cargando grupos o recuperando mensajes:', error);
       return;
     }
 
     // Suscripción al servicio WebSocket para recibir notificaciones en tiempo real
-    this.chatSubscription = this.notificacionService.connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
+    this.chatSubscription = this.notificacionService
+      .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
 
@@ -243,47 +314,59 @@ export class IndexComponent implements OnInit {
             nombreApp: 'proveedoresDigitales'
           });
         } else if (event.type === 'message') {
-          // Primero verifica si data.idMensaje existe para llamar a detectarSentimiento.
-          const promesaSentimiento = data.idMensaje ? this.detectarSentimiento(data.idMensaje) : Promise.resolve();
+          // Verifica si data.idMensaje existe para llamar a detectarSentimiento
+          const promesaSentimiento = data.idMensaje
+            ? this.detectarSentimiento(data.idMensaje)
+            : Promise.resolve();
 
           promesaSentimiento.then(() => {
             this.loadRecuperacionMensajes(data).then(() => {
               // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
-              const chatToUpdate = [].concat(...this.chat
-                .map(group => group.prospects))
-                .find(prospect => prospect.ultimoMensaje.id === data.idMensaje + "");
+              const chatToUpdate = []
+                .concat(...this.chat.map(group => group.prospects))
+                .find(
+                  prospect =>
+                    prospect.ultimoMensaje.id === data.idMensaje + ''
+                );
 
-              /*    if (chatToUpdate) {
-                   chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-                 } */
+              /* 
+              if (chatToUpdate) {
+                chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+              }
+              */
 
-              // Vuelve a ordenar los chats después de actualizar el contador
-              // Garantiza que el chat con el mensaje más reciente siempre esté en la parte superior
+              // Ordenar los chats tras la actualización
               this.chat.sort((a, b) => {
-                const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
-                const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
-                const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
-                const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
+                const lastMessageA =
+                  a.prospects[0].Conversacion[
+                  a.prospects[0].Conversacion.length - 1
+                  ];
+                const lastMessageB =
+                  b.prospects[0].Conversacion[
+                  b.prospects[0].Conversacion.length - 1
+                  ];
+                const lastMsgDateA = lastMessageA.fechaRespuesta
+                  ? new Date(lastMessageA.fechaRespuesta).getTime()
+                  : new Date(lastMessageA.fechaCreacion).getTime();
+                const lastMsgDateB = lastMessageB.fechaRespuesta
+                  ? new Date(lastMessageB.fechaRespuesta).getTime()
+                  : new Date(lastMessageB.fechaCreacion).getTime();
                 return lastMsgDateB - lastMsgDateA;
               });
-
             });
-
           });
         }
       });
 
-
-
-
     document.body.setAttribute('data-layout-mode', 'light');
-
-
     this.lang = this.translate.currentLang;
     this.onListScroll();
     this.loadScripts();
   }
 
+  /**
+   * Inicia el gráfico con Highcharts
+   */
   initiateChart() {
     // Función que se llama en el evento de renderizado del gráfico
     if (typeof Highcharts !== 'undefined') {
@@ -308,26 +391,19 @@ export class IndexComponent implements OnInit {
           }
           series.icon.attr({
             x: this.chartWidth / 2 - 15,
-            y: this.plotHeight / 2 -
+            y:
+              this.plotHeight / 2 -
               series.points[0].shapeArgs.innerR -
-              (
-                series.points[0].shapeArgs.r -
-                series.points[0].shapeArgs.innerR
-              ) / 2 +
+              (series.points[0].shapeArgs.r -
+                series.points[0].shapeArgs.innerR) /
+              2 +
               8
           });
         });
       }
 
-      // La configuración de colores y opacidad de las pistas del gráfico
-      const trackColors = Highcharts.getOptions().colors.map(color =>
-        new Highcharts.Color(color).setOpacity(0.3).get()
-      );
-
-
       // Creación del gráfico
       Highcharts.chart('container', {
-
         chart: {
           type: 'solidgauge',
           height: '80%',
@@ -335,14 +411,12 @@ export class IndexComponent implements OnInit {
             render: renderIcons
           }
         },
-
         title: {
           text: 'Perfomance Del Día',
           style: {
             fontSize: '24px'
           }
         },
-
         tooltip: {
           borderWidth: 0,
           backgroundColor: 'none',
@@ -351,17 +425,15 @@ export class IndexComponent implements OnInit {
             fontSize: '16px'
           },
           valueSuffix: '%',
-          pointFormat: '{series.name}<br>' +
-            '<span style="font-size: 2em; color: {point.color}; ' +
-            'font-weight: bold">{point.y}</span>',
+          pointFormat:
+            '{series.name}<br><span style="font-size: 2em; color: {point.color}; font-weight: bold">{point.y}</span>',
           positioner: function (labelWidth) {
             return {
-              x: (this.chart.chartWidth - labelWidth) - 150 ,
-              y: (this.chart.plotHeight / 2) + 20
+              x: this.chart.chartWidth - labelWidth - 150,
+              y: this.chart.plotHeight / 2 + 20
             };
           }
         },
-
         pane: {
           startAngle: 0,
           endAngle: 360,
@@ -369,43 +441,51 @@ export class IndexComponent implements OnInit {
             {
               outerRadius: '100%',
               innerRadius: '90%',
-              backgroundColor: Highcharts.color("#2caffe").setOpacity(1).get(), // Más transparente
+              backgroundColor: Highcharts.color('#2caffe')
+                .setOpacity(1)
+                .get(),
               borderWidth: 0
             },
             {
               outerRadius: '90%',
               innerRadius: '80%',
-              backgroundColor: Highcharts.color("#544fc5").setOpacity(0.10).get(), // Más transparente
+              backgroundColor: Highcharts.color('#544fc5')
+                .setOpacity(0.1)
+                .get(),
               borderWidth: 0
             },
             {
               outerRadius: '80%',
               innerRadius: '70%',
-              backgroundColor: Highcharts.color("#BC2866").setOpacity(0.10).get(), // Más transparente
+              backgroundColor: Highcharts.color('#BC2866')
+                .setOpacity(0.1)
+                .get(),
               borderWidth: 0
             },
             {
               outerRadius: '70%',
               innerRadius: '60%',
-              backgroundColor: Highcharts.color("#fe6a35").setOpacity(0.10).get(), // Más transparente
+              backgroundColor: Highcharts.color('#fe6a35')
+                .setOpacity(0.1)
+                .get(),
               borderWidth: 0
             },
             {
               outerRadius: '60%',
               innerRadius: '50%',
-              backgroundColor: Highcharts.color("#f7f022").setOpacity(0.10).get(), // Más transparente
+              backgroundColor: Highcharts.color('#f7f022')
+                .setOpacity(0.1)
+                .get(),
               borderWidth: 0
             }
           ]
         },
-
         yAxis: {
           min: 0,
           max: 100,
           lineWidth: 0,
           tickPositions: []
         },
-
         plotOptions: {
           solidgauge: {
             dataLabels: {
@@ -417,8 +497,8 @@ export class IndexComponent implements OnInit {
           }
         },
         legend: {
-          with: "90px",
-          verticalAlign: "middle",
+          with: '90px',
+          verticalAlign: 'middle',
           position: 'relative',
           margingTop: 10,
           margin: 10,
@@ -429,31 +509,35 @@ export class IndexComponent implements OnInit {
           useHTML: true,
           color: 'black',
           labelFormatter: function () {
-            return '<span style="border:1px; text-weight:bold;color:' + this.userOptions.color + ';">' + this.name + '</span>';
+            return (
+              '<span style="border:1px; text-weight:bold;color:' +
+              this.userOptions.color +
+              ';">' +
+              this.name +
+              '</span>'
+            );
           },
-          itemHiddenStyle: { "color": "#a3bd36" },
-          symbolWidth: 60,
-          //itemStyle:{"display": "none"},
-          //itemCheckboxStyle:{"width": "13px", "height": "13px", "position":"absolute", "color": "#a3bd36"}
+          itemHiddenStyle: { color: '#a3bd36' },
+          symbolWidth: 60
         },
-
         navigation: {
           buttonOptions: {
-            symbolFill: "#a3bd36",
-            symbolStroke: "#a3bd36"
+            symbolFill: '#a3bd36',
+            symbolStroke: '#a3bd36'
           }
         },
-
         series: [
           {
-            color: "#2caffe", // Azul para mensajes recibidos
+            color: '#2caffe',
             name: 'Mensajes Recibidos',
-            data: [{
-              color: "#2caffe",
-              radius: '100%',
-              innerRadius: '90%',
-              y: 100 // Ejemplo: 200 mensajes recibidos
-            }],
+            data: [
+              {
+                color: '#2caffe',
+                radius: '100%',
+                innerRadius: '90%',
+                y: 100
+              }
+            ],
             custom: {
               icon: 'envelope',
               iconColor: '#303030'
@@ -461,14 +545,16 @@ export class IndexComponent implements OnInit {
             showInLegend: true
           },
           {
-            color: "#544fc5", // Verde para mensajes contestados
+            color: '#544fc5',
             name: 'Mensajes Contestados',
-            data: [{
-              color: "#544fc5",
-              radius: '90%',
-              innerRadius: '80%',
-              y: 60 // Ejemplo: 180 mensajes contestados
-            }],
+            data: [
+              {
+                color: '#544fc5',
+                radius: '90%',
+                innerRadius: '80%',
+                y: 60
+              }
+            ],
             custom: {
               icon: 'comments-o',
               iconColor: '#ffffff'
@@ -476,14 +562,16 @@ export class IndexComponent implements OnInit {
             showInLegend: true
           },
           {
-            color: "#BC2866", // Rojo para mensajes no contestados
+            color: '#BC2866',
             name: 'Mensajes No Contestados',
-            data: [{
-              color: "#BC2866",
-              radius: '80%',
-              innerRadius: '70%',
-              y: 40 // Ejemplo: 20 mensajes no contestados
-            }],
+            data: [
+              {
+                color: '#BC2866',
+                radius: '80%',
+                innerRadius: '70%',
+                y: 40
+              }
+            ],
             custom: {
               icon: 'commenting-o',
               iconColor: '#303030'
@@ -491,14 +579,16 @@ export class IndexComponent implements OnInit {
             showInLegend: true
           },
           {
-            color: "#fe6a35", // Naranja para mensajes negativos
+            color: '#fe6a35',
             name: 'Mensajes Negativos',
-            data: [{
-              color: "#544fc5",
-              radius: '70%',
-              innerRadius: '60%',
-              y: 20 // Ejemplo: 10 mensajes negativos
-            }],
+            data: [
+              {
+                color: '#544fc5',
+                radius: '70%',
+                innerRadius: '60%',
+                y: 20
+              }
+            ],
             custom: {
               icon: 'thumbs-down',
               iconColor: '#303030'
@@ -506,14 +596,16 @@ export class IndexComponent implements OnInit {
             showInLegend: true
           },
           {
-            color: "#f7f022", // Amarillo para mensajes positivos
+            color: '#f7f022',
             name: 'Mensajes Positivos',
-            data: [{
-              color: "#f7f022",
-              radius: '60%',
-              innerRadius: '50%',
-              y: 67 // Ejemplo: 170 mensajes positivos
-            }],
+            data: [
+              {
+                color: '#f7f022',
+                radius: '60%',
+                innerRadius: '50%',
+                y: 67
+              }
+            ],
             custom: {
               icon: 'thumbs-up',
               iconColor: '#303030'
@@ -521,28 +613,41 @@ export class IndexComponent implements OnInit {
             showInLegend: true
           }
         ]
-        // ... (otras configuraciones)
       });
-
     } else {
       console.error('Highcharts no está definido');
     }
   }
 
+  /**
+   * Carga scripts de Highcharts y llama a initiateChart()
+   */
   loadScripts() {
     this.loadScript('https://code.highcharts.com/highcharts.js', () => {
       this.loadScript('https://code.highcharts.com/highcharts-more.js', () => {
         this.loadScript('https://code.highcharts.com/modules/solid-gauge.js', () => {
-          this.loadScript('https://code.highcharts.com/modules/exporting.js', () => {
-            this.loadScript('https://code.highcharts.com/modules/export-data.js', () => {
-              this.loadScript('https://code.highcharts.com/modules/accessibility.js', this.initiateChart);
-            });
-          });
+          this.loadScript(
+            'https://code.highcharts.com/modules/exporting.js',
+            () => {
+              this.loadScript(
+                'https://code.highcharts.com/modules/export-data.js',
+                () => {
+                  this.loadScript(
+                    'https://code.highcharts.com/modules/accessibility.js',
+                    this.initiateChart
+                  );
+                }
+              );
+            }
+          );
         });
       });
     });
   }
 
+  /**
+   * Carga de script externo
+   */
   loadScript(src: string, onLoad: () => void) {
     const script = this.renderer.createElement('script');
     script.src = src;
@@ -550,179 +655,181 @@ export class IndexComponent implements OnInit {
     this.renderer.appendChild(this.el.nativeElement, script);
   }
 
-
+  /**
+   * Se ejecuta después de que la vista inicie
+   */
   ngAfterViewInit() {
     // Escucha los mensajes que llegan del padre
-    window.addEventListener('message', async (event) => { // marcado como async
+    window.addEventListener('message', async event => {
       if (!this.yaEstaSeteado) {
         // Almacena el usuario en el servicio
         this.globalUserService.setCurrentUser(event.data);
-        console.log("esta funcionando o no aquí lo sabremos: ", event.data);
+        console.log('esta funcionando o no aquí lo sabremos: ', event.data);
         this.usuarioCorreo = event.data.username;
         if (this.usuarioCorreo) {
           this.senderName = this.usuarioCorreo;
           this.senderProfile = 'assets/images/users/' + event.data.profile;
-          await this.loadGrupos(); // se agrega await
-          await this.loadRecuperacionMensajes(); // se agrega await
+          await this.loadGrupos();
+          await this.loadRecuperacionMensajes();
         }
         this.yaEstaSeteado = true;
       }
     });
+
     this.scrollRef.SimpleBar.getScrollElement().scrollTop = 100;
 
-    const iframeElement = document.getElementById("iframePub") as HTMLIFrameElement;
+    const iframeElement = document.getElementById(
+      'iframePub'
+    ) as HTMLIFrameElement;
     if (iframeElement) {
       const iframeWindow = iframeElement.contentWindow;
       const iframeDocument = iframeWindow.document;
-      const bodyElement = iframeDocument.getElementsByTagName("body")[0];
-      bodyElement.setAttribute("id", "idIframe");
+      const bodyElement = iframeDocument.getElementsByTagName('body')[0];
+      bodyElement.setAttribute('id', 'idIframe');
     } else {
       console.log('El iframe no se encuentra en el DOM.');
     }
   }
 
-
-
+  /**
+   * Se destruye la suscripción del WebSocket
+   */
   ngOnDestroy(): void {
     this.chatSubscription.unsubscribe();
     this.notificacionService.close();
   }
 
+  /**
+   * Obtiene el último mensaje de una conversación
+   */
   getLastMessage(conversacion: Conversacion[]): Conversacion {
-    // this.idMensajeLeads.push(conversacion.length > 0 ? conversacion[conversacion.length - 1] : null);
     return conversacion.length > 0 ? conversacion[conversacion.length - 1] : null;
   }
 
-
+  /**
+   * Muestra la notificación de nuevo mensaje (placeholder si se requiere)
+   */
   showNewMessageNotification(chat: ResponseItem): void {
-    // Mostrar un aviso de "nuevo mensaje" en la interfaz del usuario.
-    // Aquí puedes agregar el código para mostrar la notificación según cómo hayas implementado tu interfaz.
-    // Por ejemplo, puedes cambiar una variable "newMessage" a true y usarla para mostrar un elemento en tu HTML.
-    // this.nuevoMensaje = true;
-    // this.datosMensajeNuevo = chat.Nombre;  // Guardar el nombre del chat para mostrarlo en la notificación.
+    // Implementar lógica de notificación si se requiere
   }
 
   /**
-   * Show user profile
+   * Muestra el perfil del usuario
    */
-  // tslint:disable-next-line: typedef
   showUserProfile() {
     document.getElementById('profile-detail').style.display = 'block';
   }
 
+  /**
+   * Control de cambio de tab
+   */
   showTabMetodos(tabId: string) {
     this.hideMenu = false;
     this.activetab = Number(tabId);
   }
 
-
   /**
-   * Close user chat
+   * Cierra el chat de usuario
    */
-  // tslint:disable-next-line: typedef
   closeUserChat() {
     document.getElementById('chat-room').classList.remove('user-chat-show');
   }
 
-
   /**
-   * Set language
-   * @param lang language
+   * Cambia el idioma
    */
   setLanguage(lang) {
     this.translate.use(lang);
     this.lang = lang;
   }
 
+  /**
+   * Abre el modal de la publicación (Ver Publicación)
+   */
   openCallModal(content) {
     this.modalService.open(content, { centered: true });
   }
 
+  /**
+   * Abre el modal de Video (Enviar a Seekop)
+   */
   openVideoModal(videoContent) {
     this.modalDatos = this.modalService.open(videoContent, { centered: true });
   }
 
+  /**
+   * Evento al enfocar el input de mensaje
+   */
   onInputFocus() {
     if (this.activeChatId) {
-      const activeChat = [].concat(...this.chat.map(group => group.prospects))
+      const activeChat = []
+        .concat(...this.chat.map(group => group.prospects))
         .find(prospect => prospect.idPregunta === this.activeChatId);
 
       if (activeChat) {
         // Marca el mensaje como leído
         activeChat.unreadCount = 0;
-        // Adicionalmente, lógica para comunicar al backend
-        // que el mensaje ha sido leído, mover aquí
+        // Lógica extra de leído si se requiere
       }
     }
   }
 
-
-  /**
-   * Show user chat
-   */
-  // tslint:disable-next-line: typedef
+  // Nombre de usuario y estatus en la parte superior del chat
   userName: any = 'Doris Brown';
   userStatus: any = 'En línea';
   userProfile: any = '';
-  urlPublicacion: any = ''; // "https://auto.mercadolibre.com.mx/MLM-1952360720-volkswagen-t-cross-2022-_JM#position=35&search_layout=grid&type=item&tracking_id=bcfdd2c2-d303-4fc3-8424-f071854cf10f"
+  urlPublicacion: any = '';
   message: any;
 
-  showChat(event: any, id: any) { // alert("este es el id seleccionado: "+id);
-    this.enviadoaseekop == false
-    console.log(id);
+  /**
+   * Muestra el chat
+   */
+  showChat(event: any, id: any) {
+    this.enviadoaseekop == false;
     this.activeChatId = id;
-    var removeClass = document.querySelectorAll('.chat-user-list li');
+    console.log('ID Chat seleccionado:', id);
+
+    const removeClass = document.querySelectorAll('.chat-user-list li');
     removeClass.forEach((element: any) => {
       element.classList.remove('active');
     });
 
-    document.querySelector('.user-chat').classList.add('user-chat-show')
+    document.querySelector('.user-chat').classList.add('user-chat-show');
     document.querySelector('.chat-welcome-section').classList.add('d-none');
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
-    /*  var data = this.chat.flatMap(group => group.prospects).filter((prospect: any) => {
-       return prospect.Email === id;
-     }); */
 
-
-    var IdUltimoMensaje = [];
-    var data = this.chat
+    // Buscamos la data relacionada con el ID seleccionado
+    const IdUltimoMensaje = [];
+    const data = this.chat
       .map(group => group.prospects)
       .reduce((a, b) => a.concat(b), [])
       .filter((prospect: any) => {
-
-        let val = "";
         if (prospect.ultimoMensaje.id === id) {
-          // console.log("=========> "+JSON.stringify(prospect.Conversacion[0].id));
           IdUltimoMensaje.push(prospect.Conversacion);
         }
-
         return prospect.ultimoMensaje.id === id;
       });
 
+    // Se busca el "IdMensajeLeads"
     for (let key in IdUltimoMensaje[0]) {
-
       if (IdUltimoMensaje[0][key].ultimoMensaje == true) {
-        // console.log("ultimoMensaje: "+IdUltimoMensaje[0][key].id);
         this.idMensajeLeads = IdUltimoMensaje[0][key].id;
-
       }
     }
 
-    // console.log(Object.values(IdUltimoMensaje[0][0]))
-    //
-    data[0].unreadCount = 0;
+    data[0].unreadCount = 0; // Marcamos la conversación como leída
     this.userName = data[0].Nombre;
     this.Distribuidor = data[0].NombreGrupo;
-    this.RedSocial = data[0].redSocial
+    this.RedSocial = data[0].redSocial;
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
-    this.apellidoPaterno=data[0].Apellido;
-    this.Telefono=data[0].Telefono;
-    this.Email=data[0].Email;
+    this.apellidoPaterno = data[0].Apellido;
+    this.Telefono = data[0].Telefono;
+    this.Email = data[0].Email;
 
-
+    // Precarga del formulario con datos
     this.newInteresadoForm = {
       nombre: this.userName,
       apellidop: this.apellidoPaterno,
@@ -731,89 +838,72 @@ export class IndexComponent implements OnInit {
       email: this.Email,
       comentarios: ''
     };
-    console.log("data: "+JSON.stringify(data));
 
-    // this.LinkPublicacion = "https://autos.mercadolibre.com.mx/#redirectedFromVip=https%3A%2F%2Fauto.mercadolibre.com.mx%2FMLM-1952360720-volkswagen-t-cross-2022-_JM";
-    this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl("https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM"); // (this.urlPublicacion);
-    this.Telefono = data[0].Telefono; // this.sanitizer.bypassSecurityTrustResourceUrl
-    this.apellidoPaterno = data[0].Apellido;
-    // this.idMensajeLeads.push(data[0].IdProspecto);
+    // Asignación de datos para la vista
+    this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl(
+      'https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM'
+    );
     this.idDistribuidor = data[0].IdDistribuidor;
     this.nombreDistribuidor = data[0].NombreGrupo;
-
     this.idRedSocial = data[0]['idred'];
-    // console.log("data: "+data[0]['idred']);
-
-    // this.enviadoaseekop = true;
-
-    this.userStatus = "En línea"
+    this.userStatus = 'En línea';
     this.userProfile = '';
-    this.message = data[0].Conversacion
+    this.message = data[0].Conversacion;
     this.selectedChatId = data[0].ultimoMensaje.id;
     this.onListScroll();
 
+    // Obtiene el botón para cambiar su estado si ya fue enviado
+    const btnEnviarSeekop = document.getElementById(
+      'btnEnviarSeekop_' + this.idMensajeLeads
+    );
 
-    const btnEnviarSeekop = document.getElementById("btnEnviarSeekop_" + this.idMensajeLeads);
-
-
-
-    if (this.IdPublicacionLead == '') {
-      this.par_IdPublicacionLead = null;
-    } else {
-      this.par_IdPublicacionLead = this.IdPublicacionLead;
-    }
-    if (this.idDistribuidor == '') {
-      this.par_idDistribuidor = null;
-    } else {
-      this.par_idDistribuidor = this.idDistribuidor;
-    }
-    if (this.idRedSocial == '') {
-      this.par_idRedSocial = null;
-    } else {
-      this.par_idRedSocial = this.idRedSocial;
-    }
+    // Parametrizamos los datos para la API
+    this.par_IdPublicacionLead = this.IdPublicacionLead || null;
+    this.par_idDistribuidor = this.idDistribuidor || null;
+    this.par_idRedSocial = this.idRedSocial || null;
 
     const apiUrl = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}&existe=true`;
 
-    this.http.get(apiUrl).subscribe(response => {
-      if (response && response['body']) {
-        this.enviadoaseekop = response['body']['exists'];
-        console.log("estatus envio: " + this.enviadoaseekop);
-        if (this.enviadoaseekop) {
-          // Deshabilitar el botón de enviar seekop
-          btnEnviarSeekop?.setAttribute('disabled', 'true');
-          // btnEnviarSeekop?.removeAttribute('tooltip');
-          // btnEnviarSeekop?.setAttribute('title', 'Hello...');
-          // btnEnviarSeekop?.setAttribute('title', 'This is a tooltip text.');
-          document.getElementById('btnenviarleads_' + this.idMensajeLeads).style.display = 'none';
-          document.getElementById('btnenviadoleads_' + this.idMensajeLeads).style.display = 'block';
+    this.http.get(apiUrl).subscribe(
+      response => {
+        if (response && response['body']) {
+          this.enviadoaseekop = response['body']['exists'];
+          console.log('estatus envio: ' + this.enviadoaseekop);
 
-          /* let clickTooltip: Tooltip = new Tooltip({
-              opensOn: 'Click',
-              content: 'Tooltip from click'
-          });
-          clickTooltip.appendTo('#'+btnEnviarSeekop);
-          */
-
-
-        } else {
-          btnEnviarSeekop?.removeAttribute('disabled');
+          if (this.enviadoaseekop) {
+            // Deshabilitar el botón de enviar a Seekop
+            btnEnviarSeekop?.setAttribute('disabled', 'true');
+            document.getElementById(
+              'btnenviarleads_' + this.idMensajeLeads
+            ).style.display = 'none';
+            document.getElementById(
+              'btnenviadoleads_' + this.idMensajeLeads
+            ).style.display = 'block';
+          } else {
+            btnEnviarSeekop?.removeAttribute('disabled');
+          }
         }
+      },
+      error => {
+        console.error('Hubo un error al obtener los datos de la API:', error);
       }
-    }, error => {
-      console.error("Hubo un error al obtener los datos de la API:", error);
-    });
-
-    // console.log("esta es la url => "+this.urlPublicacion+" => username =>  "+this.userName);
+    );
   }
 
+  /**
+   * Búsqueda de contactos
+   */
   ContactSearch() {
-    const input = document.getElementById("searchContact") as HTMLInputElement;
+    const input = document.getElementById(
+      'searchContact'
+    ) as HTMLInputElement;
     const filter = input.value.toUpperCase();
-    const chatUserList = document.querySelectorAll(".chat-user-list li");
-    const groupDivs = document.querySelectorAll(".chat-user-list .font-weight-bold.text-primary");
+    const chatUserList = document.querySelectorAll('.chat-user-list li');
+    const groupDivs = document.querySelectorAll(
+      '.chat-user-list .font-weight-bold.text-primary'
+    );
 
-    chatUserList.forEach((li) => {
+    chatUserList.forEach(li => {
       if (!(li instanceof HTMLElement)) {
         return;
       }
@@ -821,113 +911,131 @@ export class IndexComponent implements OnInit {
       let groupName = '';
       let previousElement: Element | null = li.previousElementSibling;
       while (previousElement) {
-        if (previousElement.classList.contains("font-weight-bold") && previousElement.classList.contains("text-primary")) {
-          groupName = previousElement.textContent || "";
+        if (
+          previousElement.classList.contains('font-weight-bold') &&
+          previousElement.classList.contains('text-primary')
+        ) {
+          groupName = previousElement.textContent || '';
           break;
         }
         previousElement = previousElement.previousElementSibling;
       }
 
-      const userName = li.querySelector('h5')?.textContent || "";
-      const userMessage = li.querySelector('p.chat-user-message')?.textContent || "";
+      const userName = li.querySelector('h5')?.textContent || '';
+      const userMessage =
+        li.querySelector('p.chat-user-message')?.textContent || '';
 
-      if (groupName.toUpperCase().includes(filter) || userName.toUpperCase().includes(filter) || userMessage.toUpperCase().includes(filter)) {
-        li.style.display = "";
+      if (
+        groupName.toUpperCase().includes(filter) ||
+        userName.toUpperCase().includes(filter) ||
+        userMessage.toUpperCase().includes(filter)
+      ) {
+        li.style.display = '';
       } else {
-        li.style.display = "none";
+        li.style.display = 'none';
       }
     });
 
-    groupDivs.forEach((div) => {
+    groupDivs.forEach(div => {
       if (!(div instanceof HTMLElement)) {
         return;
       }
-
       let hasVisibleChild = false;
       let nextElement: Element | null = div.nextElementSibling;
-      while (nextElement && !nextElement.classList.contains("font-weight-bold")) {
-        if (nextElement instanceof HTMLElement && nextElement.style.display !== "none") {
+      while (
+        nextElement &&
+        !nextElement.classList.contains('font-weight-bold')
+      ) {
+        if (
+          nextElement instanceof HTMLElement &&
+          nextElement.style.display !== 'none'
+        ) {
           hasVisibleChild = true;
           break;
         }
         nextElement = nextElement.nextElementSibling;
       }
-
       if (hasVisibleChild) {
-        div.style.display = "";
+        div.style.display = '';
       } else {
-        div.style.display = "none";
+        div.style.display = 'none';
       }
     });
   }
 
-
-
-
-  // Message Search
+  /**
+   * Búsqueda de mensajes
+   */
   MessageSearch() {
-    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
-    input = document.getElementById("searchMessage") as HTMLAreaElement;
-    filter = input.value.toUpperCase();
-    ul = document.getElementById("users-conversation");
-    li = ul.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-      a = li[i].getElementsByTagName("p")[0];
-      txtValue = a?.innerText;
+    const input: any = document.getElementById('searchMessage');
+    const filter = input.value.toUpperCase();
+    const ul = document.getElementById('users-conversation');
+    const li = ul.getElementsByTagName('li');
+    for (let i = 0; i < li.length; i++) {
+      const a = li[i].getElementsByTagName('p')[0];
+      const txtValue = a?.innerText;
       if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-        li[i].style.display = "";
+        li[i].style.display = '';
       } else {
-        li[i].style.display = "none";
+        li[i].style.display = 'none';
       }
     }
   }
 
-  // Filter Offcanvas Set
+  /**
+   * Muestra la barra lateral con la información del usuario
+   */
   onChatInfoClicked(content: TemplateRef<any>) {
     this.offcanvasService.open(content, { position: 'end' });
   }
 
   /**
-   * Returns form
+   * Getter para el form (acceso rápido)
    */
   get form() {
     return this.formData.controls;
   }
 
   /**
-   * Guarda y muestra un nuevo mensaje en la conversación.
-   * Además, envía el mensaje a la API para que sea persistido y reflejado en la base de datos.
+   * Envía el mensaje actual y lo guarda en la conversación
    */
   async messageSave() {
-    // Captura de elementos y valores relevantes de la interfaz de usuario.
-
-    // Comprueba qué grupo de chat está activo.
-    const groupMsg = document.querySelector('.pills-groups-tab.active');
-
-    // Obtiene el contenido del mensaje del formulario.
+    // Obtiene el mensaje
     const message = this.formData.get('message')!.value;
 
-    // Verifica si el mensaje está vacío o es un duplicado del último mensaje enviado
+    // Verifica duplicados o vacío
     if (!message || message === this.lastSentMessage) {
-      console.log("Mensaje duplicado o vacío, no se enviará.");
-      return; // No continuar si el mensaje está vacío o es un duplicado
+      console.log('Mensaje duplicado o vacío, no se enviará.');
+      return;
     }
 
-    // Muestra el mensaje en la lista de chat si no hay ningún grupo de chat activo.
+    // Busca si el grupo está activo (opcional)
+    const groupMsg = document.querySelector('.pills-groups-tab.active');
     if (!groupMsg) {
-      document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img;
+      const activeUserMessage = document.querySelector(
+        '.chat-user-list li.active .chat-user-message'
+      );
+      if (activeUserMessage) {
+        activeUserMessage.innerHTML = message;
+      }
     }
 
-    // Configura las propiedades del mensaje, como la imagen y el estado.
+    // Asigna valores al nuevo mensaje
     const img = this.img ? this.img : '';
     const status = this.img ? true : '';
-    const dateTime = this.datePipe.transform(new Date(), "h:mm a");
+    const dateTime = this.datePipe.transform(new Date(), 'h:mm a');
 
-    // Captura la información del mensaje de respuesta si existe.
-    const chatReplyUser = this.isreplyMessage ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : '';
-    const chatReplyMessage = this.isreplyMessage ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : '';
+    const chatReplyUser = this.isreplyMessage
+      ? (document.querySelector(
+        '.replyCard .replymessage-block .flex-grow-1 .conversation-name'
+      ) as HTMLAreaElement).innerHTML
+      : '';
+    const chatReplyMessage = this.isreplyMessage
+      ? (document.querySelector(
+        '.replyCard .replymessage-block .flex-grow-1 .mb-0'
+      ) as HTMLAreaElement).innerText
+      : '';
 
-    // Construye el objeto del nuevo mensaje.
     const newMessage = {
       id: 1,
       texto: message,
@@ -939,52 +1047,47 @@ export class IndexComponent implements OnInit {
       ultimoMensaje: false,
       imageContent: [img],
       replayName: chatReplyUser,
-      replaymsg: chatReplyMessage,
+      replaymsg: chatReplyMessage
     };
 
-    // Busca la conversación correspondiente para este mensaje.
-    console.log("id actual: ", this.selectedChatId);
-    console.log("chat: ", this.chat);
-    const chatToUpdate = this.chat
-      .map(group => group.prospects)
-      .reduce((a, b) => a.concat(b), [])
-      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId + "");
+    // Busca el chat
+    console.log('id actual: ', this.selectedChatId);
+    const chatToUpdate = []
+      .concat(...this.chat.map(group => group.prospects))
+      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId + '');
 
-    // Si encontramos la conversación, añade el nuevo mensaje y actualiza los metadatos.
+    // Añade el mensaje y marca el anterior como no último
     if (chatToUpdate) {
       chatToUpdate.Conversacion.push(newMessage);
-      chatToUpdate.Conversacion.forEach(mensaje => mensaje.ultimoMensaje = false);
+      chatToUpdate.Conversacion.forEach(m => (m.ultimoMensaje = false));
       newMessage.ultimoMensaje = true;
     }
 
-    // Asegúrate de que el mensaje se añade a la lista principal si es necesario.
     if (chatToUpdate && this.message !== chatToUpdate.Conversacion) {
       this.message.push(newMessage);
     }
 
-    // Desplaza la vista de chat para mostrar el nuevo mensaje.
     this.onListScroll();
 
-    // Envía el mensaje a la API para persistirlo y reflejarlo en la base de datos.
+    // Enviar a la API
     try {
-      await this.http.post('https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs', {
-        IdPregunta: this.selectedChatId,
-        Mensaje: message
-      }).toPromise();
+      await this.http
+        .post('https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs', {
+          IdPregunta: this.selectedChatId,
+          Mensaje: message
+        })
+        .toPromise();
 
-      this.lastSentMessage = message; // Actualiza el último mensaje enviado
-
-      // Después de guardar con éxito, recarga la conversación para reflejar cualquier cambio.
+      this.lastSentMessage = message;
+      // Recarga la conversación
       await this.loadRecuperacionMensajes();
-
     } catch (error) {
-      // En caso de error al guardar el mensaje, muestra el error.
       console.error('Error al guardar el mensaje:', error);
     }
 
-    // Restablece los campos y la interfaz de usuario para preparar el próximo mensaje.
+    // Resetea el formulario
     this.formData = this.formBuilder.group({
-      message: null,
+      message: null
     });
     this.isreplyMessage = false;
     this.emoji = '';
@@ -992,17 +1095,19 @@ export class IndexComponent implements OnInit {
     document.querySelector('.replyCard')?.classList.remove('show');
   }
 
-
+  /**
+   * Hace scroll al final de la conversación
+   */
   onListScroll() {
     if (this.scrollRef !== undefined) {
       setTimeout(() => {
-        this.scrollRef.SimpleBar.getScrollElement().scrollTop = this.scrollRef.SimpleBar.getScrollElement().scrollHeight;
+        this.scrollRef.SimpleBar.getScrollElement().scrollTop =
+          this.scrollRef.SimpleBar.getScrollElement().scrollHeight;
       }, 500);
     }
   }
 
-  // Emoji Picker
-  showEmojiPicker = false;
+  // Config Emojis
   sets: any = [
     'native',
     'google',
@@ -1011,8 +1116,9 @@ export class IndexComponent implements OnInit {
     'emojione',
     'apple',
     'messenger'
-  ]
+  ];
   set: any = 'twitter';
+
   toggleEmojiPicker() {
     this.showEmojiPicker = !this.showEmojiPicker;
   }
@@ -1027,234 +1133,289 @@ export class IndexComponent implements OnInit {
   onFocus() {
     this.showEmojiPicker = false;
   }
-  onBlur() {
-  }
+  onBlur() { }
 
   closeReplay() {
     document.querySelector('.replyCard')?.classList.remove('show');
   }
 
-  // Copy Message
+  /**
+   * Copia el texto de un mensaje
+   */
   copyMessage(event: any) {
-    navigator.clipboard.writeText(event.target.closest('.chats').querySelector('.messageText').innerHTML);
+    navigator.clipboard.writeText(
+      event.target.closest('.chats').querySelector('.messageText').innerHTML
+    );
     document.getElementById('copyClipBoard')?.classList.add('show');
     setTimeout(() => {
       document.getElementById('copyClipBoard')?.classList.remove('show');
     }, 1000);
   }
 
-  // Delete Message
+  /**
+   * Elimina un mensaje
+   */
   deleteMessage(event: any) {
     event.target.closest('.chats').remove();
   }
 
-  // Delete All Message
+  /**
+   * Elimina todos los mensajes
+   */
   deleteAllMessage(event: any) {
-    var allMsgDelete: any = document.getElementById('users-conversation')?.querySelectorAll('.chats');
+    const allMsgDelete: any = document
+      .getElementById('users-conversation')
+      ?.querySelectorAll('.chats');
     allMsgDelete.forEach((item: any) => {
       item.remove();
-    })
-  }
-
-  // Replay Message
-  replyMessage(event: any, align: any) {
-    this.isreplyMessage = true;
-    document.querySelector('.replyCard')?.classList.add('show');
-    var copyText = event.target.closest('.chats').querySelector('.messageText').innerHTML;
-    (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerHTML = copyText;
-    var msgOwnerName: any = event.target.closest(".chats").classList.contains("right") == true ? 'You' : document.querySelector('.username')?.innerHTML;
-    (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML = msgOwnerName;
+    });
   }
 
   /**
-  * Open center modal
-  * @param centerDataModal center modal data
-  */
+   * Responder un mensaje
+   */
+  replyMessage(event: any, align: any) {
+    this.isreplyMessage = true;
+    document.querySelector('.replyCard')?.classList.add('show');
+    const copyText = event.target
+      .closest('.chats')
+      .querySelector('.messageText').innerHTML;
+
+    (
+      document.querySelector(
+        '.replyCard .replymessage-block .flex-grow-1 .mb-0'
+      ) as HTMLAreaElement
+    ).innerHTML = copyText;
+
+    const msgOwnerName: any =
+      event.target.closest('.chats').classList.contains('right') == true
+        ? 'You'
+        : document.querySelector('.username')?.innerHTML;
+
+    (
+      document.querySelector(
+        '.replyCard .replymessage-block .flex-grow-1 .conversation-name'
+      ) as HTMLAreaElement
+    ).innerHTML = msgOwnerName;
+  }
+
+  /**
+   * Abre un modal centrado
+   */
   centerModal(centerDataModal: any) {
     this.modalService.open(centerDataModal, { centered: true });
   }
 
-  // File Upload
+  // Subida de archivos
   imageURL: string | undefined;
   img: any;
+
   fileChange(event: any) {
-    let fileList: any = (event.target as HTMLInputElement);
-    let file: File = fileList.files[0];
+    const fileList: any = event.target as HTMLInputElement;
+    const file: File = fileList.files[0];
     const reader = new FileReader();
     reader.onload = () => {
       this.imageURL = reader.result as string;
       this.img = this.imageURL;
-    }
-    reader.readAsDataURL(file)
+    };
+    reader.readAsDataURL(file);
   }
 
   /**
-   * Topbar Light-Dark Mode Change
+   * Cambia el modo (light/dark)
    */
   changeMode(mode: string) {
     this.mode = mode;
     switch (mode) {
       case 'light':
-        document.body.setAttribute('data-layout-mode', "light");
+        document.body.setAttribute('data-layout-mode', 'light');
         break;
       case 'dark':
-        document.body.setAttribute('data-layout-mode', "dark");
+        document.body.setAttribute('data-layout-mode', 'dark');
         break;
       default:
-        document.body.setAttribute('data-layout-mode', "light");
+        document.body.setAttribute('data-layout-mode', 'light');
         break;
     }
   }
 
-  /***
-   * ========== Group Msg ============
-   */
   /**
- * Show user chat
- */
-  // tslint:disable-next-line: typedef
+   * Mostrar chat de grupo (placeholder si se requiere)
+   */
   showGroupChat(event: any, id: any) {
-    var removeClass = document.querySelectorAll('.chat-list li');
+    const removeClass = document.querySelectorAll('.chat-list li');
     removeClass.forEach((element: any) => {
       element.classList.remove('active');
     });
-    document.querySelector('.user-chat').classList.add('user-chat-show')
+    document.querySelector('.user-chat').classList.add('user-chat-show');
     document.querySelector('.chat-welcome-section').classList.add('d-none');
     document.querySelector('.user-chat').classList.remove('d-none');
     event.target.closest('li').classList.add('active');
-    var data = this.groups.filter((group: any) => {
+    const data = this.groups.filter((group: any) => {
       return group.idgrupo === id;
     });
-    this.userName = data[0].nombredistribuidor
-    this.userProfile = ''
-    this.message = ''
+    this.userName = data[0].nombredistribuidor;
+    this.userProfile = '';
+    this.message = '';
   }
 
   /**
-   * Open add group modal
-   * @param content content
+   * Abre modal para crear grupo (placeholder si se requiere)
    */
-  // tslint:disable-next-line: typedef
   openGroupModal(content: any) {
     this.modalService.open(content, { centered: true });
   }
 
-  // Group Search
+  /**
+   * Búsqueda dentro de grupos
+   */
   GroupSearch() {
-    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
-    input = document.getElementById("searchGroup") as HTMLAreaElement;
-    filter = input.value.toUpperCase();
-    ul = document.querySelectorAll(".group-list");
+    const input: any = document.getElementById('searchGroup');
+    const filter = input.value.toUpperCase();
+    const ul = document.querySelectorAll('.group-list');
     ul.forEach((item: any) => {
-      li = item.getElementsByTagName("li");
-      for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName("h5")[0];
-        txtValue = a?.innerText;
+      const li = item.getElementsByTagName('li');
+      for (let i = 0; i < li.length; i++) {
+        const a = li[i].getElementsByTagName('h5')[0];
+        const txtValue = a?.innerText;
         if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-          li[i].style.display = "";
+          li[i].style.display = '';
         } else {
-          li[i].style.display = "none";
+          li[i].style.display = 'none';
         }
       }
-    })
+    });
   }
 
-  // Método para cargar los mensajes recuperados
+  /**
+   * Carga de mensajes recuperados del API
+   */
   loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
       const userName = this.senderName || this.usuarioCorreo;
 
-      this.http.get<ApiResponse>('https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs', { params: { usuario: userName } }).subscribe(
-        res => {
-          const prospects = res.body;
+      this.http
+        .get<ApiResponse>(
+          'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
+          { params: { usuario: userName } }
+        )
+        .subscribe(
+          res => {
+            const prospects = res.body;
 
-          // Marcar el último mensaje de cada conversación
-          prospects.forEach(prospect => {
-            if (prospect.Conversacion && prospect.Conversacion.length > 0) {
-              prospect.Conversacion[prospect.Conversacion.length - 1].ultimoMensaje = true;
-            }
-          });
+            // Marcar el último mensaje
+            prospects.forEach(prospect => {
+              if (prospect.Conversacion && prospect.Conversacion.length > 0) {
+                prospect.Conversacion[
+                  prospect.Conversacion.length - 1
+                ].ultimoMensaje = true;
+              }
+            });
 
-          // Agrupar por red social y distribuidor
-          const groupedByRedSocial = prospects.reduce((groups, prospect) => {
-            const red = prospect.redSocial;
-            if (!groups[red]) {
-              groups[red] = {};
-            }
-            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
-            if (!groups[red][grupo]) {
-              groups[red][grupo] = [];
-            }
-            groups[red][grupo].push(prospect);
-            return groups;
-          }, {});
+            // Agrupar por Red Social -> Distribuidor
+            const groupedByRedSocial = prospects.reduce((groups, prospect) => {
+              const red = prospect.redSocial;
+              if (!groups[red]) {
+                groups[red] = {};
+              }
+              const grupo =
+                this.groups.find(
+                  group => group.iddistribuidor == prospect.IdDistribuidor
+                )?.nombredistribuidor || 'Sin Distribuidor';
+              if (!groups[red][grupo]) {
+                groups[red][grupo] = [];
+              }
+              groups[red][grupo].push(prospect);
+              return groups;
+            }, {});
+            this.chatByRedSocial = groupedByRedSocial;
 
-          this.chatByRedSocial = groupedByRedSocial;
+            // Agrupar por Distribuidor -> Red Social
+            const groupedByDistributorThenRedSocial = prospects.reduce(
+              (groups, prospect) => {
+                const grupo =
+                  this.groups.find(
+                    group => group.iddistribuidor == prospect.IdDistribuidor
+                  )?.nombredistribuidor || 'Sin Distribuidor';
+                const red = prospect.redSocial;
 
-          // Agrupar por distribuidor, luego por red social
-          const groupedByDistributorThenRedSocial = prospects.reduce((groups, prospect) => {
-            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
-            const red = prospect.redSocial;
+                if (!groups[grupo]) {
+                  groups[grupo] = {};
+                }
+                if (!groups[grupo][red]) {
+                  groups[grupo][red] = [];
+                }
+                groups[grupo][red].push(prospect);
+                return groups;
+              },
+              {}
+            );
+            this.chatByDistributorThenRedSocial =
+              groupedByDistributorThenRedSocial;
 
-            if (!groups[grupo]) {
-              groups[grupo] = {};
-            }
-            if (!groups[grupo][red]) {
-              groups[grupo][red] = [];
-            }
+            // Agrupar solo por Distribuidor
+            const grouped = prospects.reduce((groups, prospect) => {
+              const grupo =
+                this.groups.find(
+                  group => group.iddistribuidor == prospect.IdDistribuidor
+                )?.nombredistribuidor || 'Sin Distribuidor';
+              groups[grupo] = groups[grupo] || [];
+              groups[grupo].push(prospect);
+              return groups;
+            }, {});
 
-            groups[grupo][red].push(prospect);
-            return groups;
-          }, {});
+            // Convertir a array de GroupedResponseItem
+            this.chat = Object.keys(grouped).map(key => ({
+              key,
+              prospects: grouped[key]
+            }));
 
-          this.chatByDistributorThenRedSocial = groupedByDistributorThenRedSocial;
+            // Ordenar los grupos por fecha de último mensaje
+            this.chat.sort((a, b) => {
+              const lastMessageA =
+                a.prospects[0].Conversacion[
+                a.prospects[0].Conversacion.length - 1
+                ];
+              const lastMessageB =
+                b.prospects[0].Conversacion[
+                b.prospects[0].Conversacion.length - 1
+                ];
 
-          // El código anterior para agrupar solo por distribuidor
-          const grouped = prospects.reduce((groups, prospect) => {
-            const grupo = this.groups.find(group => group.iddistribuidor == prospect.IdDistribuidor)?.nombredistribuidor || 'Sin Distribuidor';
-            groups[grupo] = groups[grupo] || [];
-            groups[grupo].push(prospect);
-            return groups;
-          }, {});
+              const lastMsgDateA = lastMessageA.fechaRespuesta
+                ? new Date(lastMessageA.fechaRespuesta).getTime()
+                : new Date(lastMessageA.fechaCreacion).getTime();
+              const lastMsgDateB = lastMessageB.fechaRespuesta
+                ? new Date(lastMessageB.fechaRespuesta).getTime()
+                : new Date(lastMessageB.fechaCreacion).getTime();
 
-          this.chat = Object.keys(grouped).map(key => ({ key, prospects: grouped[key] }));
+              return lastMsgDateB - lastMsgDateA;
+            });
 
-          // Ordena los grupos por fecha
-          this.chat.sort((a, b) => {
-            const lastMessageA = a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
-            const lastMessageB = b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
-
-            const lastMsgDateA = lastMessageA.fechaRespuesta ? new Date(lastMessageA.fechaRespuesta).getTime() : new Date(lastMessageA.fechaCreacion).getTime();
-            const lastMsgDateB = lastMessageB.fechaRespuesta ? new Date(lastMessageB.fechaRespuesta).getTime() : new Date(lastMessageB.fechaCreacion).getTime();
-
-            return lastMsgDateB - lastMsgDateA; // Orden descendente
-          });
-
-          resolve();
-        },
-        error => {
-          console.error(error);
-          reject(error);
-        }
-      );
+            resolve();
+          },
+          error => {
+            console.error(error);
+            reject(error);
+          }
+        );
     });
   }
 
-
-
+  /**
+   * Carga de grupos
+   */
   loadGrupos(): Promise<void> {
     return new Promise((resolve, reject) => {
-      // Define el nombre de usuario basado en las propiedades de clase
       const userName = this.senderName || this.usuarioCorreo;
-
-      // Realiza la solicitud GET al API usando template strings para construir la URL
-      this.http.get<Grupos[]>(`https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/${userName}`)
+      this.http
+        .get<Grupos[]>(
+          `https://ti3pwepc47.execute-api.us-west-1.amazonaws.com/dev/grupos/${userName}`
+        )
         .subscribe(
           res => {
             this.groups = res;
             resolve();
           },
-          // Proporciona información más descriptiva en caso de error
           error => {
             console.error('Error al cargar los grupos:', error);
             reject(error);
@@ -1263,100 +1424,87 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  /**
+   * Validación de prospecto en Seekop (placeholder)
+   */
   validarProspectoEnviadoSeekop() {
-
+    // Implementar si se requiere
   }
 
+  /**
+   * Confirmación de envío de datos a Seekop
+   */
   confirmSend() {
+    this.userName = JSON.stringify(this.interesadoForm.value.nombre);
+    this.apellidoPaterno = JSON.stringify(this.interesadoForm.value.apellidoP);
+    this.apellidoMaterno = JSON.stringify(this.interesadoForm.value.apellidoM);
+    this.Telefono = JSON.stringify(this.interesadoForm.value.telefono);
+    this.Email = JSON.stringify(this.interesadoForm.value.email);
+    const comentarios = JSON.stringify(this.interesadoForm.value.comentarios);
 
-    // this.interesadoForm.value);
-    this.userName=JSON.stringify(this.interesadoForm.value.nombre);
-    this.apellidoPaterno=JSON.stringify(this.interesadoForm.value.apellidoP);
-    this.apellidoMaterno=JSON.stringify(this.interesadoForm.value.apellidoM);
-    this.Telefono=JSON.stringify(this.interesadoForm.value.telefono);
-    this.Email=JSON.stringify(this.interesadoForm.value.email);
-    const comentarios=JSON.stringify(this.interesadoForm.value.comentarios);
-
-    console.log("esto es lo que vas enviar: "+this.Telefono);
+    console.log('Esto es lo que vas enviar: ' + this.Telefono);
 
     const headers = {
-      'Authorization': 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
-      //'My-Custom-Header': 'foobar'
+      Authorization: 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
       accept: 'application/json'
     };
 
     const data = {
-      "prospect": {
-        "status": "new",
-        "id": this.idMensajeLeads, //  "000000001", // idmsj "123456710"
-        "requestdate": "2023-06-13 16:00:00",
-        "vehicle": {
-          "interest": "buy",
-          "status": "new",
-          "make": "Nissan", // Nissan
-          "year": "2023",
-          "model": this.AutoDeInteres // "Sentra"
+      prospect: {
+        status: 'new',
+        id: this.idMensajeLeads,
+        requestdate: '2023-06-13 16:00:00',
+        vehicle: {
+          interest: 'buy',
+          status: 'new',
+          make: 'Nissan',
+          year: '2023',
+          model: this.AutoDeInteres
         },
-        "customer": {
-          "contact": {
-            "name": [
+        customer: {
+          contact: {
+            name: [
               {
-                "part": "first",
-                "value": this.userName // "Marino"
+                part: 'first',
+                value: this.userName
               },
               {
-                "part": "middle",
-                "value": this.apellidoPaterno // "Vargas"
+                part: 'middle',
+                value: this.apellidoPaterno
               },
               {
-                "part": "last",
-                "value": this.apellidoMaterno // "Chavez"
+                part: 'last',
+                value: this.apellidoMaterno
               }
             ],
-            "email": this.Email, // "test@gmail.com", // this.Email, // "marino@gmail.com",
-            "phone": [
-              this.Telefono // "5511223344"
-            ]
+            email: this.Email,
+            phone: [this.Telefono]
           },
-          "comments": comentarios // " Prospecto enviado desde Mercado Libre de Comunity Manager  "
+          comments: comentarios
         },
-        "vendor": {
-          "source": this.RedSocial, // "MERCADOLIBRE",
-          "id": this.idDistribuidor, // this.idDistribuidor,// 158814  "609024", // id distribuidor al que se asigan el prospecto
-          "name": this.nombreDistribuidor,// "Suzuki Queretaro" // Nombre del distribuior
+        vendor: {
+          source: this.RedSocial,
+          id: this.idDistribuidor,
+          name: this.nombreDistribuidor
         }
       },
-      "provider": {
-        "name": (this.RedSocial.replace(/\s/g, '')) // "MERCADOLIBRE"
+      provider: {
+        name: this.RedSocial.replace(/\s/g, '')
       }
     };
 
-    // console.log("Estos son los datos a enviar: " + JSON.stringify(data));
-
     if (this.enviadoaseekop == false) {
-      //alert("alert");
-      //this.enviadoaseekop=true;
-
       Swal.fire({
         title: '¿Desea enviar los datos hacia Seekop?',
         showDenyButton: true,
         confirmButtonText: `Enviar`,
-        denyButtonText: `Cancelar`,
-      }).then((result) => {
-
+        denyButtonText: `Cancelar`
+      }).then(result => {
         if (result.isConfirmed) {
-          // this.addNewProspecto();
-          // alert("alerta");
-          console.log("Estos son los datos a enviar: " + JSON.stringify(data));
           const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
-
-          // if(this.enviadoaseekop==false){
 
           this.http.post<any>(url, data, { headers }).subscribe(
             response => {
-
-              // console.log("esta es la respuesta: "+response.status);
-              console.log("esta es la respuesta: " + response);
               if (response == null) {
                 Swal.fire({
                   icon: 'error',
@@ -1364,32 +1512,23 @@ export class IndexComponent implements OnInit {
                   text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
                   confirmButtonText: 'Ok'
                 });
-
                 this.modalDatos.close('Close click');
-              }
-              else {
-                // this.enviadoaseekop = true;
-                // const btnEnviarSeekop = document.getElementById("btnEnviarSeekop");
-                // btnEnviarSeekop?.setAttribute('disabled', 'true');
+              } else {
                 this.addNewProspecto();
-
                 Swal.fire({
                   icon: 'success',
                   title: '¡Éxito!',
                   text: 'Se enviaron correctamente los datos a Seekop',
                   confirmButtonText: 'Ok'
-
                 });
-
-                this.newInteresadoForm={
-                  nombre: "",
-                  apellidop: "",
-                  apellidom: "",
-                  telefono: "",
-                  email: "",
-                  comentarios: ""
+                this.newInteresadoForm = {
+                  nombre: '',
+                  apellidop: '',
+                  apellidom: '',
+                  telefono: '',
+                  email: '',
+                  comentarios: ''
                 };
-
                 this.modalDatos.close('Close click');
                 this.modalService.dismissAll();
               }
@@ -1397,148 +1536,135 @@ export class IndexComponent implements OnInit {
             error => {
               console.error(error);
               this.addNewProspecto();
-              // Muestra una alerta de error
-              if (error == "El Lead ya existe") {
+              if (error == 'El Lead ya existe') {
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
                   text: 'El leads ya existe en Seekop ...',
                   confirmButtonText: 'Entendido'
                 });
-
                 this.modalDatos.close('Close click');
                 this.modalService.dismissAll();
-
-              }
-              else {
+              } else {
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
                   text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
                   confirmButtonText: 'Entendido'
                 });
-
                 this.modalDatos.close('Close click');
                 this.modalService.dismissAll();
               }
             }
           );
         }
-
       });
-
-    }
-    else {
-      // alert("else");
-
+    } else {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'El leads ya existe en Seekop...',
         confirmButtonText: 'Entendido'
       });
-
       this.modalDatos.close('Close click');
       this.modalService.dismissAll();
     }
-
   }
 
+  /**
+   * Llama al endpoint para guardar prospecto como enviado
+   */
   addNewProspecto() {
-    // enviarprospecto,idpublicacion,idmensaje,idDistribuidor,idredsocial
-    let data = {
-      "enviarprospecto": this.idMensajeLeads,
-      "idpublicacion": this.IdPublicacionLead,
-      "idmensaje": this.idMensajeLeads,
-      "idDistribuidor": this.idDistribuidor,
-      "idredsocial": this.idRedSocial
+    const data = {
+      enviarprospecto: this.idMensajeLeads,
+      idpublicacion: this.IdPublicacionLead,
+      idmensaje: this.idMensajeLeads,
+      idDistribuidor: this.idDistribuidor,
+      idredsocial: this.idRedSocial
     };
 
-    console.log("data: " + JSON.stringify(data));
-    // console.log("esta es la url", `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.idDistribuidor}&idredsocial=${this.idRedSocial}`)
-    this.http.get<any>(`https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}`)
+    console.log('data:', JSON.stringify(data));
+
+    this.http
+      .get<any>(
+        `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs?enviarprospecto=${this.idMensajeLeads}&idpublicacion=${this.par_IdPublicacionLead}&idmensaje=${this.idMensajeLeads}&idDistribuidor=${this.par_idDistribuidor}&idredsocial=${this.par_idRedSocial}`
+      )
       .toPromise()
       .then(res => {
         this.enviadoaseekop = JSON.parse(res.body.enviadoaseekop);
-        console.log("res: " + this.enviadoaseekop);
+        console.log('res:', this.enviadoaseekop);
       })
       .catch(error => {
         console.error('Error al a:', error);
       });
   }
 
-  validateForm(): void{
-
+  /**
+   * Validación del formulario
+   */
+  validateForm(): void {
     this.submitted = true;
-    const var_inv= document.getElementsByClassName('ng-invalid');
 
     if (this.interesadoForm.valid) {
-
       this.submitted = true;
       this.confirmSend();
-      // return true;
-		}else {
+    } else {
       return console.log(this.interesadoForm.value);
-		}
+    }
   }
 
-  get f()  {
+  /**
+   * Getter de acceso rápido para los controles del form de interesado
+   */
+  get f() {
     return this.interesadoForm.controls;
   }
 
+  /**
+   * Manejo de cambios en el input de teléfono y verificación
+   */
   onInputChange(event: Event): void {
-    // Acceder al valor del input
     const inputValue = (event.target as HTMLInputElement).value;
     console.log('Valor del input:', inputValue);
 
-    // const fbylada = '52';
-    // const fbytelefono = '7226650170';
-
-    // const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      // 'Connection': 'keep-alive',
-      // 'Content-Length': '148',
-      // 'x-amzn-RequestId': '33b6bc0d-346a-444e-9f04-973116be1505',
-      // 'Host': '<calculated when request is sent>',
-      // 'User-Agent': 'PostmanRuntime/7.36.1',
-      // 'Accept': '*/*',
-      // 'Accept-Encoding': 'gzip, deflate, br',
-      // 'Connection': 'keep-alive',
-      // 'Origin': 'http://localhost:4200'
-      // 'x-amz-apigw-id': 'TCD2ZEDkyK4EDbg=',
-      // 'X-Amzn-Trace-Id': 'Root=1-65ca4cf5-72253dee179cea001b8a51b8;Parent=5286178c7cb2851d;Sampled=0;lineage=40f10397:0',
+      'Access-Control-Allow-Origin': 'http://localhost:4200'
     });
 
     const fbylada = '52';
     const fbytelefono = inputValue;
 
-const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
+    const apiUrl = `https://api.sicopweb.com/datamaster/dev/serialestelefonicos?fbylada=${fbylada}&fbytelefono=${fbytelefono}`;
 
-this.http.get(apiUrl).subscribe(
-  (data) => {
-    console.log('Datos recibidos:', data['correcto']);
-    if(data['correcto']==1){
-      document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'block';
-      document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'none';
-    }
-    else{
-      document.getElementById('btnNoVerificado_'+this.idMensajeLeads).style.display = 'block';
-      document.getElementById('btnVerificado_'+this.idMensajeLeads).style.display = 'none';
-    }
-
-  },
-  (error) => {
-    console.error('Error al obtener datos:', error);
+    this.http.get(apiUrl).subscribe(
+      data => {
+        console.log('Datos recibidos:', data['correcto']);
+        if (data['correcto'] == 1) {
+          document.getElementById(
+            'btnVerificado_' + this.idMensajeLeads
+          ).style.display = 'block';
+          document.getElementById(
+            'btnNoVerificado_' + this.idMensajeLeads
+          ).style.display = 'none';
+        } else {
+          document.getElementById(
+            'btnNoVerificado_' + this.idMensajeLeads
+          ).style.display = 'block';
+          document.getElementById(
+            'btnVerificado_' + this.idMensajeLeads
+          ).style.display = 'none';
+        }
+      },
+      error => {
+        console.error('Error al obtener datos:', error);
+      }
+    );
   }
-);
 
-
-  }
-
-
-
+  /**
+   * Detección de sentimiento
+   */
   detectarSentimiento(idMensaje): Promise<void> {
     return new Promise((resolve, reject) => {
       const url = `https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/detectarsentimiento?idPregunta=${idMensaje}`;
@@ -1555,6 +1681,9 @@ this.http.get(apiUrl).subscribe(
     });
   }
 
+  /**
+   * Alternar visibilidad de contenedor Performance KPI
+   */
   toggleContainerVisibility() {
     if (this.isContainerVisibleKPIs) {
       this.isContainerVisibleKPIs = false;
@@ -1563,6 +1692,9 @@ this.http.get(apiUrl).subscribe(
     this.loadScripts();
   }
 
+  /**
+   * Alternar visibilidad de contenedor KPI
+   */
   toggleContainerVisibilityKPIs() {
     if (this.isContainerVisible) {
       this.isContainerVisible = false;
@@ -1570,99 +1702,123 @@ this.http.get(apiUrl).subscribe(
     this.isContainerVisibleKPIs = !this.isContainerVisibleKPIs;
   }
 
- // Método para abrir el modal del bot
- openBotModal(content: any) {
-  this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
-}
-
- // Método para activar el bot seleccionado
- activateBot() {
-  if (this.selectedBot) {
-    this.botActive = true;  // Activar el bot
-    console.log('Bot activado:', this.selectedBot);
-
-    // Aquí puedes agregar la lógica para activar el bot en la aplicación.
-  } else {
-    console.log('No se ha seleccionado ningún bot');
+  /**
+   * Abre el modal de selección de Bot
+   */
+  openBotModal(content: any) {
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
   }
-}
 
-proposeBotMessage() {
-  const currentMessage = this.formData.get('message')!.value;
-
-  // Determinar el tipo (creación o mejora)
-  const tipo = currentMessage ? 'mejora' : 'creacion';
-  console.log('Tipo de mensaje:', tipo); // Depuración
-
-  // Llamar a la API para obtener el mensaje según el tipo
-  this.enviarUltimosMensajes(tipo).subscribe(
-    response => {
-      console.log('Respuesta de la API:', response); // Depuración
-      // Actualiza la caja de texto con el mensaje de la API
-      this.formData.patchValue({ message: response.mensaje });
-      this.updateTooltip(); // Actualiza el tooltip con el estado actual (creación/mejora)
-    },
-    error => {
-      console.error('Error al enviar los mensajes:', error); // Depuración
-      alert('Hubo un error al obtener el mensaje del bot');
+  /**
+   * Activa el bot seleccionado
+   */
+  activateBot() {
+    if (this.selectedBot) {
+      this.botActive = true;
+      console.log('Bot activado:', this.selectedBot);
+      // Lógica extra si se requiere
+    } else {
+      console.log('No se ha seleccionado ningún bot');
     }
-  );
-}
+  }
 
-updateTooltip() {
-  const currentMessage = this.formData.get('message')!.value;
-  // Si no hay mensaje, es creación, si hay mensaje, es mejora
-  this.tooltipText = currentMessage ? "Enriquecer mensaje" : "Proponer mensaje";
-}
+  /**
+   * Proponer mensaje desde Bot
+   */
+  proposeBotMessage() {
+    const currentMessage = this.formData.get('message')!.value;
+    // Determinar si es creación o mejora
+    const tipo = currentMessage ? 'mejora' : 'creacion';
+    console.log('Tipo de mensaje:', tipo);
 
+    // Llamar a la API
+    this.enviarUltimosMensajes(tipo).subscribe(
+      response => {
+        console.log('Respuesta de la API:', response);
+        this.formData.patchValue({ message: response.mensaje });
+        this.updateTooltip();
+      },
+      error => {
+        console.error('Error al enviar los mensajes:', error);
+        alert('Hubo un error al obtener el mensaje del bot');
+      }
+    );
+  }
 
-enviarUltimosMensajes(tipo: string) {
-  // Obtenemos los últimos 20 mensajes del chat, si hay menos de 20, tomamos todos los disponibles.
-  const mensajesAgrupados = this.chat.slice(-20);
+  /**
+   * Actualiza el tooltip del botón de Bot (crear/mejorar)
+   */
+  updateTooltip() {
+    const currentMessage = this.formData.get('message')!.value;
+    this.tooltipText = currentMessage
+      ? 'Enriquecer mensaje'
+      : 'Proponer mensaje';
+  }
 
-  // Construimos el objeto conversacion
-  const conversacion = {
-    idProspecto: '123456789', // Hardcodeado
-    idEjecutivo: '123456789', // Hardcodeado
-    idDistribuidor: '123456789', // Hardcodeado
-    messages: [] // Aquí se van a agregar los últimos 20 mensajes
-  };
+  /**
+   * Envia los últimos mensajes del chat a la API para que el Bot genere respuesta
+   */
+  enviarUltimosMensajes(tipo: string) {
+    // Tomamos los últimos 20 mensajes
+    const mensajesAgrupados = this.chat.slice(-20);
 
-  // Iteramos sobre los últimos 20 mensajes y construimos el array de messages
-  mensajesAgrupados.forEach(group => {
-    group.prospects.forEach(prospect => {
-      prospect.Conversacion.forEach(conversacionItem => {
-        conversacion.messages.push({
-          role: conversacionItem.align === 'right' ? 'ejecutivo' : 'prospecto', // Determinamos el rol
-          name: conversacionItem.name || prospect.Nombre, // Nombre del prospecto o del ejecutivo
-          message: conversacionItem.texto // El contenido del mensaje
+    // Construcción del objeto conversacion
+    const conversacion = {
+      idProspecto: '123456789',
+      idEjecutivo: '123456789',
+      idDistribuidor: '123456789',
+      messages: []
+    };
+
+    mensajesAgrupados.forEach(group => {
+      group.prospects.forEach(prospect => {
+        prospect.Conversacion.forEach(conversacionItem => {
+          conversacion.messages.push({
+            role: conversacionItem.align === 'right' ? 'ejecutivo' : 'prospecto',
+            name: conversacionItem.name || prospect.Nombre,
+            message: conversacionItem.texto
+          });
         });
       });
     });
-  });
 
-  // Formamos el payload
-  const payload = {
-    conversacion, // Estructura correcta
-    mensaje: "", // Campo vacío
-    tipo: tipo // "mejora" o "creacion"
-  };
+    // Payload
+    const payload = {
+      conversacion,
+      mensaje: '',
+      tipo: tipo
+    };
 
-  console.log('Payload enviado a la API:', payload); // Depuración para ver el payload
+    console.log('Payload enviado a la API:', payload);
+    return this.chatService.enviarMensajes(payload, tipo);
+  }
 
-  // Retornamos el observable para manejarlo en proposeBotMessage
-  return this.chatService.enviarMensajes(payload, tipo);
+
+  /**
+ * Método para descargar mensajes iniciales (llamado desde ngOnInit).
+ */
+  async descargarMensajesIniciales(): Promise<void> {
+    // Por el momento lo dejamos hardcodeado:
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=5`;
+
+    // Si deseas transformarlo en algo configurable, podrías usar variables de entorno:
+    // const url = `${environment.hostMotorConversaciones}/descargamensajes?idDistribuidor=104425&plataforma=both&days=5`;
+
+    return new Promise((resolve, reject) => {
+      this.http.get(url).subscribe({
+        next: (resp: any) => {
+          // Si la API devuelve algo de información, puedes guardarla 
+          // o disparar algún proceso adicional.
+          console.log('Mensajes descargados exitosamente:', resp);
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al llamar a la API de descargamensajes', err);
+          reject(err);
+        }
+      });
+    });
+  }
+
+
 }
-
-
-
-
-
-
-
-
-
-
-}
-
-
