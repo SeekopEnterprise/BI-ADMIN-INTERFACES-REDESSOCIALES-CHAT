@@ -271,13 +271,6 @@ export class IndexComponent implements OnInit {
       }
     });
 
-    // Aquí puedes poner la llamada a la API para que se ejecute al cargar el chat:
-    try {
-      await this.descargarMensajesIniciales();
-    } catch (error) {
-      console.error('Error al descargar mensajes iniciales:', error);
-    } 
-
     try {
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
@@ -294,6 +287,7 @@ export class IndexComponent implements OnInit {
         this.senderProfile = 'assets/images/users/' + user.profile;
         await this.loadGrupos();
         await this.loadRecuperacionMensajes();
+        await this.descargarMensajesIniciales();
       }
 
     } catch (error) {
@@ -339,11 +333,11 @@ export class IndexComponent implements OnInit {
               this.chat.sort((a, b) => {
                 const lastMessageA =
                   a.prospects[0].Conversacion[
-                  a.prospects[0].Conversacion.length - 1
+                    a.prospects[0].Conversacion.length - 1
                   ];
                 const lastMessageB =
                   b.prospects[0].Conversacion[
-                  b.prospects[0].Conversacion.length - 1
+                    b.prospects[0].Conversacion.length - 1
                   ];
                 const lastMsgDateA = lastMessageA.fechaRespuesta
                   ? new Date(lastMessageA.fechaRespuesta).getTime()
@@ -396,7 +390,7 @@ export class IndexComponent implements OnInit {
               series.points[0].shapeArgs.innerR -
               (series.points[0].shapeArgs.r -
                 series.points[0].shapeArgs.innerR) /
-              2 +
+                2 +
               8
           });
         });
@@ -1027,13 +1021,13 @@ export class IndexComponent implements OnInit {
 
     const chatReplyUser = this.isreplyMessage
       ? (document.querySelector(
-        '.replyCard .replymessage-block .flex-grow-1 .conversation-name'
-      ) as HTMLAreaElement).innerHTML
+          '.replyCard .replymessage-block .flex-grow-1 .conversation-name'
+        ) as HTMLAreaElement).innerHTML
       : '';
     const chatReplyMessage = this.isreplyMessage
       ? (document.querySelector(
-        '.replyCard .replymessage-block .flex-grow-1 .mb-0'
-      ) as HTMLAreaElement).innerText
+          '.replyCard .replymessage-block .flex-grow-1 .mb-0'
+        ) as HTMLAreaElement).innerText
       : '';
 
     const newMessage = {
@@ -1133,7 +1127,7 @@ export class IndexComponent implements OnInit {
   onFocus() {
     this.showEmojiPicker = false;
   }
-  onBlur() { }
+  onBlur() {}
 
   closeReplay() {
     document.querySelector('.replyCard')?.classList.remove('show');
@@ -1374,11 +1368,11 @@ export class IndexComponent implements OnInit {
             this.chat.sort((a, b) => {
               const lastMessageA =
                 a.prospects[0].Conversacion[
-                a.prospects[0].Conversacion.length - 1
+                  a.prospects[0].Conversacion.length - 1
                 ];
               const lastMessageB =
                 b.prospects[0].Conversacion[
-                b.prospects[0].Conversacion.length - 1
+                  b.prospects[0].Conversacion.length - 1
                 ];
 
               const lastMsgDateA = lastMessageA.fechaRespuesta
@@ -1795,30 +1789,24 @@ export class IndexComponent implements OnInit {
 
 
   /**
- * Método para descargar mensajes iniciales (llamado desde ngOnInit).
+ * Método para descargar mensajes desde el motor de conversaciones 
+ * (se llama DESPUÉS de loadRecuperacionMensajes).
  */
-  async descargarMensajesIniciales(): Promise<void> {
-    // Por el momento lo dejamos hardcodeado:
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=5`;
+async descargarMensajesIniciales(): Promise<void> {
+  const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=30`;
 
-    // Si deseas transformarlo en algo configurable, podrías usar variables de entorno:
-    // const url = `${environment.hostMotorConversaciones}/descargamensajes?idDistribuidor=104425&plataforma=both&days=5`;
-
-    return new Promise((resolve, reject) => {
-      this.http.get(url).subscribe({
-        next: (resp: any) => {
-          // Si la API devuelve algo de información, puedes guardarla 
-          // o disparar algún proceso adicional.
-          console.log('Mensajes descargados exitosamente:', resp);
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error al llamar a la API de descargamensajes', err);
-          reject(err);
-        }
-      });
+  return new Promise((resolve, reject) => {
+    this.http.get(url).subscribe({
+      next: (resp: any) => {
+        console.log('Mensajes descargados con éxito:', resp);
+        resolve();
+      },
+      error: (err) => {
+        console.error('Error al llamar a la API de descargamensajes:', err);
+        reject(err);
+      }
     });
-  }
-
+  });
+}
 
 }
