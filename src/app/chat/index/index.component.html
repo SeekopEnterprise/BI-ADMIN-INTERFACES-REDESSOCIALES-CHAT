@@ -473,7 +473,7 @@
                     </div>
                   </div>
                 </li>
-                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+              <!--   <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
                   <button
                     type="button"
                     class="btn nav-btn"
@@ -484,7 +484,7 @@
                   >
                     <i class="ri-upload-cloud-2-fill"></i>
                   </button>
-                </li>
+                </li> -->
 
                 <ng-template #callContent let-modal>
                   <div class="modal-body">
@@ -857,7 +857,7 @@
                     </div>
                   </div>
                 </li>
-                <li class="list-inline-item d-none d-lg-inline-block">
+                <!-- <li class="list-inline-item d-none d-lg-inline-block">
                   <button
                     type="button"
                     class="btn nav-btn user-profile-show"
@@ -866,8 +866,8 @@
                   >
                     <i class="ri-pie-chart-2-fill"></i>
                   </button>
-                </li>
-                <li class="list-inline-item d-none d-lg-inline-block">
+                </li> -->
+                <!-- <li class="list-inline-item d-none d-lg-inline-block">
                   <button
                     type="button"
                     class="btn nav-btn user-profile-show"
@@ -876,7 +876,7 @@
                   >
                     <i class="ri-bar-chart-fill"></i>
                   </button>
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -1283,7 +1283,7 @@
               <div class="col-auto">
                 <div class="chat-input-links ms-md-2">
                   <ul class="list-inline mb-0">
-                    <li class="list-inline-item">
+                    <!-- <li class="list-inline-item">
                       <button
                         type="button"
                         class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect"
@@ -1297,7 +1297,7 @@
                           height="24"
                         />
                       </button>
-                    </li>
+                    </li> -->
                     <li class="list-inline-item">
                       <button
                         type="submit"
@@ -1636,7 +1636,7 @@
             <ng-template ngbPanelContent>
               <div>
                 <p class="text-muted mb-1">Red Social</p>
-                <h5 class="font-size-14">Mercado Libre</h5>
+                <h5 class="font-size-14">{{RedSocial}}</h5>
               </div>
               <div class="mt-4">
                 <p class="text-muted mb-1">Distribuidor</p>
@@ -1649,8 +1649,8 @@
               <div class="mt-4">
                 <p class="text-muted mb-1">Publicación</p>
                 <h5 class="font-size-14 mb-0">
-                  <a href="{{LinkPublicacion}}" target="_blank"
-                    >{{LinkPublicacion}}</a
+                  <a href="{{urlPublicacion}}" target="_blank"
+                    >{{urlPublicacion}}</a
                   >
                 </h5>
               </div>
