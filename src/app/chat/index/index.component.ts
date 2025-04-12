@@ -286,8 +286,9 @@ export class IndexComponent implements OnInit {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
         await this.loadGrupos();
-        await this.descargarMensajesIniciales();
         await this.loadRecuperacionMensajes();
+        await this.descargarMensajesIniciales();
+        
         
       }
 
