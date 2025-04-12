@@ -286,8 +286,9 @@ export class IndexComponent implements OnInit {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
         await this.loadGrupos();
-        await this.loadRecuperacionMensajes();
         await this.descargarMensajesIniciales();
+        await this.loadRecuperacionMensajes();
+        
       }
 
     } catch (error) {
@@ -295,359 +296,97 @@ export class IndexComponent implements OnInit {
       return;
     }
 
-    // Suscripción al servicio WebSocket para recibir notificaciones en tiempo real
+    /**
+     * SUBSCRIPCIÓN AL WEBSOCKET
+     */
     this.chatSubscription = this.notificacionService
       .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
+        console.log("WS data recibida:", data);
 
-        // Si la conexión al WebSocket se abre con éxito, se establece la aplicación
-        if (event.type === 'open') {
-          this.notificacionService.send({
-            accion: 'setApp',
-            nombreApp: 'proveedoresDigitales'
-          });
-        } else if (event.type === 'message') {
-          // Verifica si data.idMensaje existe para llamar a detectarSentimiento
-          const promesaSentimiento = data.idMensaje
-            ? this.detectarSentimiento(data.idMensaje)
-            : Promise.resolve();
-
-          promesaSentimiento.then(() => {
-            this.loadRecuperacionMensajes(data).then(() => {
-              // Busca el chat para actualizar con el nuevo mensaje y actualiza el contador de mensajes no leídos
-              const chatToUpdate = []
-                .concat(...this.chat.map(group => group.prospects))
-                .find(
-                  prospect =>
-                    prospect.ultimoMensaje.id === data.idMensaje + ''
-                );
-
-              /* 
-              if (chatToUpdate) {
-                chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-              }
-              */
-
-              // Ordenar los chats tras la actualización
-              this.chat.sort((a, b) => {
-                const lastMessageA =
-                  a.prospects[0].Conversacion[
-                    a.prospects[0].Conversacion.length - 1
-                  ];
-                const lastMessageB =
-                  b.prospects[0].Conversacion[
-                    b.prospects[0].Conversacion.length - 1
-                  ];
-                const lastMsgDateA = lastMessageA.fechaRespuesta
-                  ? new Date(lastMessageA.fechaRespuesta).getTime()
-                  : new Date(lastMessageA.fechaCreacion).getTime();
-                const lastMsgDateB = lastMessageB.fechaRespuesta
-                  ? new Date(lastMessageB.fechaRespuesta).getTime()
-                  : new Date(lastMessageB.fechaCreacion).getTime();
-                return lastMsgDateB - lastMsgDateA;
-              });
-            });
-          });
+        if (data.idMensaje) {
+          const promesaSentimiento = this.detectarSentimiento(data.idMensaje);
+          promesaSentimiento
+            .then(() => {
+              this.agregarMensajeSocket(data);
+              // Opcional: this.loadRecuperacionMensajes();
+            })
+            .catch(err => console.error('Error detectando sentimiento:', err));
+        } else {
+          console.log('Notificación WS sin idMensaje, data:', data);
         }
       });
 
     document.body.setAttribute('data-layout-mode', 'light');
     this.lang = this.translate.currentLang;
     this.onListScroll();
-    this.loadScripts();
   }
 
   /**
-   * Inicia el gráfico con Highcharts
+   * Inserta el mensaje llegado por WebSocket en la conversación local
+   * para reflejarlo de inmediato en la vista.
    */
-  initiateChart() {
-    // Función que se llama en el evento de renderizado del gráfico
-    if (typeof Highcharts !== 'undefined') {
-      function renderIcons() {
-        this.series.forEach(series => {
-          if (!series.icon) {
-            series.icon = this.renderer
-              .text(
-                `<i class="fa fa-${series.options.custom.icon}"></i>`,
-                0,
-                0,
-                true
-              )
-              .attr({
-                zIndex: 10
-              })
-              .css({
-                color: series.options.custom.iconColor,
-                fontSize: '1.5em'
-              })
-              .add(this.series[2].group);
-          }
-          series.icon.attr({
-            x: this.chartWidth / 2 - 15,
-            y:
-              this.plotHeight / 2 -
-              series.points[0].shapeArgs.innerR -
-              (series.points[0].shapeArgs.r -
-                series.points[0].shapeArgs.innerR) /
-                2 +
-              8
-          });
-        });
-      }
+  private agregarMensajeSocket(data: any) {
+    console.log('Agregando mensaje a la conversación con idMensaje =', data.idMensaje);
 
-      // Creación del gráfico
-      Highcharts.chart('container', {
-        chart: {
-          type: 'solidgauge',
-          height: '80%',
-          events: {
-            render: renderIcons
-          }
-        },
-        title: {
-          text: 'Perfomance Del Día',
-          style: {
-            fontSize: '24px'
-          }
-        },
-        tooltip: {
-          borderWidth: 0,
-          backgroundColor: 'none',
-          shadow: false,
-          style: {
-            fontSize: '16px'
-          },
-          valueSuffix: '%',
-          pointFormat:
-            '{series.name}<br><span style="font-size: 2em; color: {point.color}; font-weight: bold">{point.y}</span>',
-          positioner: function (labelWidth) {
-            return {
-              x: this.chart.chartWidth - labelWidth - 150,
-              y: this.chart.plotHeight / 2 + 20
-            };
-          }
-        },
-        pane: {
-          startAngle: 0,
-          endAngle: 360,
-          background: [
-            {
-              outerRadius: '100%',
-              innerRadius: '90%',
-              backgroundColor: Highcharts.color('#2caffe')
-                .setOpacity(1)
-                .get(),
-              borderWidth: 0
-            },
-            {
-              outerRadius: '90%',
-              innerRadius: '80%',
-              backgroundColor: Highcharts.color('#544fc5')
-                .setOpacity(0.1)
-                .get(),
-              borderWidth: 0
-            },
-            {
-              outerRadius: '80%',
-              innerRadius: '70%',
-              backgroundColor: Highcharts.color('#BC2866')
-                .setOpacity(0.1)
-                .get(),
-              borderWidth: 0
-            },
-            {
-              outerRadius: '70%',
-              innerRadius: '60%',
-              backgroundColor: Highcharts.color('#fe6a35')
-                .setOpacity(0.1)
-                .get(),
-              borderWidth: 0
-            },
-            {
-              outerRadius: '60%',
-              innerRadius: '50%',
-              backgroundColor: Highcharts.color('#f7f022')
-                .setOpacity(0.1)
-                .get(),
-              borderWidth: 0
-            }
-          ]
-        },
-        yAxis: {
-          min: 0,
-          max: 100,
-          lineWidth: 0,
-          tickPositions: []
-        },
-        plotOptions: {
-          solidgauge: {
-            dataLabels: {
-              enabled: false
-            },
-            linecap: 'round',
-            stickyTracking: false,
-            rounded: true
-          }
-        },
-        legend: {
-          with: '90px',
-          verticalAlign: 'middle',
-          position: 'relative',
-          margingTop: 10,
-          margin: 10,
-          top: 100,
-          paddingTop: 50,
-          align: 'left',
-          layout: 'vertical',
-          useHTML: true,
-          color: 'black',
-          labelFormatter: function () {
-            return (
-              '<span style="border:1px; text-weight:bold;color:' +
-              this.userOptions.color +
-              ';">' +
-              this.name +
-              '</span>'
-            );
-          },
-          itemHiddenStyle: { color: '#a3bd36' },
-          symbolWidth: 60
-        },
-        navigation: {
-          buttonOptions: {
-            symbolFill: '#a3bd36',
-            symbolStroke: '#a3bd36'
-          }
-        },
-        series: [
-          {
-            color: '#2caffe',
-            name: 'Mensajes Recibidos',
-            data: [
-              {
-                color: '#2caffe',
-                radius: '100%',
-                innerRadius: '90%',
-                y: 100
-              }
-            ],
-            custom: {
-              icon: 'envelope',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: '#544fc5',
-            name: 'Mensajes Contestados',
-            data: [
-              {
-                color: '#544fc5',
-                radius: '90%',
-                innerRadius: '80%',
-                y: 60
-              }
-            ],
-            custom: {
-              icon: 'comments-o',
-              iconColor: '#ffffff'
-            },
-            showInLegend: true
-          },
-          {
-            color: '#BC2866',
-            name: 'Mensajes No Contestados',
-            data: [
-              {
-                color: '#BC2866',
-                radius: '80%',
-                innerRadius: '70%',
-                y: 40
-              }
-            ],
-            custom: {
-              icon: 'commenting-o',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: '#fe6a35',
-            name: 'Mensajes Negativos',
-            data: [
-              {
-                color: '#544fc5',
-                radius: '70%',
-                innerRadius: '60%',
-                y: 20
-              }
-            ],
-            custom: {
-              icon: 'thumbs-down',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          },
-          {
-            color: '#f7f022',
-            name: 'Mensajes Positivos',
-            data: [
-              {
-                color: '#f7f022',
-                radius: '60%',
-                innerRadius: '50%',
-                y: 67
-              }
-            ],
-            custom: {
-              icon: 'thumbs-up',
-              iconColor: '#303030'
-            },
-            showInLegend: true
-          }
-        ]
-      });
-    } else {
-      console.error('Highcharts no está definido');
+    // ====== REEMPLAZO DE flatMap POR reduce ======
+    // Antes: const allProspects = this.chat.flatMap(group => group.prospects);
+    // Ahora con reduce, para no requerir ES2019+:
+    const allProspects = this.chat.reduce((acc, group) => {
+      return acc.concat(group.prospects);
+    }, []);
+
+    // Localiza la conversación
+    const chatToUpdate = allProspects.find(
+      prospect => prospect.ultimoMensaje && prospect.ultimoMensaje.id === data.idMensaje
+    );
+
+    if (!chatToUpdate) {
+      console.warn('No se encontró la conversación para el idMensaje:', data.idMensaje);
+      return;
     }
-  }
 
-  /**
-   * Carga scripts de Highcharts y llama a initiateChart()
-   */
-  loadScripts() {
-    this.loadScript('https://code.highcharts.com/highcharts.js', () => {
-      this.loadScript('https://code.highcharts.com/highcharts-more.js', () => {
-        this.loadScript('https://code.highcharts.com/modules/solid-gauge.js', () => {
-          this.loadScript(
-            'https://code.highcharts.com/modules/exporting.js',
-            () => {
-              this.loadScript(
-                'https://code.highcharts.com/modules/export-data.js',
-                () => {
-                  this.loadScript(
-                    'https://code.highcharts.com/modules/accessibility.js',
-                    this.initiateChart
-                  );
-                }
-              );
-            }
-          );
-        });
-      });
+    chatToUpdate.Conversacion.forEach(m => (m.ultimoMensaje = false));
+
+    const nuevoMensaje = {
+      id: data.idMensaje,
+      texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
+      name: data.appNotificada || 'Cliente',
+      profile: '',
+      time: '',
+      align: 'left',
+      isimage: false,
+      ultimoMensaje: true,
+      imageContent: [],
+      replayName: null,
+      replaymsg: null
+    };
+
+    chatToUpdate.Conversacion.push(nuevoMensaje);
+
+    chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
+
+    // Reordenar la lista si deseas
+    this.chat.sort((a, b) => {
+      const lastMessageA =
+        a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
+      const lastMessageB =
+        b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
+      const lastMsgDateA = lastMessageA.fechaRespuesta
+        ? new Date(lastMessageA.fechaRespuesta).getTime()
+        : new Date(lastMessageA.fechaCreacion).getTime();
+      const lastMsgDateB = lastMessageB.fechaRespuesta
+        ? new Date(lastMessageB.fechaRespuesta).getTime()
+        : new Date(lastMessageB.fechaCreacion).getTime();
+      return lastMsgDateB - lastMsgDateA;
     });
+
+    this.onListScroll();
+
+    console.log('Mensaje insertado localmente =>', nuevoMensaje);
   }
 
-  /**
-   * Carga de script externo
-   */
-  loadScript(src: string, onLoad: () => void) {
-    const script = this.renderer.createElement('script');
-    script.src = src;
-    script.onload = onLoad;
-    this.renderer.appendChild(this.el.nativeElement, script);
-  }
 
   /**
    * Se ejecuta después de que la vista inicie
@@ -865,7 +604,6 @@ export class IndexComponent implements OnInit {
           console.log('estatus envio: ' + this.enviadoaseekop);
 
           if (this.enviadoaseekop) {
-            // Deshabilitar el botón de enviar a Seekop
             btnEnviarSeekop?.setAttribute('disabled', 'true');
             document.getElementById(
               'btnenviarleads_' + this.idMensajeLeads
@@ -994,16 +732,13 @@ export class IndexComponent implements OnInit {
    * Envía el mensaje actual y lo guarda en la conversación
    */
   async messageSave() {
-    // Obtiene el mensaje
     const message = this.formData.get('message')!.value;
 
-    // Verifica duplicados o vacío
     if (!message || message === this.lastSentMessage) {
       console.log('Mensaje duplicado o vacío, no se enviará.');
       return;
     }
 
-    // Busca si el grupo está activo (opcional)
     const groupMsg = document.querySelector('.pills-groups-tab.active');
     if (!groupMsg) {
       const activeUserMessage = document.querySelector(
@@ -1014,7 +749,6 @@ export class IndexComponent implements OnInit {
       }
     }
 
-    // Asigna valores al nuevo mensaje
     const img = this.img ? this.img : '';
     const status = this.img ? true : '';
     const dateTime = this.datePipe.transform(new Date(), 'h:mm a');
@@ -1044,13 +778,11 @@ export class IndexComponent implements OnInit {
       replaymsg: chatReplyMessage
     };
 
-    // Busca el chat
     console.log('id actual: ', this.selectedChatId);
     const chatToUpdate = []
       .concat(...this.chat.map(group => group.prospects))
       .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId + '');
 
-    // Añade el mensaje y marca el anterior como no último
     if (chatToUpdate) {
       chatToUpdate.Conversacion.push(newMessage);
       chatToUpdate.Conversacion.forEach(m => (m.ultimoMensaje = false));
@@ -1063,7 +795,6 @@ export class IndexComponent implements OnInit {
 
     this.onListScroll();
 
-    // Enviar a la API
     try {
       await this.http
         .post('https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs', {
@@ -1073,13 +804,11 @@ export class IndexComponent implements OnInit {
         .toPromise();
 
       this.lastSentMessage = message;
-      // Recarga la conversación
       await this.loadRecuperacionMensajes();
     } catch (error) {
       console.error('Error al guardar el mensaje:', error);
     }
 
-    // Resetea el formulario
     this.formData = this.formBuilder.group({
       message: null
     });
@@ -1358,13 +1087,11 @@ export class IndexComponent implements OnInit {
               return groups;
             }, {});
 
-            // Convertir a array de GroupedResponseItem
             this.chat = Object.keys(grouped).map(key => ({
               key,
               prospects: grouped[key]
             }));
 
-            // Ordenar los grupos por fecha de último mensaje
             this.chat.sort((a, b) => {
               const lastMessageA =
                 a.prospects[0].Conversacion[
@@ -1683,7 +1410,6 @@ export class IndexComponent implements OnInit {
       this.isContainerVisibleKPIs = false;
     }
     this.isContainerVisible = !this.isContainerVisible;
-    this.loadScripts();
   }
 
   /**
@@ -1710,7 +1436,6 @@ export class IndexComponent implements OnInit {
     if (this.selectedBot) {
       this.botActive = true;
       console.log('Bot activado:', this.selectedBot);
-      // Lógica extra si se requiere
     } else {
       console.log('No se ha seleccionado ningún bot');
     }
@@ -1721,11 +1446,9 @@ export class IndexComponent implements OnInit {
    */
   proposeBotMessage() {
     const currentMessage = this.formData.get('message')!.value;
-    // Determinar si es creación o mejora
     const tipo = currentMessage ? 'mejora' : 'creacion';
     console.log('Tipo de mensaje:', tipo);
 
-    // Llamar a la API
     this.enviarUltimosMensajes(tipo).subscribe(
       response => {
         console.log('Respuesta de la API:', response);
@@ -1753,10 +1476,8 @@ export class IndexComponent implements OnInit {
    * Envia los últimos mensajes del chat a la API para que el Bot genere respuesta
    */
   enviarUltimosMensajes(tipo: string) {
-    // Tomamos los últimos 20 mensajes
     const mensajesAgrupados = this.chat.slice(-20);
 
-    // Construcción del objeto conversacion
     const conversacion = {
       idProspecto: '123456789',
       idEjecutivo: '123456789',
@@ -1776,7 +1497,6 @@ export class IndexComponent implements OnInit {
       });
     });
 
-    // Payload
     const payload = {
       conversacion,
       mensaje: '',
@@ -1787,26 +1507,24 @@ export class IndexComponent implements OnInit {
     return this.chatService.enviarMensajes(payload, tipo);
   }
 
-
   /**
- * Método para descargar mensajes desde el motor de conversaciones 
- * (se llama DESPUÉS de loadRecuperacionMensajes).
- */
-async descargarMensajesIniciales(): Promise<void> {
-  const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=30`;
+   * Método para descargar mensajes desde el motor de conversaciones
+   */
+  async descargarMensajesIniciales(): Promise<void> {
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=3`;
 
-  return new Promise((resolve, reject) => {
-    this.http.get(url).subscribe({
-      next: (resp: any) => {
-        console.log('Mensajes descargados con éxito:', resp);
-        resolve();
-      },
-      error: (err) => {
-        console.error('Error al llamar a la API de descargamensajes:', err);
-        reject(err);
-      }
+    return new Promise((resolve, reject) => {
+      this.http.get(url).subscribe({
+        next: (resp: any) => {
+          console.log('Mensajes descargados con éxito:', resp);
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al llamar a la API de descargamensajes:', err);
+          reject(err);
+        }
+      });
     });
-  });
-}
+  }
 
 }
