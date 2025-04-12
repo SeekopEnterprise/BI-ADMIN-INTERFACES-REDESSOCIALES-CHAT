@@ -1511,7 +1511,7 @@ export class IndexComponent implements OnInit {
    * Método para descargar mensajes desde el motor de conversaciones
    */
   async descargarMensajesIniciales(): Promise<void> {
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=3`;
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=30`;
 
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe({
