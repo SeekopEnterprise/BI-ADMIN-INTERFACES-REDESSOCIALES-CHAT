@@ -12,7 +12,7 @@
             </nb-accordion-item-header>
             <nb-accordion-item-body>
               <div *ngFor="let mensaje of groupedMessages[redSocial]" class="message-item">
-                <div class="message-title">{{ mensaje.Nombre }}</div>
+                <div class="message-title" (click)="onSelect(mensaje)">{{ mensaje.Nombre }}</div>
               </div>
             </nb-accordion-item-body>
           </nb-accordion-item>

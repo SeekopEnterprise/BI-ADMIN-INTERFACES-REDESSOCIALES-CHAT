@@ -7,6 +7,10 @@ import { DetailMessage } from '../../../interfaces/messages.interface';
   styleUrls: ['./chat-content.component.scss']
 })
 export class ChatContentComponent implements OnInit  {
-  @Input() mensajes: DetailMessage[] = [];
-  ngOnInit() {}
+  @Input() mensaje: DetailMessage | null = null;
+  nuevoMensaje: string = '';
+
+  ngOnInit() {
+    console.log(this.mensaje)
+  }
 }

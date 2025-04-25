@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DetailMessage } from '../../../interfaces/messages.interface';
 
 @Component({
@@ -8,7 +8,9 @@ import { DetailMessage } from '../../../interfaces/messages.interface';
 })
 export class SideMenuChatComponent implements OnInit {
   @Input() mensajes: DetailMessage[] = []; 
-  groupedMessages: { [redSocial: string]: DetailMessage[] } = {};
+  @Output() mensajeSeleccionado = new EventEmitter<DetailMessage>();
+
+  groupedMessages: { [key: string]: DetailMessage[] } = {};
 
 
   ngOnInit() {
@@ -27,6 +29,10 @@ export class SideMenuChatComponent implements OnInit {
   }
   objectKeys(obj: any): string[] {
     return Object.keys(obj);
+  }
+
+  onSelect(mensaje: DetailMessage) {
+    this.mensajeSeleccionado.emit(mensaje);
   }
 
 }

@@ -1,9 +1,18 @@
 <nb-card class="custom-chat-card">
-    <nb-card-header class="custom-chat-card-header">
-      Conversación
-    </nb-card-header>
-    <nb-card-body class="custom-chat-card-body">
-      <!-- Aquí va el contenido del chat -->
-    </nb-card-body>
-  </nb-card>
+  <nb-card-header class="custom-chat-card-header">
+    {{mensaje.Nombre}}
+  </nb-card-header>
+  <nb-card-body class="custom-chat-card-body">
+    <div *ngFor="let msg of mensaje?.Conversacion" class="message-wrapper" [ngClass]="msg.align">
+      <div class="message-bubble">
+        <div class="message-text">{{ msg.texto }}</div>
+        <div class="message-date">{{ msg.fechaCreacion | date:'short' }}</div>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="custom-chat-footer">
+    <span class="chat-footer-label">Escribe un mensaje...</span>
+    <input nbInput placeholder="Tu mensaje" [(ngModel)]="nuevoMensaje" fullWidth />
+  </nb-card-footer>
   
+</nb-card>

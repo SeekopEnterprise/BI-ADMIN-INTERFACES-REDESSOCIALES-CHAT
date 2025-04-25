@@ -4,13 +4,13 @@
      
       <!-- Sidebar de conversaciones -->
       <div class="col-md-3">
-        <app-side-menu-chat  [mensajes]="mensajes">
+        <app-side-menu-chat  [mensajes]="mensajes" (mensajeSeleccionado)="seleccionarMensaje($event)">
         </app-side-menu-chat>
       </div>
   
       <!-- Chat -->
-      <div class="col-md-6">
-        <app-chat-content  [mensajes]="mensajes" ></app-chat-content>
+      <div class="col-md-6" *ngIf="mensajeSeleccionado">
+        <app-chat-content  [mensaje]="mensajeSeleccionado" ></app-chat-content>
       </div>
   
       <!-- Publicación relacionada -->

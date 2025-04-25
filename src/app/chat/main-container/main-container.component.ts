@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DetailMessage } from '../../interfaces/messages.interface';
 import { ChatService } from '../../services/chat.service';
 
@@ -11,10 +11,12 @@ import { ChatService } from '../../services/chat.service';
 export class MainContainerComponent implements OnInit {
   mensajes: DetailMessage[] = [];
   mensajeSeleccionado: DetailMessage | null = null;
+  @Input() mensaje: DetailMessage | null = null;
 
   ngOnInit() {
     this.getMessagesByDistribuidor();
   }
+  
   constructor(private chatService: ChatService) { }
   getMessagesByDistribuidor(): void {
     this.chatService.getMessagesByDistribuidor().subscribe({
