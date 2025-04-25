@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IndexComponent } from './index/index.component';
+import { MainContainerComponent } from './main-container/main-container.component';
 
 const routes: Routes = [
   {
@@ -11,8 +12,13 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'refactor',
+    component: MainContainerComponent,
+    pathMatch: 'full'
+  },
+  {
     path: ':tab',
-    component: IndexComponent,
+    component: MainContainerComponent,
   }
 ];
 

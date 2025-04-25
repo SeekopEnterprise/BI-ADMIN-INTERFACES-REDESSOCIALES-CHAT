@@ -1,0 +1,35 @@
+
+  .main-chat-container {
+   
+    height: calc(100vh - 8rem);
+    overflow: hidden;
+  
+    .row {
+      height: 100%;
+      text-align: -webkit-center;
+    }
+  
+    app-side-menu-chat,
+    app-chat-content,
+    app-post-by-chat {
+      height: 100%;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+  
+    @media (max-width: 798px) {
+    
+      .main-chat-container {
+        height: auto;
+        width: auto;
+      }
+    }
+    @media (max-width: 1500px) {
+    
+      .main-chat-container {
+        height: auto;
+        width: auto;
+      }
+    }
+  }
+  

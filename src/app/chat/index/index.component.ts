@@ -1014,7 +1014,7 @@ export class IndexComponent implements OnInit {
   /**
    * Carga de mensajes recuperados del API
    */
-  loadRecuperacionMensajes(socketData = null): Promise<void> {
+  loadRecuperacionMensajes(): Promise<void> {
     return new Promise((resolve, reject) => {
       const userName = this.senderName || this.usuarioCorreo;
 

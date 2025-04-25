@@ -1,0 +1,18 @@
+<nb-card class="custom-card">
+    <nb-card-header class="custom-card-header">
+      Conversaciones
+    </nb-card-header>
+    <nb-card-body class="custom-card-body">
+      <nb-accordion>
+        <nb-accordion-item *ngFor="let redSocial of objectKeys(groupedMessages)" >
+         <nb-accordion-item-header><h4>{{ redSocial }}</h4></nb-accordion-item-header>
+         <nb-accordion-item-body>
+            <div *ngFor="let mensaje of groupedMessages[redSocial]"  class="message-item">
+              <div class="message-title">{{ mensaje.Nombre }} </div>
+            </div>
+        </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+    </nb-card-body>
+  </nb-card>
+  

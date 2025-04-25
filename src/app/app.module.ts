@@ -14,6 +14,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule,ReactiveFormsModule} from '@angular/forms';
 import { MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { NbCardModule, NbThemeModule } from '@nebular/theme';
 
 
 export function createTranslateLoader(http: HttpClient): any {
@@ -31,6 +32,7 @@ export function createTranslateLoader(http: HttpClient): any {
     BrowserModule,
     AppRoutingModule,
     ChatModule,
+   
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

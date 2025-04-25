@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ResponseMessages } from '../interfaces/messages.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +20,13 @@ export class ChatService {
     };
 
     return this.http.post(this.apiUrl, conversacion);
+  }
+  getMessagesByDistribuidor(): Observable<ResponseMessages> {
+    const apiUrlMessages = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs';
+
+    const userName ='';
+    const params = new HttpParams().set('usuario', userName);
+    return this.http
+    .get<ResponseMessages>(apiUrlMessages, { params });
   }
 }

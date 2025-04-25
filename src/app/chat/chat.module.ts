@@ -10,13 +10,12 @@ import { LightboxModule } from 'ngx-lightbox';
 
 import { ChatRoutingModule } from './chat-routing.module';
 
-import {DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 // Emoji Picker
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 
 // Simplebar
-import { SimplebarAngularModule } from 'simplebar-angular';
 
 import { IndexComponent } from './index/index.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -25,8 +24,13 @@ import { NotificacionesComponent } from './notificaciones/notificaciones/notific
 import { NotificacionesService } from '../chat/notificaciones/notificaciones.service';
 import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MainContainerComponent } from './main-container/main-container.component';
+import { SideMenuChatComponent } from './main-container/side-menu-chat/side-menu-chat.component';
+import { ChatContentComponent } from './main-container/chat-content/chat-content.component';
+import { PostByChatComponent } from './main-container/post-by-chat/post-by-chat.component';
+import { NbAccordionModule, NbActionsModule, NbCardModule, NbThemeModule } from '@nebular/theme';
 @NgModule({
-  declarations: [IndexComponent, NotificacionesComponent],
+  declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent],
   imports: [
     PerfectScrollbarModule,
     LightboxModule,
@@ -40,10 +44,14 @@ import { MatNativeDateModule } from '@angular/material/core';
     NgbTooltipModule,
     NgbDropdownModule,
     TranslateModule,
-    SimplebarAngularModule,
+    
     PickerModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NbCardModule,
+    NbAccordionModule,
+    NbActionsModule,
+    NbThemeModule.forRoot({ name: 'default' }),
   ],
   providers: [
     DatePipe,
