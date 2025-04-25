@@ -24,3 +24,56 @@
     height: calc(100vh - 4rem);  
   }
   
+  ::ng-deep nb-accordion-item {
+    background-color: white;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  ::ng-deep nb-accordion-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    background-color: white;
+    border-radius: 8px;
+    color: #272D3B;
+    cursor: pointer;
+  }
+  
+  /* Logo + nombre de red social */
+  ::ng-deep nb-accordion-item-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #272D3B;
+  }
+  
+  ::ng-deep nb-accordion-item-header nb-icon {
+    color: #A3BD36 !important;
+    width: 28px !important;
+  }
+  
+  ::ng-deep nb-accordion-item-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .message-item {
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .message-title {
+    font-weight: bold;
+    color: #272D3B;
+    cursor: pointer;
+  }
+  
