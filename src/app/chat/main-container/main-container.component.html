@@ -14,8 +14,8 @@
       </div>
   
       <!-- Publicación relacionada -->
-      <div class="col-md-3">
-        <app-post-by-chat  [mensajes]="mensajes" ></app-post-by-chat>
+      <div class="col-md-3" *ngIf="mensajeSeleccionado">
+        <app-post-by-chat  [mensaje]="mensajeSeleccionado" ></app-post-by-chat>
       </div>
     </div>
   </div>

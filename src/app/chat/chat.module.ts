@@ -28,7 +28,8 @@ import { MainContainerComponent } from './main-container/main-container.componen
 import { SideMenuChatComponent } from './main-container/side-menu-chat/side-menu-chat.component';
 import { ChatContentComponent } from './main-container/chat-content/chat-content.component';
 import { PostByChatComponent } from './main-container/post-by-chat/post-by-chat.component';
-import { NbAccordionModule, NbActionsModule, NbCardModule, NbThemeModule } from '@nebular/theme';
+import { NbAccordionModule, NbActionsModule, NbCardModule, NbIconModule, NbThemeModule } from '@nebular/theme';
+import { CoreModule } from '../core/core.module';
 @NgModule({
   declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent],
   imports: [
@@ -44,7 +45,7 @@ import { NbAccordionModule, NbActionsModule, NbCardModule, NbThemeModule } from 
     NgbTooltipModule,
     NgbDropdownModule,
     TranslateModule,
-    
+    NbIconModule,
     PickerModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -52,6 +53,7 @@ import { NbAccordionModule, NbActionsModule, NbCardModule, NbThemeModule } from 
     NbAccordionModule,
     NbActionsModule,
     NbThemeModule.forRoot({ name: 'default' }),
+    CoreModule
   ],
   providers: [
     DatePipe,

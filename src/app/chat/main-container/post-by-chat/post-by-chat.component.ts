@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailMessage } from '../../../interfaces/messages.interface';
+import { PostsService } from '../../../services/posts.service';
+import { ResponseKpiPostChat } from '../../../interfaces/kpi-post-chat.interface';
 
 @Component({
   selector: 'app-post-by-chat',
@@ -7,6 +9,32 @@ import { DetailMessage } from '../../../interfaces/messages.interface';
   styleUrls: ['./post-by-chat.component.scss']
 })
 export class PostByChatComponent implements OnInit {
-  @Input() mensajes: DetailMessage[] = [];
-  ngOnInit() {}
+  @Input() mensaje: DetailMessage | null = null;
+  kpiData!: ResponseKpiPostChat;
+  tabs = [
+    { key: 'origen', icon: 'mdl-file-eye', label: 'Publicación de origen' },
+    { key: 'conversacion', icon: 'mdl-file-eye', label: 'Informacion personal' },
+    { key: 'kpi', icon: 'mdl-file-eye', label: 'KPI Conversacion' },
+    { key: 'detalles', icon: 'mdl-file-eye', label: 'Enviar a Seekop' },
+  ];
+  selectedTab = 'origen';
+
+  constructor(private postsService: PostsService) { }
+  ngOnInit() {
+
+    this.postsService.getKpiPostChatByIdPublicacion().subscribe({
+      next: (response) => {
+        this.kpiData = response;
+        console.log('Data:', this.kpiData);
+      },
+      error: (err) => {
+        console.error('Error al cargar KPI:', err);
+      }
+    });
+  }
+
+  get selectedTabLabel(): string {
+    const found = this.tabs.find(t => t.key === this.selectedTab);
+    return found ? found.label : '';
+  }
 }

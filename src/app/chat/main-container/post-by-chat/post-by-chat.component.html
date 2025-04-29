@@ -1,9 +1,41 @@
 <nb-card class="custom-publicacion-card">
-    <nb-card-header class="custom-publicacion-card-header">
-      Publicación de origen
-    </nb-card-header>
-    <nb-card-body class="custom-publicacion-card-body">
-      <!-- Aquí va el contenido de la publicación -->
-    </nb-card-body>
-  </nb-card>
+  <nb-card-header class="custom-tabs-header">
+    <div class="tabs-container">
+      <div
+      *ngFor="let tab of tabs"
+      class="tab-icon"
+      [class.active]="selectedTab === tab.key"
+      (click)="selectedTab = tab.key"
+    >
+        <nb-icon [icon]="tab.icon" pack="seekop"></nb-icon>
+      </div>
+    </div>
   
+    <div class="tab-label">
+      {{ selectedTabLabel }}
+    </div>
+  </nb-card-header>
+  
+  
+
+  <nb-card-body class="custom-publicacion-card-body">
+    <ng-container [ngSwitch]="selectedTab">
+      <div *ngSwitchCase="'origen'">
+        <!-- Contenido de Publicación de Origen -->
+        Aquí va la publicación de origen.
+      </div>
+      <div *ngSwitchCase="'conversacion'">
+        <!-- Contenido de Conversación -->
+        Aquí va la conversación.
+      </div>
+      <div *ngSwitchCase="'kpi'">
+        <!-- Contenido de KPIs -->
+        Aquí van los KPIs.
+      </div>
+      <div *ngSwitchCase="'detalles'">
+        <!-- Contenido de Detalles del Prospecto -->
+        Aquí van los datos personales del prospecto.
+      </div>
+    </ng-container>
+  </nb-card-body>
+</nb-card>
