@@ -10,11 +10,11 @@ import { ResponseKpiPostChat } from '../../../interfaces/kpi-post-chat.interface
 })
 export class PostByChatComponent implements OnInit {
   @Input() mensaje: DetailMessage | null = null;
-  kpiData!: ResponseKpiPostChat;
+  postConversacionKpiData!: ResponseKpiPostChat;
   tabs = [
     { key: 'origen', icon: 'mdl-file-eye', label: 'Publicación de origen' },
-    { key: 'conversacion', icon: 'mdl-file-eye', label: 'Informacion personal' },
-    { key: 'kpi', icon: 'mdl-file-eye', label: 'KPI Conversacion' },
+    { key: 'informacionPersonal', icon: 'mdl-file-eye', label: 'Informacion personal' },
+    { key: 'kpiConversacion', icon: 'mdl-file-eye', label: 'KPI Conversacion' },
     { key: 'detalles', icon: 'mdl-file-eye', label: 'Enviar a Seekop' },
   ];
   selectedTab = 'origen';
@@ -24,8 +24,8 @@ export class PostByChatComponent implements OnInit {
 
     this.postsService.getKpiPostChatByIdPublicacion().subscribe({
       next: (response) => {
-        this.kpiData = response;
-        console.log('Data:', this.kpiData);
+        this.postConversacionKpiData = response;
+        console.log('Data:', this.postConversacionKpiData);
       },
       error: (err) => {
         console.error('Error al cargar KPI:', err);

@@ -30,8 +30,11 @@ import { ChatContentComponent } from './main-container/chat-content/chat-content
 import { PostByChatComponent } from './main-container/post-by-chat/post-by-chat.component';
 import { NbAccordionModule, NbActionsModule, NbCardModule, NbIconModule, NbThemeModule } from '@nebular/theme';
 import { CoreModule } from '../core/core.module';
+import { CardPostComponent } from './main-container/post-by-chat/card-post/card-post.component';
+import { InformacionPersonalComponent } from './main-container/post-by-chat/informacion-personal/informacion-personal.component';
+import { KpiConversacionComponent } from './main-container/post-by-chat/kpi-conversacion/kpi-conversacion.component';
 @NgModule({
-  declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent],
+  declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent, CardPostComponent, InformacionPersonalComponent, KpiConversacionComponent],
   imports: [
     PerfectScrollbarModule,
     LightboxModule,
