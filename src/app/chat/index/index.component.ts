@@ -55,7 +55,7 @@ declare var Highcharts: any;
 export class IndexComponent implements OnInit {
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // NUEVA VARIABLE para mostrar/ocultar el loader mientras se descargan mensajes
+  // Variable para mostrar/ocultar el loader mientras se descargan mensajes
   public isLoadingMensajesIniciales: boolean = false;
   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -277,43 +277,11 @@ export class IndexComponent implements OnInit {
     });
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // Activamos el loader ANTES de intentar descargar los mensajes
+    // Activamos el loader ANTES de iniciar la secuencia de descarga
     this.isLoadingMensajesIniciales = true;
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    try {
-      // Recupera el usuario del servicio o del localStorage
-      let user = this.globalUserService.getCurrentUser();
-      if (!user) {
-        try {
-          user = JSON.parse(localStorage.getItem('currentUser'));
-        } catch (error) {
-          console.log('Error al acceder a localStorage nuevo:', error);
-        }
-      }
-
-      if (user && user.token) {
-        this.senderName = user.username;
-        this.senderProfile = 'assets/images/users/' + user.profile;
-        await this.loadGrupos();
-        await this.descargarMensajesIniciales();
-        await this.loadRecuperacionMensajes();
-       
-      }
-
-    } catch (error) {
-      console.log('Error cargando grupos o recuperando mensajes:', error);
-      return;
-    } finally {
-      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      // Apagamos el loader JUSTO después de que se descarguen (o fallen)
-      this.isLoadingMensajesIniciales = false;
-      // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    }
-
-    /**
-     * SUBSCRIPCIÓN AL WEBSOCKET
-     */
+    // 1. Abrimos el socket de inmediato, para que reciba notificaciones
     this.chatSubscription = this.notificacionService
       .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
@@ -332,6 +300,39 @@ export class IndexComponent implements OnInit {
           console.log('Notificación WS sin idMensaje, data:', data);
         }
       });
+
+    try {
+      // 2. Recupera el usuario del servicio o del localStorage
+      let user = this.globalUserService.getCurrentUser();
+      if (!user) {
+        try {
+          user = JSON.parse(localStorage.getItem('currentUser'));
+        } catch (error) {
+          console.log('Error al acceder a localStorage nuevo:', error);
+        }
+      }
+
+      if (user && user.token) {
+        this.senderName = user.username;
+        this.senderProfile = 'assets/images/users/' + user.profile;
+
+        // 3. Cargar grupos primero
+        await this.loadGrupos();
+
+        // 4. Primero se descarga (inserta en la BD) para que el socket notifique
+        await this.descargarMensajesIniciales();
+
+        // 5. Luego cargamos lo que se haya guardado en base
+        await this.loadRecuperacionMensajes();
+      }
+
+    } catch (error) {
+      console.log('Error cargando grupos o recuperando mensajes:', error);
+      return;
+    } finally {
+      // Apagamos el loader al concluir o fallar la secuencia
+      this.isLoadingMensajesIniciales = false;
+    }
 
     document.body.setAttribute('data-layout-mode', 'light');
     this.lang = this.translate.currentLang;
@@ -401,7 +402,6 @@ export class IndexComponent implements OnInit {
 
     console.log('Mensaje insertado localmente =>', nuevoMensaje);
   }
-
 
   /**
    * Se ejecuta después de que la vista inicie
