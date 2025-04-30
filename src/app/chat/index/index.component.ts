@@ -54,6 +54,11 @@ declare var Highcharts: any;
  */
 export class IndexComponent implements OnInit {
 
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // NUEVA VARIABLE para mostrar/ocultar el loader mientras se descargan mensajes
+  public isLoadingMensajesIniciales: boolean = false;
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
   // Suscripción para WebSocket
   private chatSubscription: Subscription;
 
@@ -271,6 +276,11 @@ export class IndexComponent implements OnInit {
       }
     });
 
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // Activamos el loader ANTES de intentar descargar los mensajes
+    this.isLoadingMensajesIniciales = true;
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     try {
       // Recupera el usuario del servicio o del localStorage
       let user = this.globalUserService.getCurrentUser();
@@ -286,15 +296,19 @@ export class IndexComponent implements OnInit {
         this.senderName = user.username;
         this.senderProfile = 'assets/images/users/' + user.profile;
         await this.loadGrupos();
-        await this.loadRecuperacionMensajes();
         await this.descargarMensajesIniciales();
-        
-        
+        await this.loadRecuperacionMensajes();
+       
       }
 
     } catch (error) {
       console.log('Error cargando grupos o recuperando mensajes:', error);
       return;
+    } finally {
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      // Apagamos el loader JUSTO después de que se descarguen (o fallen)
+      this.isLoadingMensajesIniciales = false;
+      // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     }
 
     /**
@@ -1512,7 +1526,7 @@ export class IndexComponent implements OnInit {
    * Método para descargar mensajes desde el motor de conversaciones
    */
   async descargarMensajesIniciales(): Promise<void> {
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=30`;
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=15`;
 
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe({
