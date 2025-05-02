@@ -24,7 +24,7 @@ export class ChatService {
   getMessagesByDistribuidor(): Observable<ResponseMessages> {
     const apiUrlMessages = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs';
 
-    const userName ='';
+    const userName ='default.pruebas@seekoop.com';
     const params = new HttpParams().set('usuario', userName);
     return this.http
     .get<ResponseMessages>(apiUrlMessages, { params });

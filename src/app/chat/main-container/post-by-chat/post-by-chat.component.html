@@ -17,7 +17,7 @@
   <nb-card-body class="custom-publicacion-card-body">
     <ng-container [ngSwitch]="selectedTab">
       <div *ngSwitchCase="'origen'">
-        <app-card-post></app-card-post>
+        <app-card-post [publicaciones]="body.publicaciones"></app-card-post>
       </div>
       <div *ngSwitchCase="'informacionPersonal'">
         <app-informacion-personal></app-informacion-personal>

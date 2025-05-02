@@ -21,8 +21,12 @@ export class PostByChatComponent implements OnInit {
 
   constructor(private postsService: PostsService) { }
   ngOnInit() {
+    this.getPostConversacionKpiData();
+  }
 
-    this.postsService.getKpiPostChatByIdPublicacion().subscribe({
+  getPostConversacionKpiData() {
+
+    this.postsService.getKpiPostChatByIdPublicacion(this.mensaje.IdPublicacion).subscribe({
       next: (response) => {
         this.postConversacionKpiData = response;
         console.log('Data:', this.postConversacionKpiData);
@@ -32,7 +36,6 @@ export class PostByChatComponent implements OnInit {
       }
     });
   }
-
   get selectedTabLabel(): string {
     const found = this.tabs.find(t => t.key === this.selectedTab);
     return found ? found.label : '';

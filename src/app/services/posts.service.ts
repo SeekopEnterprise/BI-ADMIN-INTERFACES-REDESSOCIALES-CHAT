@@ -8,7 +8,7 @@ import { ResponseKpiPostChat } from "../interfaces/kpi-post-chat.interface";
 })
 export class PostsService {
     constructor(private http: HttpClient) { }
-    getKpiPostChatByIdPublicacion(): Observable<ResponseKpiPostChat> {
+    getKpiPostChatByIdPublicacion(idPublicacion:string): Observable<ResponseKpiPostChat> {
         let apiUrl = 'http://demo8917364.mockable.io/getKpiPostChatByIdPublicacion';
 
         return this.http.get<ResponseKpiPostChat>(apiUrl);
