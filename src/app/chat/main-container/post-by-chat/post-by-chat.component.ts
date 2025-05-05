@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { DetailMessage } from '../../../interfaces/messages.interface';
 import { PostsService } from '../../../services/posts.service';
 import { ResponseKpiPostChat } from '../../../interfaces/kpi-post-chat.interface';
@@ -8,7 +8,7 @@ import { ResponseKpiPostChat } from '../../../interfaces/kpi-post-chat.interface
   templateUrl: './post-by-chat.component.html',
   styleUrls: ['./post-by-chat.component.scss']
 })
-export class PostByChatComponent implements OnInit {
+export class PostByChatComponent implements  OnChanges  {
   @Input() mensaje: DetailMessage | null = null;
   postConversacionKpiData!: ResponseKpiPostChat;
   tabs = [
@@ -20,11 +20,14 @@ export class PostByChatComponent implements OnInit {
   selectedTab = 'origen';
 
   constructor(private postsService: PostsService) { }
-  ngOnInit() {
-    this.getPostConversacionKpiData();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mensaje'] && this.mensaje?.IdPublicacion) {
+      this.getPostConversacionKpiData();
+    }
   }
 
   getPostConversacionKpiData() {
+    console.log(this.mensaje.IdPublicacion)
 
     this.postsService.getKpiPostChatByIdPublicacion(this.mensaje.IdPublicacion).subscribe({
       next: (response) => {

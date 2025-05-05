@@ -17,13 +17,18 @@
   <nb-card-body class="custom-publicacion-card-body">
     <ng-container [ngSwitch]="selectedTab">
       <div *ngSwitchCase="'origen'">
-        <app-card-post [publicaciones]="body.publicaciones"></app-card-post>
+        <ng-container *ngIf="postConversacionKpiData">
+          <app-card-post [bodyCardPost]="postConversacionKpiData.body"></app-card-post>
+        </ng-container>
       </div>
+      
       <div *ngSwitchCase="'informacionPersonal'">
-        <app-informacion-personal></app-informacion-personal>
+        <ng-container *ngIf="postConversacionKpiData">
+        <app-informacion-personal [bodyCardPost]="postConversacionKpiData.body"></app-informacion-personal>
+      </ng-container>
       </div>
       <div *ngSwitchCase="'kpiConversacion'">
-        <app-kpi-conversacion></app-kpi-conversacion>
+        <app-kpi-conversacion ></app-kpi-conversacion>
       </div>
       <div *ngSwitchCase="'detalles'">
         <!-- Contenido de Detalles del Prospecto -->

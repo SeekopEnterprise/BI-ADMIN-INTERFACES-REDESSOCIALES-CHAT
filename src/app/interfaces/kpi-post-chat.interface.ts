@@ -1,9 +1,9 @@
 export interface ResponseKpiPostChat {
     statusCode: number;
-    body: Body;
+    body: BodyKpiPostChat;
   }
   
-  export interface Body {
+  export interface BodyKpiPostChat {
     distribuidorId: string;
     nombreDistribuidor: string;
     publicaciones: Publicacion[];

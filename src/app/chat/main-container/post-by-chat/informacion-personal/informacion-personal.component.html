@@ -1,1 +1,24 @@
-<p>informacion-personal works!</p>
+<nb-card>
+    <nb-card-header class="header-informacion">
+      <div class="usuario">
+        <p class="nombre">{{ publicacion.informacionPersonal.nombre }} {{ publicacion.informacionPersonal.apellidoPaterno }}</p>
+        <strong class="username">{{ publicacion.informacionPersonal.user }}</strong>
+      </div>
+      <p class="fuente">Fuente de la información</p>
+    </nb-card-header>
+  
+    <nb-card-body class="datos-personales">
+      <label>Nombre</label>
+      <div class="campo-valor">{{ publicacion.informacionPersonal.nombre }}</div>
+  
+      <label>Apellido Paterno</label>
+      <div class="campo-valor">{{ publicacion.informacionPersonal.apellidoPaterno }}</div>
+  
+      <label>Teléfono</label>
+      <div class="campo-valor">{{ publicacion.informacionPersonal.telefono }}</div>
+  
+      <label>Email</label>
+      <div class="campo-valor">{{ publicacion.informacionPersonal.email }}</div>
+    </nb-card-body>
+  </nb-card>
+  
