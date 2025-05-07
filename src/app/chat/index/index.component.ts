@@ -58,6 +58,7 @@ export class IndexComponent implements OnInit {
   // Variable para mostrar/ocultar el loader mientras se descargan mensajes
   public isLoadingMensajesIniciales: boolean = false;
   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  isLoading: boolean = false;
 
   // Suscripción para WebSocket
   private chatSubscription: Subscription;
@@ -1526,8 +1527,10 @@ export class IndexComponent implements OnInit {
    * Método para descargar mensajes desde el motor de conversaciones
    */
   async descargarMensajesIniciales(): Promise<void> {
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=15`;
-
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=104425&plataforma=both&days=60`;
+  
+    this.isLoading = true; 
+  
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe({
         next: (resp: any) => {
@@ -1537,9 +1540,13 @@ export class IndexComponent implements OnInit {
         error: (err) => {
           console.error('Error al llamar a la API de descargamensajes:', err);
           reject(err);
+        },
+        complete: () => {
+          this.isLoading = false; 
         }
       });
     });
   }
+  
 
 }
