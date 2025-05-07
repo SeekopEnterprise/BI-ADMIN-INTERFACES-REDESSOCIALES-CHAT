@@ -17,27 +17,20 @@
   <nb-card-body class="custom-publicacion-card-body">
     <ng-container *ngIf="postConversacionKpiData">
       <ng-container [ngSwitch]="selectedTab">
-        <app-card-post
-          *ngSwitchCase="'origen'"
-          [bodyCardPost]="postConversacionKpiData.body">
+        <app-card-post *ngSwitchCase="'origen'" [bodyCardPost]="postConversacionKpiData.body">
         </app-card-post>
-  
-        <app-informacion-personal
-          *ngSwitchCase="'informacionPersonal'"
-          [bodyCardPost]="postConversacionKpiData.body">
+
+        <app-informacion-personal *ngSwitchCase="'informacionPersonal'" [bodyCardPost]="postConversacionKpiData.body">
         </app-informacion-personal>
-  
-        <app-kpi-conversacion
-          *ngSwitchCase="'kpiConversacion'"
-          [bodyCardPost]="postConversacionKpiData.body">
+
+        <app-kpi-conversacion *ngSwitchCase="'kpiConversacion'" [bodyCardPost]="postConversacionKpiData.body">
         </app-kpi-conversacion>
-  
-        <div *ngSwitchCase="'detalles'">
-          <!-- Contenido de Detalles del Prospecto -->
-          Aquí van los datos personales del prospecto.
-        </div>
+
+        <app-form-prospecto *ngSwitchCase="'formProspecto'"
+          [bodyCardPost]="postConversacionKpiData.body"></app-form-prospecto>
+
       </ng-container>
     </ng-container>
   </nb-card-body>
-  
+
 </nb-card>

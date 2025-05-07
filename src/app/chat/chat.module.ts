@@ -33,8 +33,9 @@ import { CoreModule } from '../core/core.module';
 import { CardPostComponent } from './main-container/post-by-chat/card-post/card-post.component';
 import { InformacionPersonalComponent } from './main-container/post-by-chat/informacion-personal/informacion-personal.component';
 import { KpiConversacionComponent } from './main-container/post-by-chat/kpi-conversacion/kpi-conversacion.component';
+import { FormProspectoComponent } from './main-container/post-by-chat/form-prospecto/form-prospecto.component';
 @NgModule({
-  declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent, CardPostComponent, InformacionPersonalComponent, KpiConversacionComponent],
+  declarations: [IndexComponent, NotificacionesComponent, MainContainerComponent, SideMenuChatComponent, ChatContentComponent, PostByChatComponent, CardPostComponent, InformacionPersonalComponent, KpiConversacionComponent, FormProspectoComponent],
   imports: [
     PerfectScrollbarModule,
     LightboxModule,

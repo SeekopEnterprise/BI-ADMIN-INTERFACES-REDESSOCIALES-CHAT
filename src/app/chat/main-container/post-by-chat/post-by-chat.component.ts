@@ -15,7 +15,7 @@ export class PostByChatComponent implements  OnChanges  {
     { key: 'origen', icon: 'mdl-file-eye', label: 'Publicación de origen' },
     { key: 'informacionPersonal', icon: 'mdl-file-eye', label: 'Informacion personal' },
     { key: 'kpiConversacion', icon: 'mdl-file-eye', label: 'KPI Conversacion' },
-    { key: 'detalles', icon: 'mdl-file-eye', label: 'Enviar a Seekop' },
+    { key: 'formProspecto', icon: 'mdl-file-eye', label: 'Enviar a Seekop' },
   ];
   selectedTab = 'origen';
 

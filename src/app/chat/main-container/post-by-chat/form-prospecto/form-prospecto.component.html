@@ -1,0 +1,39 @@
+<form class="prospecto-form" *ngIf="informacion">
+    <div class="form-group">
+      <label>ID Prospecto</label>
+      <input type="text" [value]="bodyCardPost.distribuidorId" readonly />
+    </div>
+  
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" [value]="informacion.nombre" />
+    </div>
+  
+    <div class="form-group">
+      <label>Apellido Paterno</label>
+      <input type="text" [value]="informacion.apellidoPaterno" />
+    </div>
+  
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input type="tel" [value]="informacion.telefono" />
+    </div>
+  
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" [value]="informacion.email" />
+    </div>
+  
+    <div class="form-group">
+      <label>Publicación / Auto de interés</label>
+      <input type="text" [value]="publicacion?.publicacionesDetail?.titulo || ''" />
+    </div>
+  
+    <div class="submit-text">
+      Enviar
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#A3BD36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.285 2.859l-11.565 11.565-4.243-4.243-2.121 2.121 6.364 6.364 13.686-13.686z" />
+      </svg>
+    </div>
+  </form>
+  

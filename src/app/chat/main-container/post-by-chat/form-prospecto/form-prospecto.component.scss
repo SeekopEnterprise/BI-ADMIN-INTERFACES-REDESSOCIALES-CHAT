@@ -1,0 +1,48 @@
+.prospecto-form {
+    
+    font-family: 'Montserrat', sans-serif;
+    .form-group {
+      margin-bottom: 16px;
+  
+      label {
+        display: block;
+        font: normal normal normal 16px/14px Montserrat;
+        letter-spacing: 0px;
+        color: #272D3B;
+        margin-bottom: 4px;
+      }
+  
+      input {
+        display: block;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        padding: 4px 0;
+        outline: none;
+  
+        &:focus {
+          border-bottom: 1px solid #A3BD36;
+        }
+      }
+    }
+  
+    .submit-text {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      font: normal normal normal 16px/14px Montserrat;
+      color: #A3BD36;
+      cursor: pointer;
+      user-select: none;
+  
+      svg {
+        flex-shrink: 0;
+      }
+  
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+  
