@@ -348,8 +348,6 @@ export class IndexComponent implements OnInit {
     console.log('Agregando mensaje a la conversación con idMensaje =', data.idMensaje);
 
     // ====== REEMPLAZO DE flatMap POR reduce ======
-    // Antes: const allProspects = this.chat.flatMap(group => group.prospects);
-    // Ahora con reduce, para no requerir ES2019+:
     const allProspects = this.chat.reduce((acc, group) => {
       return acc.concat(group.prospects);
     }, []);
@@ -811,12 +809,21 @@ export class IndexComponent implements OnInit {
 
     this.onListScroll();
 
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // AJUSTE para que Angular NO intente parsear la respuesta como JSON
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     try {
       await this.http
-        .post('https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs', {
-          IdPregunta: this.selectedChatId,
-          Mensaje: message
-        })
+        .post(
+          'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
+          {
+            IdPregunta: this.selectedChatId,
+            Mensaje: message
+          },
+          {
+            responseType: 'text' // <--- Se indica "text", evitando el parse JSON
+          }
+        )
         .toPromise();
 
       this.lastSentMessage = message;
@@ -824,6 +831,7 @@ export class IndexComponent implements OnInit {
     } catch (error) {
       console.error('Error al guardar el mensaje:', error);
     }
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     this.formData = this.formBuilder.group({
       message: null
@@ -1547,6 +1555,5 @@ export class IndexComponent implements OnInit {
       });
     });
   }
-  
 
 }
