@@ -1116,13 +1116,15 @@
                             </div>
                           </div>
                         </div>
-                        <p class="chat-time mb-0" *ngIf="!data.istyping">
-                          <i
-                            class="ri-time-line align-middle"
-                            *ngIf="data.time"
-                          ></i>
-                          <span class="align-middle">{{data.time | translate}}</span>
-                        </p>
+<p class="chat-time mb-0" *ngIf="!data.istyping">
+  <span class="align-middle" style="margin-right: 6px;">
+    {{ getHoraMensaje(data) }}
+  </span>
+  <ng-container *ngIf="data.align === 'right'">
+    <i class="ri-check-double-line align-middle" style="color: #bbb;"></i>
+  </ng-container>
+</p>
+
                       </div>
 
                       <div

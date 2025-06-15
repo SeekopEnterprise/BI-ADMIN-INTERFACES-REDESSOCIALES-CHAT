@@ -340,67 +340,89 @@ export class IndexComponent implements OnInit {
     this.onListScroll();
   }
 
+
   /**
    * Inserta el mensaje llegado por WebSocket en la conversación local
    * para reflejarlo de inmediato en la vista.
    */
-  private agregarMensajeSocket(data: any) {
-    console.log('Agregando mensaje a la conversación con idMensaje =', data.idMensaje);
+private agregarMensajeSocket(data: any) {
+  console.log('Agregando mensaje a la conversación con idMensaje =', data.idMensaje);
 
-    // ====== REEMPLAZO DE flatMap POR reduce ======
-    const allProspects = this.chat.reduce((acc, group) => {
-      return acc.concat(group.prospects);
-    }, []);
+  const allProspects = this.chat.reduce((acc, group) => {
+    return acc.concat(group.prospects);
+  }, []);
 
-    // Localiza la conversación
-    const chatToUpdate = allProspects.find(
-      prospect => prospect.ultimoMensaje && prospect.ultimoMensaje.id === data.idMensaje
+  // Construir claveUnica desde la notificación WS
+  const claveUnicaWS = `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
+  console.log('claveUnicaWS calculada:', claveUnicaWS);
+  console.log('PROSPECTOS:', allProspects.map(p => p.claveUnica));
+  console.log('DATOS WS:', data);
+
+  // Buscar por claveUnica
+  const chat = allProspects.find(
+    p => String(p.claveUnica) === claveUnicaWS
+  );
+
+  if (!chat) {
+    console.warn(
+      'No se encontró la conversación para claveUnica:',
+      claveUnicaWS, data,
+      'Claves prospectos:', allProspects.map(p => p.claveUnica)
     );
-
-    if (!chatToUpdate) {
-      console.warn('No se encontró la conversación para el idMensaje:', data.idMensaje);
-      return;
-    }
-
-    chatToUpdate.Conversacion.forEach(m => (m.ultimoMensaje = false));
-
-    const nuevoMensaje = {
-      id: data.idMensaje,
-      texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
-      name: data.appNotificada || 'Cliente',
-      profile: '',
-      time: '',
-      align: 'left',
-      isimage: false,
-      ultimoMensaje: true,
-      imageContent: [],
-      replayName: null,
-      replaymsg: null
-    };
-
-    chatToUpdate.Conversacion.push(nuevoMensaje);
-
-    chatToUpdate.unreadCount = (chatToUpdate.unreadCount || 0) + 1;
-
-    // Reordenar la lista si deseas
-    this.chat.sort((a, b) => {
-      const lastMessageA =
-        a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
-      const lastMessageB =
-        b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
-      const lastMsgDateA = lastMessageA.fechaRespuesta
-        ? new Date(lastMessageA.fechaRespuesta).getTime()
-        : new Date(lastMessageA.fechaCreacion).getTime();
-      const lastMsgDateB = lastMessageB.fechaRespuesta
-        ? new Date(lastMessageB.fechaRespuesta).getTime()
-        : new Date(lastMessageB.fechaCreacion).getTime();
-      return lastMsgDateB - lastMsgDateA;
-    });
-
-    this.onListScroll();
-
-    console.log('Mensaje insertado localmente =>', nuevoMensaje);
+    return;
   }
+
+  chat.Conversacion.forEach(m => (m.ultimoMensaje = false));
+  chat.Conversacion.push({
+    id: data.idMensaje,
+    texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
+    name: data.appNotificada || 'Cliente',
+    profile: '',
+    time: '',
+    align: 'left',
+    isimage: false,
+    ultimoMensaje: true,
+    imageContent: [],
+    replayName: null,
+    replaymsg: null
+  });
+
+  // Actualizar unreadCount solo si NO está abierta esa conversación
+  if (this.activeChatId !== chat.ultimoMensaje?.id) {
+    chat.unreadCount = (chat.unreadCount || 0) + 1;
+  }
+
+  // Si la conversación está abierta, actualiza también la vista
+  if (this.activeChatId === chat.ultimoMensaje?.id) {
+    this.message = [...chat.Conversacion];
+    chat.unreadCount = 0;
+    this.onListScroll();
+  }
+
+  // Ordenar la lista como siempre...
+  this.chat.sort((a, b) => {
+    const lastMessageA =
+      a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
+    const lastMessageB =
+      b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
+    const lastMsgDateA = lastMessageA.fechaRespuesta
+      ? new Date(lastMessageA.fechaRespuesta).getTime()
+      : new Date(lastMessageA.fechaCreacion).getTime();
+    const lastMsgDateB = lastMessageB.fechaRespuesta
+      ? new Date(lastMessageB.fechaRespuesta).getTime()
+      : new Date(lastMessageB.fechaCreacion).getTime();
+    return lastMsgDateB - lastMsgDateA;
+  });
+
+  if (this.activeChatId === chat.ultimoMensaje?.id) {
+    this.onListScroll();
+  }
+
+  console.log('Mensaje insertado localmente =>', data.idMensaje);
+}
+
+
+
 
   /**
    * Se ejecuta después de que la vista inicie
@@ -1555,5 +1577,15 @@ export class IndexComponent implements OnInit {
       });
     });
   }
+
+  getHoraMensaje(msg: Conversacion): string {
+  if (msg.time) return msg.time;
+  let fecha: string | Date = msg.fechaRespuesta || msg.fechaCreacion;
+  if (!fecha) return '';
+  const fechaObj = fecha instanceof Date ? fecha : new Date(fecha);
+  if (isNaN(fechaObj.getTime())) return '';
+  return fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+}
+
 
 }
