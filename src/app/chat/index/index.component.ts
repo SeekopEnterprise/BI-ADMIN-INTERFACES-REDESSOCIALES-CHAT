@@ -54,6 +54,8 @@ declare var Highcharts: any;
  */
 export class IndexComponent implements OnInit {
 
+  collapsedGroups: { [key: string]: boolean } = {};
+
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Variable para mostrar/ocultar el loader mientras se descargan mensajes
   public isLoadingMensajesIniciales: boolean = false;
@@ -250,6 +252,10 @@ export class IndexComponent implements OnInit {
       comentarios: ['', [Validators.required, Validators.maxLength(20)]]
     });
   }
+
+  toggleGroupCollapse(key: string): void {
+  this.collapsedGroups[key] = !this.collapsedGroups[key];
+}
 
   /**
    * Abre la imagen en Lightbox
@@ -1068,7 +1074,7 @@ export class IndexComponent implements OnInit {
   /**
    * Carga de mensajes recuperados del API
    */
-  loadRecuperacionMensajes(socketData = null): Promise<void> {
+ loadRecuperacionMensajes(socketData = null): Promise<void> {
     return new Promise((resolve, reject) => {
       const userName = this.senderName || this.usuarioCorreo;
 
@@ -1090,23 +1096,21 @@ export class IndexComponent implements OnInit {
               }
             });
 
-            // Agrupar por Red Social -> Distribuidor
+            // ======== CAMBIO AQUÍ: Agrupar ÚNICAMENTE por Red Social ==========
             const groupedByRedSocial = prospects.reduce((groups, prospect) => {
               const red = prospect.redSocial;
               if (!groups[red]) {
-                groups[red] = {};
+                groups[red] = [];
               }
-              const grupo =
-                this.groups.find(
-                  group => group.iddistribuidor == prospect.IdDistribuidor
-                )?.nombredistribuidor || 'Sin Distribuidor';
-              if (!groups[red][grupo]) {
-                groups[red][grupo] = [];
-              }
-              groups[red][grupo].push(prospect);
+              groups[red].push(prospect);
               return groups;
             }, {});
             this.chatByRedSocial = groupedByRedSocial;
+            // ======== FIN DEL CAMBIO =========================================
+
+            Object.keys(this.chatByRedSocial).forEach(key => {
+  this.collapsedGroups[key] = false; // true = colapsado
+});
 
             // Agrupar por Distribuidor -> Red Social
             const groupedByDistributorThenRedSocial = prospects.reduce(
