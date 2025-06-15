@@ -4,7 +4,8 @@ import {
   ViewChild,
   TemplateRef,
   Renderer2,
-  ElementRef
+  ElementRef,
+  ChangeDetectorRef
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -42,6 +43,28 @@ import Swal from 'sweetalert2';
 import { DatePipe } from '@angular/common';
 
 declare var Highcharts: any;
+
+/* =====================================================================
+ *  NUEVOS helpers ( solo dentro de este archivo )
+ * ===================================================================*/
+/** Devuelve el código de red social existente, cualquiera que sea el nombre
+ *  de la propiedad que venga desde la API. */
+function getIdRed(prospect: any): string {
+  return (
+    prospect.idred ??
+    prospect.idRed ??
+    prospect.idredsocial ??
+    prospect.idRedSocial ??
+    prospect.IdRedSocial ??
+    prospect.idredSocial ??
+    ''
+  ).toString();
+}
+
+/** Devuelve el id de distribuidor con compatibilidad de nombres */
+function getIdDistribuidor(prospect: any): string {
+  return (prospect.IdDistribuidor ?? prospect.idDistribuidor ?? '').toString();
+}
 
 @Component({
   selector: 'app-index',
@@ -124,6 +147,7 @@ export class IndexComponent implements OnInit {
   public hideMenu: boolean;
   public enviadoaseekop: boolean = false;
   public activeChatId: string | null = null;
+  public activeConversationKey: string | null = null; 
 
   // Variables para agrupar
   public chatByRedSocial: any = {};
@@ -231,6 +255,7 @@ export class IndexComponent implements OnInit {
     private lightbox: Lightbox,
     private http: HttpClient,
     private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private el: ElementRef
   ) {
@@ -352,89 +377,132 @@ export class IndexComponent implements OnInit {
 
     document.body.setAttribute('data-layout-mode', 'light');
     this.lang = this.translate.currentLang;
+ document.body.setAttribute('data-layout-mode', 'light');
+    this.lang = this.translate.currentLang;
+
+    /*  NOTA: la clave única solo puede calcularse cuando ya hay datos
+        de la conversación; por eso se asigna dentro de showChat()
+        y se elimina el cálculo temprano que se había añadido aquí. */
+
     this.onListScroll();
   }
 
 
-  /**
-   * Inserta el mensaje llegado por WebSocket en la conversación local
-   * para reflejarlo de inmediato en la vista.
-   */
-  private agregarMensajeSocket(data: any) {
-    console.log('Agregando mensaje a la conversación con idMensaje =', data.idMensaje);
+/**
+ * Inserta o crea la conversación que llega por WebSocket.
+ *  ▸ Evita duplicados
+ *  ▸ Mantiene contador/orden
+ *  ▸ Si el prospecto aún no existe, lo genera “en caliente”
+ */
+private async agregarMensajeSocket(data: any): Promise<void> {
 
-    const allProspects = this.chat.reduce((acc, group) => {
-      return acc.concat(group.prospects);
-    }, []);
+  /* ------------------------------------------------------------
+   * 1. Clave única y localización del prospecto
+   * ---------------------------------------------------------- */
+  const claveUnicaWS =
+        `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
 
-    // Construir claveUnica desde la notificación WS
-    const claveUnicaWS = `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
-    console.log('claveUnicaWS calculada:', claveUnicaWS);
-    console.log('PROSPECTOS:', allProspects.map(p => p.claveUnica));
-    console.log('DATOS WS:', data);
+  const findProspect = () =>
+    this.chat.flatMap(g => g.prospects)
+             .find(p => String(p.claveUnica) === claveUnicaWS);
 
-    // Buscar por claveUnica
-    const chat = allProspects.find(
-      p => String(p.claveUnica) === claveUnicaWS
-    );
+  let prospect = findProspect();
 
-    if (!chat) {
-      console.warn(
-        'No se encontró la conversación para claveUnica:',
-        claveUnicaWS, data,
-        'Claves prospectos:', allProspects.map(p => p.claveUnica)
-      );
-      return;
-    }
-
-    chat.Conversacion.forEach(m => (m.ultimoMensaje = false));
-    chat.Conversacion.push({
-      id: data.idMensaje,
-      texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
-      name: data.appNotificada || 'Cliente',
-      profile: '',
-      time: '',
-      align: 'left',
-      isimage: false,
-      ultimoMensaje: true,
-      imageContent: [],
-      replayName: null,
-      replaymsg: null
-    });
-
-    // Actualizar unreadCount solo si NO está abierta esa conversación
-    if (this.activeChatId !== chat.ultimoMensaje?.id) {
-      chat.unreadCount = (chat.unreadCount || 0) + 1;
-    }
-
-    // Si la conversación está abierta, actualiza también la vista
-    if (this.activeChatId === chat.ultimoMensaje?.id) {
-      this.message = [...chat.Conversacion];
-      chat.unreadCount = 0;
-      this.onListScroll();
-    }
-
-    // Ordenar la lista como siempre...
-    this.chat.sort((a, b) => {
-      const lastMessageA =
-        a.prospects[0].Conversacion[a.prospects[0].Conversacion.length - 1];
-      const lastMessageB =
-        b.prospects[0].Conversacion[b.prospects[0].Conversacion.length - 1];
-      const lastMsgDateA = lastMessageA.fechaRespuesta
-        ? new Date(lastMessageA.fechaRespuesta).getTime()
-        : new Date(lastMessageA.fechaCreacion).getTime();
-      const lastMsgDateB = lastMessageB.fechaRespuesta
-        ? new Date(lastMessageB.fechaRespuesta).getTime()
-        : new Date(lastMessageB.fechaCreacion).getTime();
-      return lastMsgDateB - lastMsgDateA;
-    });
-
-    if (this.activeChatId === chat.ultimoMensaje?.id) {
-      this.onListScroll();
-    }
-
-    console.log('Mensaje insertado localmente =>', data.idMensaje);
+  /* ------------------------------------------------------------
+   * 2. ¿No existe?  Intentamos recargar y volvemos a buscar
+   * ---------------------------------------------------------- */
+  if (!prospect) {
+    await this.loadRecuperacionMensajes();
+    prospect = findProspect();
   }
+
+  /* ------------------------------------------------------------
+   * 3. Si sigue sin existir, creamos un stub minimal
+   * ---------------------------------------------------------- */
+  if (!prospect) {
+
+    const grupoNombre  = this.groups.find(g => g.iddistribuidor === data.idDistribuidor)
+                         ?.nombredistribuidor || 'Sin Distribuidor';
+
+    prospect = {
+      /* ===== meta-datos ===== */
+      IdPublicacion : data.idPublicacion,
+      IdDistribuidor: data.idDistribuidor,
+      idRed         : data.idRedSocial,
+      redSocial     : data.idRedSocial,   // ← usa lo que tengas
+      NombreGrupo   : grupoNombre,
+      Nombre        : '(Nuevo prospecto)',
+      Apellido      : '',
+      Email         : '',
+      Telefono      : '',
+      /* ===== runtime ===== */
+      Conversacion  : [],
+      unreadCount   : 0,
+      claveUnica    : claveUnicaWS
+    } as any as ResponseItem;            // cast rápido
+
+    /* lo alojamos en el grupo correcto (creándolo si hace falta) */
+    let grupo = this.chat.find(c => c.key === grupoNombre);
+    if (!grupo) {
+      grupo = { key: grupoNombre, prospects: [] };
+      this.chat.push(grupo);
+    }
+    grupo.prospects.push(prospect);
+  }
+
+  /* ------------------------------------------------------------
+   * 4. Evitar duplicados
+   * ---------------------------------------------------------- */
+  if (prospect.Conversacion.some(m => m.id === data.idMensaje)) {
+    return; // ya está, nada que hacer
+  }
+
+  /* ------------------------------------------------------------
+   * 5. Insertamos el nuevo mensaje
+   * ---------------------------------------------------------- */
+  prospect.Conversacion.forEach(m => (m.ultimoMensaje = false));
+
+  const nuevoMensaje: Conversacion = {
+    id            : data.idMensaje,
+    texto         : data.mensaje || data.mensajeDelSocket || '(Notificación)',
+    name          : data.appNotificada || 'Cliente',
+    align         : 'left',
+    ultimoMensaje : true,
+    isimage       : false,
+    imageContent  : []
+  };
+
+  prospect.Conversacion.push(nuevoMensaje);
+  prospect.ultimoMensaje = nuevoMensaje;
+
+  /* ------------------------------------------------------------
+   * 6. Contadores / panel derecho
+   * ---------------------------------------------------------- */
+  const abierta = this.activeConversationKey === claveUnicaWS;
+
+  if (!abierta) {
+    prospect.unreadCount = (prospect.unreadCount || 0) + 1;
+  } else {
+    this.message        = [...prospect.Conversacion];
+    prospect.unreadCount = 0;
+    this.activeChatId    = nuevoMensaje.id;
+    this.selectedChatId  = nuevoMensaje.id;
+    this.onListScroll();
+  }
+
+  /* ------------------------------------------------------------
+   * 7. Re-ordenar la lista izquierda (descendente por fecha)
+   * ---------------------------------------------------------- */
+  this.chat.sort((a, b) => {
+    const la = a.prospects[0].ultimoMensaje;
+    const lb = b.prospects[0].ultimoMensaje;
+    const ta = new Date(la?.fechaRespuesta || la?.fechaCreacion || 0).getTime();
+    const tb = new Date(lb?.fechaRespuesta || lb?.fechaCreacion || 0).getTime();
+    return tb - ta;
+  });
+}
+
+
 
 
 
@@ -634,6 +702,10 @@ export class IndexComponent implements OnInit {
     this.userProfile = '';
     this.message = data[0].Conversacion;
     this.selectedChatId = data[0].ultimoMensaje.id;
+
+     this.activeConversationKey =
+      `${this.IdPublicacionLead}-${this.idRedSocial}--${this.idDistribuidor}`;
+
     this.onListScroll();
 
     // Obtiene el botón para cambiar su estado si ya fue enviado
@@ -779,105 +851,72 @@ export class IndexComponent implements OnInit {
     return this.formData.controls;
   }
 
-  /**
-   * Envía el mensaje actual y lo guarda en la conversación
-   */
-  async messageSave() {
-    const message = this.formData.get('message')!.value;
 
-    if (!message || message === this.lastSentMessage) {
-      console.log('Mensaje duplicado o vacío, no se enviará.');
-      return;
-    }
-
-    const groupMsg = document.querySelector('.pills-groups-tab.active');
-    if (!groupMsg) {
-      const activeUserMessage = document.querySelector(
-        '.chat-user-list li.active .chat-user-message'
-      );
-      if (activeUserMessage) {
-        activeUserMessage.innerHTML = message;
-      }
-    }
-
-    const img = this.img ? this.img : '';
-    const status = this.img ? true : '';
-    const dateTime = this.datePipe.transform(new Date(), 'h:mm a');
-
-    const chatReplyUser = this.isreplyMessage
-      ? (document.querySelector(
-        '.replyCard .replymessage-block .flex-grow-1 .conversation-name'
-      ) as HTMLAreaElement).innerHTML
-      : '';
-    const chatReplyMessage = this.isreplyMessage
-      ? (document.querySelector(
-        '.replyCard .replymessage-block .flex-grow-1 .mb-0'
-      ) as HTMLAreaElement).innerText
-      : '';
-
-    const newMessage = {
-      id: 1,
-      texto: message,
-      name: this.senderName,
-      profile: this.senderProfile,
-      time: null,
-      align: 'right',
-      isimage: status,
-      ultimoMensaje: false,
-      imageContent: [img],
-      replayName: chatReplyUser,
-      replaymsg: chatReplyMessage
-    };
-
-    console.log('id actual: ', this.selectedChatId);
-    const chatToUpdate = []
-      .concat(...this.chat.map(group => group.prospects))
-      .find(prospect => prospect.ultimoMensaje.id === this.selectedChatId + '');
-
-    if (chatToUpdate) {
-      chatToUpdate.Conversacion.push(newMessage);
-      chatToUpdate.Conversacion.forEach(m => (m.ultimoMensaje = false));
-      newMessage.ultimoMensaje = true;
-    }
-
-    if (chatToUpdate && this.message !== chatToUpdate.Conversacion) {
-      this.message.push(newMessage);
-    }
-
-    this.onListScroll();
-
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // AJUSTE para que Angular NO intente parsear la respuesta como JSON
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    try {
-      await this.http
-        .post(
-          'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
-          {
-            IdPregunta: this.selectedChatId,
-            Mensaje: message
-          },
-          {
-            responseType: 'text' // <--- Se indica "text", evitando el parse JSON
-          }
-        )
-        .toPromise();
-
-      this.lastSentMessage = message;
-      await this.loadRecuperacionMensajes();
-    } catch (error) {
-      console.error('Error al guardar el mensaje:', error);
-    }
-    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    this.formData = this.formBuilder.group({
-      message: null
-    });
-    this.isreplyMessage = false;
-    this.emoji = '';
-    this.img = '';
-    document.querySelector('.replyCard')?.classList.remove('show');
+/**
+ * Envía el mensaje que hay en el input y lo muestra
+ * de manera optimista.  El refresco real llegará por
+ * WebSocket; por eso NO volvemos a llamar a
+ * loadRecuperacionMensajes().
+ */
+async messageSave() {
+  const texto = this.formData.get('message')!.value?.trim();
+  if (!texto || texto === this.lastSentMessage) {
+    console.log('Mensaje vacío o duplicado; se ignora.');
+    return;
   }
+
+  /* ---------- construimos el mensaje local --------------------- */
+  const nuevoMensaje: Conversacion = {
+    id           : Date.now(),           // id temporal (se sobrescribirá)
+    texto        : texto,
+    name         : this.senderName,
+    profile      : this.senderProfile,
+    time         : null,
+    align        : 'right',
+    isimage      : false,
+    ultimoMensaje: true,
+    imageContent : [],
+    replayName   : null,
+    replaymsg    : null
+  };
+
+  /* ---------- lo insertamos en la conversación visible ---------- */
+  const prospecto = this.chat
+    .flatMap(g => g.prospects)
+    .find(p => p.ultimoMensaje.id === this.selectedChatId + '');
+
+  if (prospecto) {
+    prospecto.Conversacion.forEach(m => (m.ultimoMensaje = false));
+    prospecto.Conversacion.push(nuevoMensaje);
+    prospecto.ultimoMensaje = nuevoMensaje;      //  ← referencia actualizada
+    prospecto.unreadCount = 0;
+  }
+
+  /* ---------- panel derecho y scroll --------------------------- */
+  if (this.message !== prospecto?.Conversacion) {
+    this.message = prospecto!.Conversacion;
+  }
+  this.onListScroll();
+
+  /* ---------- POST al backend ---------------------------------- */
+  try {
+    await this.http.post(
+      'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
+      { IdPregunta: this.selectedChatId, Mensaje: texto },
+      { responseType: 'text' }
+    ).toPromise();
+
+    this.lastSentMessage = texto;
+    // 👇 YA NO recargamos la lista – esperamos al WebSocket
+  } catch (err) {
+    console.error('Fallo al enviar:', err);
+    // aquí podrías implementar un retry o marcar el mensaje como no enviado
+  }
+
+  /* ---------- limpiamos el input ------------------------------- */
+  this.formData.reset();
+}
+
 
   /**
    * Hace scroll al final de la conversación
@@ -1071,115 +1110,96 @@ export class IndexComponent implements OnInit {
     });
   }
 
-  /**
-   * Carga de mensajes recuperados del API
-   */
- loadRecuperacionMensajes(socketData = null): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const userName = this.senderName || this.usuarioCorreo;
+/**
+ * Descarga las conversaciones y genera TODAS las
+ * estructuras que la plantilla usa (chat, chatByRedSocial,
+ * chatByDistributorThenRedSocial, collapsedGroups).
+ */
+loadRecuperacionMensajes(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    this.http
+      .get<ApiResponse>(
+        'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
+        { params: { idDistribuidor: this.idDistribuidor } }
+      )
+      .subscribe(
+        res => {
+          const prospects = res.body;
 
-      this.http
-        .get<ApiResponse>(
-          'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
-          { params: { idDistribuidor: this.idDistribuidor } }
-        )
-        .subscribe(
-          res => {
-            const prospects = res.body;
+          /* ---------- claveUnica en cada prospecto ---------------- */
+          prospects.forEach(p => {
+            p.claveUnica =
+              `${p.IdPublicacion}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
+          });
 
-            // Marcar el último mensaje
-            prospects.forEach(prospect => {
-              if (prospect.Conversacion && prospect.Conversacion.length > 0) {
-                prospect.Conversacion[
-                  prospect.Conversacion.length - 1
-                ].ultimoMensaje = true;
-              }
-            });
+          /* ---------- 1) Agrupación SOLO por red social ----------- */
+          this.chatByRedSocial = prospects.reduce((acc, p) => {
+            (acc[p.redSocial] = acc[p.redSocial] || []).push(p);
+            return acc;
+          }, {} as { [red: string]: ResponseItem[] });
 
-            // ======== CAMBIO AQUÍ: Agrupar ÚNICAMENTE por Red Social ==========
-            const groupedByRedSocial = prospects.reduce((groups, prospect) => {
-              const red = prospect.redSocial;
-              if (!groups[red]) {
-                groups[red] = [];
-              }
-              groups[red].push(prospect);
-              return groups;
-            }, {});
-            this.chatByRedSocial = groupedByRedSocial;
-            // ======== FIN DEL CAMBIO =========================================
+          /* reiniciamos estado de colapsado */
+          Object.keys(this.chatByRedSocial).forEach(
+            red => (this.collapsedGroups[red] = false)
+          );
 
-            Object.keys(this.chatByRedSocial).forEach(key => {
-  this.collapsedGroups[key] = false; // true = colapsado
-});
+          /* ---------- 2) Distribuidor → Red social ---------------- */
+          this.chatByDistributorThenRedSocial = prospects.reduce(
+            (acc, p) => {
+              const dist = this.groups.find(
+                g => g.iddistribuidor == p.IdDistribuidor
+              )?.nombredistribuidor || 'Sin Distribuidor';
 
-            // Agrupar por Distribuidor -> Red Social
-            const groupedByDistributorThenRedSocial = prospects.reduce(
-              (groups, prospect) => {
-                const grupo =
-                  this.groups.find(
-                    group => group.iddistribuidor == prospect.IdDistribuidor
-                  )?.nombredistribuidor || 'Sin Distribuidor';
-                const red = prospect.redSocial;
+              acc[dist] = acc[dist] || {};
+              acc[dist][p.redSocial] = acc[dist][p.redSocial] || [];
+              acc[dist][p.redSocial].push(p);
+              return acc;
+            },
+            {} as { [dist: string]: { [red: string]: ResponseItem[] } }
+          );
 
-                if (!groups[grupo]) {
-                  groups[grupo] = {};
-                }
-                if (!groups[grupo][red]) {
-                  groups[grupo][red] = [];
-                }
-                groups[grupo][red].push(prospect);
-                return groups;
-              },
-              {}
-            );
-            this.chatByDistributorThenRedSocial =
-              groupedByDistributorThenRedSocial;
+          /* ---------- 3) Agrupación FINAL (chat) ------------------ */
+          const groupedByDist = prospects.reduce((acc, p) => {
+            const dist = this.groups.find(
+              g => g.iddistribuidor == p.IdDistribuidor
+            )?.nombredistribuidor || 'Sin Distribuidor';
 
-            // Agrupar solo por Distribuidor
-            const grouped = prospects.reduce((groups, prospect) => {
-              const grupo =
-                this.groups.find(
-                  group => group.iddistribuidor == prospect.IdDistribuidor
-                )?.nombredistribuidor || 'Sin Distribuidor';
-              groups[grupo] = groups[grupo] || [];
-              groups[grupo].push(prospect);
-              return groups;
-            }, {});
+            (acc[dist] = acc[dist] || []).push(p);
+            return acc;
+          }, {} as { [dist: string]: ResponseItem[] });
 
-            this.chat = Object.keys(grouped).map(key => ({
-              key,
-              prospects: grouped[key]
-            }));
+          this.chat = Object.keys(groupedByDist).map(key => ({
+            key,
+            prospects: groupedByDist[key]
+          }));
 
-            this.chat.sort((a, b) => {
-              const lastMessageA =
-                a.prospects[0].Conversacion[
-                a.prospects[0].Conversacion.length - 1
-                ];
-              const lastMessageB =
-                b.prospects[0].Conversacion[
-                b.prospects[0].Conversacion.length - 1
-                ];
+          /* ---------- 4) Ordenar por último mensaje --------------- */
+          this.chat.sort((a, b) => {
+            const la = a.prospects[0].Conversacion.slice(-1)[0];
+            const lb = b.prospects[0].Conversacion.slice(-1)[0];
+            const ta = new Date(la.fechaRespuesta || la.fechaCreacion).getTime();
+            const tb = new Date(lb.fechaRespuesta || lb.fechaCreacion).getTime();
+            return tb - ta;
+          });
 
-              const lastMsgDateA = lastMessageA.fechaRespuesta
-                ? new Date(lastMessageA.fechaRespuesta).getTime()
-                : new Date(lastMessageA.fechaCreacion).getTime();
-              const lastMsgDateB = lastMessageB.fechaRespuesta
-                ? new Date(lastMessageB.fechaRespuesta).getTime()
-                : new Date(lastMessageB.fechaCreacion).getTime();
-
-              return lastMsgDateB - lastMsgDateA;
-            });
-
-            resolve();
-          },
-          error => {
-            console.error(error);
-            reject(error);
+          /* ---------- 5) Reset unread de la conversación abierta -- */
+          if (this.activeConversationKey) {
+            const abierta = this.chat
+              .flatMap(g => g.prospects)
+              .find(p => p.claveUnica === this.activeConversationKey);
+            if (abierta) abierta.unreadCount = 0;
           }
-        );
-    });
-  }
+
+          resolve();
+        },
+        err => {
+          console.error(err);
+          reject(err);
+        }
+      );
+  });
+}
+
 
   /**
    * Carga de grupos

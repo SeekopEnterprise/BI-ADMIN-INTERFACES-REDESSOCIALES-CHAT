@@ -27,7 +27,7 @@ export class AuthfakeauthenticationService {
       console.log('Error obteniendo el usuario del localStorage', e);
     }
     if (!user) {
-      user = getDefaultUser('default.pruebas@seekoop.com'); // Define un correo por defecto aquí.
+      user = getDefaultUser(''); // Define un correo por defecto aquí.
       try {
         localStorage.setItem('currentUser', JSON.stringify(user));
       } catch (e) {

@@ -36,6 +36,7 @@ export interface ResponseItem {
   Conversacion: Conversacion[];
   unreadCount?: number;
   ultimoMensaje?: UltimoMensaje;
+  claveUnica?: any;
 }
 
 export interface ApiResponse {
