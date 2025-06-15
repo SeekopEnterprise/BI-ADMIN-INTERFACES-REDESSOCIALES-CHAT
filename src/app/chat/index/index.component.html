@@ -1,4 +1,3 @@
-
 <div *ngIf="isLoading" class="body-loading full-screen">
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     style="background: none; display: block; shape-rendering: auto; margin: auto;" width="200px" height="200px"
@@ -17,20 +16,12 @@
     <div class="navbar-brand-box">
       <a routerLink="/" class="logo logo-dark">
         <span class="logo-sm">
-          <img
-            src="https://seekop.com/wp-content/uploads/2019/01/cropped-op1-192x192.png"
-            alt="Seekop"
-            height="50"
-          />
+          <img src="https://seekop.com/wp-content/uploads/2019/01/cropped-op1-192x192.png" alt="Seekop" height="50" />
         </span>
       </a>
       <a routerLink="/" class="logo logo-light">
         <span class="logo-sm">
-          <img
-            src="https://seekop.com/wp-content/uploads/2019/01/cropped-op1-192x192.png"
-            alt="Seekop"
-            height="50"
-          />
+          <img src="https://seekop.com/wp-content/uploads/2019/01/cropped-op1-192x192.png" alt="Seekop" height="50" />
         </span>
       </a>
     </div>
@@ -40,14 +31,8 @@
     <div class="flex-lg-column my-auto">
       <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
         <li class="nav-item" ngbTooltip="Conversaciones">
-          <a
-            class="nav-link active"
-            id="pills-chat-tab"
-            (click)="showTabMetodos('2')"
-            (click)="activetab=2"
-            href="javascript: void(0);"
-            [ngClass]="{'active': activetab === 2}"
-          >
+          <a class="nav-link active" id="pills-chat-tab" (click)="showTabMetodos('2')" (click)="activetab=2"
+            href="javascript: void(0);" [ngClass]="{'active': activetab === 2}">
             <i class="ri-wechat-fill"></i>
           </a>
         </li>
@@ -59,34 +44,19 @@
   <div class="chat-leftsidebar me-lg-1">
     <div class="tab-content">
       <!-- Start chats tab-pane -->
-      <div
-        id="pills-chat"
-        role="tabpanel"
-        aria-labelledby="pills-chat-tab"
-        *ngIf="activetab === 2"
-      >
+      <div id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab" *ngIf="activetab === 2">
         <!-- Start chats content -->
         <div>
           <div class="px-4 pt-4">
             <h4 class="mb-4">Conversaciones</h4>
             <div class="search-box chat-search-box">
               <div class="input-group mb-3 rounded-3">
-                <span
-                  class="input-group-text text-muted bg-light pe-1 ps-3"
-                  id="basic-addon1"
-                >
+                <span class="input-group-text text-muted bg-light pe-1 ps-3" id="basic-addon1">
                   <i class="ri-search-line search-icon font-size-18"></i>
                 </span>
-                <input
-                  type="text"
-                  class="form-control bg-light"
-                  placeholder="Buscar mensajes"
-                  aria-label="Search messages or users"
-                  aria-describedby="basic-addon1"
-                  (keyup)="ContactSearch()"
-                  id="searchContact"
-                  autocomplete="off"
-                />
+                <input type="text" class="form-control bg-light" placeholder="Buscar mensajes"
+                  aria-label="Search messages or users" aria-describedby="basic-addon1" (keyup)="ContactSearch()"
+                  id="searchContact" autocomplete="off" />
               </div>
             </div>
           </div>
@@ -94,11 +64,7 @@
           <!-- Start chat-message-list -->
           <div class="px-2">
             <h5 class="mb-3 px-3 font-size-16">Recientes</h5>
-            <button
-              type="button"
-              class="btn nav-btn"
-              (click)="vistaPorDistribuidor = !vistaPorDistribuidor"
-            >
+            <button type="button" class="btn nav-btn" (click)="vistaPorDistribuidor = !vistaPorDistribuidor">
               <i class="ri-shuffle-line"></i>
               {{ vistaPorDistribuidor ? 'Ver por Red Social' : 'Ver por Distribuidor' }}
             </button>
@@ -115,28 +81,16 @@
                       <div class="p-3 font-weight-bold text-info">
                         <i class="ri-share-line"></i>&nbsp;&nbsp;{{ group.key }}
                       </div>
-                      <li
-                        *ngFor="let user of group.value"
-                        [ngClass]="{'typing': user.isTyping}"
-                        (click)="showChat($event, user.ultimoMensaje['id'])"
-                      >
+                      <li *ngFor="let user of group.value" [ngClass]="{'typing': user.isTyping}"
+                        (click)="showChat($event, user.ultimoMensaje['id'])">
                         <!-- Código que muestra la información del usuario y sus mensajes -->
                         <a href="javascript:void(0);">
                           <div class="d-flex">
-                            <div
-                              class="chat-user-img online align-self-center me-3 ms-0"
-                              [ngClass]="online"
-                            >
-                              <img
-                                *ngIf="user.profilePicture"
-                                src="{{user.profilePicture}}"
-                                class="rounded-circle avatar-xs"
-                                alt=""
-                              />
+                            <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
+                              <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
+                                class="rounded-circle avatar-xs" alt="" />
                               <div class="avatar-xs" *ngIf="!user.profilePicture">
-                                <span
-                                  class="avatar-title rounded-circle bg-soft-primary text-primary"
-                                >
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
                                   {{(user.Nombre | translate).charAt(0)}}
                                 </span>
                               </div>
@@ -146,10 +100,7 @@
                               <h5 class="text-truncate font-size-15 mb-1">
                                 {{user.Nombre | translate}}
                               </h5>
-                              <p
-                                *ngIf="user.isTyping"
-                                class="chat-user-message text-truncate mb-0"
-                              >
+                              <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">
                                 typing
                                 <span class="animate-typing">
                                   <span class="dot ms-1"></span>
@@ -157,24 +108,14 @@
                                   <span class="dot ms-1"></span>
                                 </span>
                               </p>
-                              <div
-                                style="display: flex; justify-content: space-between; align-items: center;"
-                              >
-                                <p
-                                  class="chat-user-message text-truncate mb-0"
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p class="chat-user-message text-truncate mb-0"
                                   *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
-                                  style="flex: 1; margin-right: 20px;"
-                                >
+                                  style="flex: 1; margin-right: 20px;">
                                   {{getLastMessage(user.Conversacion)?.texto}}
                                 </p>
-                                <div
-                                  class="unread-message"
-                                  style="margin-left: 20px;"
-                                >
-                                  <span
-                                    class="badge badge-soft-danger rounded-pill"
-                                    *ngIf="user.unreadCount"
-                                  >
+                                <div class="unread-message" style="margin-left: 20px;">
+                                  <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
                                     {{user.unreadCount}}
                                   </span>
                                 </div>
@@ -192,119 +133,65 @@
 
                 <!-- Vista por Distribuidor -->
                 <ng-container *ngIf="vistaPorDistribuidor">
-                  <ng-container
-                    *ngFor="let distribuidorGroup of chatByDistributorThenRedSocial | keyvalue"
-                  >
+                  <ng-container *ngFor="let distribuidorGroup of chatByDistributorThenRedSocial | keyvalue">
                     <div class="p-3 font-weight-bold text-primary">
                       <i class="ri-hand-coin-fill"></i>&nbsp;&nbsp;{{ distribuidorGroup.key }}
                     </div>
-                    <ng-container
-                      *ngFor="let redSocialGroup of distribuidorGroup.value | keyvalue"
-                    >
+                    <ng-container *ngFor="let redSocialGroup of distribuidorGroup.value | keyvalue">
                       <!-- <div class="p-3 font-weight-bold text-info">
                         <i class="ri-share-line"></i>&nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div> -->
 
-                      <div
-                        *ngIf="redSocialGroup.key=='Facebook'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
-                          height="20"
-                          width="20"
-                          alt="Facebook"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                      <div *ngIf="redSocialGroup.key=='Facebook'" class="p-3 font-weight-bold text-info">
+                        <img src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png" height="20"
+                          width="20" alt="Facebook" class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <div
-                        *ngIf="redSocialGroup.key=='Instagram'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          _ngcontent-txw-c34=""
+                      <div *ngIf="redSocialGroup.key=='Instagram'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-txw-c34=""
                           src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-                          alt="Instagram"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                          alt="Instagram" class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <div
-                        *ngIf="redSocialGroup.key=='Mercado Libre'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          _ngcontent-cbu-c34=""
+                      <div *ngIf="redSocialGroup.key=='Mercado Libre'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-cbu-c34=""
                           src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
-                          alt="Mercado Libre"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                          alt="Mercado Libre" class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <div
-                        *ngIf="redSocialGroup.key=='YouTube'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          _ngcontent-djh-c34=""
+                      <div *ngIf="redSocialGroup.key=='YouTube'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-djh-c34=""
                           src="https://w7.pngwing.com/pngs/982/799/png-transparent-youtube-logo-youtube-logo-internet-marketing-subscribe-television-label-text.png"
-                          alt="Pinterest"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                          alt="Pinterest" class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <div
-                        *ngIf="redSocialGroup.key=='Pinterest'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          _ngcontent-djh-c34=""
-                          src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
-                          alt="Pinterest"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                      <div *ngIf="redSocialGroup.key=='Pinterest'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-djh-c34=""
+                          src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" alt="Pinterest"
+                          class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <div
-                        *ngIf="redSocialGroup.key=='TikTok'"
-                        class="p-3 font-weight-bold text-info"
-                      >
-                        <img
-                          _ngcontent-elt-c34=""
-                          src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
-                          alt="Tiktok"
-                          class="rounded-circle avatar-xs img-thumbnail"
-                        />
+                      <div *ngIf="redSocialGroup.key=='TikTok'" class="p-3 font-weight-bold text-info">
+                        <img _ngcontent-elt-c34=""
+                          src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png" alt="Tiktok"
+                          class="rounded-circle avatar-xs img-thumbnail" />
                         &nbsp;&nbsp;{{ redSocialGroup.key }}
                       </div>
 
-                      <li
-                        *ngFor="let user of redSocialGroup.value"
-                        [ngClass]="{'typing': user.isTyping}"
-                        (click)="showChat($event, user.ultimoMensaje['id'])"
-                      >
+                      <li *ngFor="let user of redSocialGroup.value" [ngClass]="{'typing': user.isTyping}"
+                        (click)="showChat($event, user.ultimoMensaje['id'])">
                         <a href="javascript:void(0);">
                           <div class="d-flex">
-                            <div
-                              class="chat-user-img online align-self-center me-3 ms-0"
-                              [ngClass]="online"
-                            >
-                              <img
-                                *ngIf="user.profilePicture"
-                                src="{{user.profilePicture}}"
-                                class="rounded-circle avatar-xs"
-                                alt=""
-                              />
+                            <div class="chat-user-img online align-self-center me-3 ms-0" [ngClass]="online">
+                              <img *ngIf="user.profilePicture" src="{{user.profilePicture}}"
+                                class="rounded-circle avatar-xs" alt="" />
                               <div class="avatar-xs" *ngIf="!user.profilePicture">
-                                <span
-                                  class="avatar-title rounded-circle bg-soft-primary text-primary"
-                                >
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
                                   {{(user.Nombre | translate).charAt(0)}}
                                 </span>
                               </div>
@@ -314,10 +201,7 @@
                               <h5 class="text-truncate font-size-15 mb-1">
                                 {{user.Nombre | translate}}
                               </h5>
-                              <p
-                                *ngIf="user.isTyping"
-                                class="chat-user-message text-truncate mb-0"
-                              >
+                              <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">
                                 typing
                                 <span class="animate-typing">
                                   <span class="dot ms-1"></span>
@@ -325,24 +209,14 @@
                                   <span class="dot ms-1"></span>
                                 </span>
                               </p>
-                              <div
-                                style="display: flex; justify-content: space-between; align-items: center;"
-                              >
-                                <p
-                                  class="chat-user-message text-truncate mb-0"
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p class="chat-user-message text-truncate mb-0"
                                   *ngIf="getLastMessage(user.Conversacion)?.ultimoMensaje"
-                                  style="flex: 1; margin-right: 20px;"
-                                >
+                                  style="flex: 1; margin-right: 20px;">
                                   {{getLastMessage(user.Conversacion)?.texto}}
                                 </p>
-                                <div
-                                  class="unread-message"
-                                  style="margin-left: 20px;"
-                                >
-                                  <span
-                                    class="badge badge-soft-danger rounded-pill"
-                                    *ngIf="user.unreadCount"
-                                  >
+                                <div class="unread-message" style="margin-left: 20px;">
+                                  <span class="badge badge-soft-danger rounded-pill" *ngIf="user.unreadCount">
                                     {{user.unreadCount}}
                                   </span>
                                 </div>
@@ -368,33 +242,16 @@
     </div>
   </div>
 
-  <div
-    class="chat-welcome-section"
-    id="chat-welcome-section"
-    *ngIf="activetab !== 7 && activetab!==8 && activetab!==9"
-  >
+  <div class="chat-welcome-section" id="chat-welcome-section" *ngIf="activetab !== 7 && activetab!==8 && activetab!==9">
     <div class="row w-100 justify-content-center">
       <div class="col-xxl-5 col-md-7">
         <div class="p-4 text-center">
           <div class="avatar-xl mx-auto mb-4">
             <div class="avatar-title bg-secondary rounded-circle">
-              <svg
-                data-v-5e8ea5c2=""
-                xmlns="http://www.w3.org/2000/svg"
-                width="70px"
-                height="65px"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-message-square"
-              >
-                <path
-                  data-v-5e8ea5c2=""
-                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                ></path>
+              <svg data-v-5e8ea5c2="" xmlns="http://www.w3.org/2000/svg" width="70px" height="65px" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-message-square">
+                <path data-v-5e8ea5c2="" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
             </div>
           </div>
@@ -416,21 +273,13 @@
             <div class="col-sm-4 col-8">
               <div class="d-flex align-items-center">
                 <div class="d-block d-lg-none me-2 ms-0">
-                  <a
-                    href="javascript: void(0);"
-                    class="user-chat-remove text-muted font-size-16 p-2"
-                    (click)="closeUserChat()"
-                  >
+                  <a href="javascript: void(0);" class="user-chat-remove text-muted font-size-16 p-2"
+                    (click)="closeUserChat()">
                     <i class="ri-arrow-left-s-line"></i>
                   </a>
                 </div>
                 <div class="me-3 ms-0">
-                  <img
-                    *ngIf="userProfile"
-                    src="{{userProfile}}"
-                    class="rounded-circle avatar-xs"
-                    alt=""
-                  />
+                  <img *ngIf="userProfile" src="{{userProfile}}" class="rounded-circle avatar-xs" alt="" />
                   <div class="avatar-xs" *ngIf="!userProfile">
                     <span class="avatar-title rounded-circle bg-soft-primary text-primary">
                       {{userName.charAt(0)}}
@@ -439,18 +288,13 @@
                 </div>
                 <div class="flex-grow-1 overflow-hidden">
                   <h5 class="font-size-16 mb-0 text-truncate">
-                    <a
-                      href="javascript:void(0);"
-                      class="text-reset user-profile-show username"
-                      (click)="onChatInfoClicked(userInfo)"
-                    >
+                    <a href="javascript:void(0);" class="text-reset user-profile-show username"
+                      (click)="onChatInfoClicked(userInfo)">
                       {{userName}}
                     </a>
                   </h5>
-                  <i
-                    class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
-                    [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"
-                  ></i>
+                  <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
+                    [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
                   <strong style="font-size: 14px;">{{Distribuidor + ' - ' + RedSocial}}</strong>
                 </div>
               </div>
@@ -459,34 +303,20 @@
               <ul class="list-inline user-chat-nav text-end mb-0">
                 <li class="list-inline-item">
                   <div class="dropdown" ngbDropdown>
-                    <button
-                      class="btn nav-btn dropdown-toggle"
-                      ngbDropdownToggle
-                      type="button"
-                      data-toggle="dropdown"
-                      ngbTooltip="Buscar en conversación"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
+                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown"
+                      ngbTooltip="Buscar en conversación" aria-haspopup="true" aria-expanded="false">
                       <i class="ri-search-line"></i>
                     </button>
-                    <div
-                      class="dropdown-menu p-0 dropdown-menu-right dropdown-menu-md"
-                      ngbDropdownMenu
-                    >
+                    <div class="dropdown-menu p-0 dropdown-menu-right dropdown-menu-md" ngbDropdownMenu>
                       <div class="search-box p-2">
-                        <input
-                          type="text"
-                          class="form-control bg-light border-0"
+                        <input type="text" class="form-control bg-light border-0"
                           placeholder="{{'chat.chatpanelheader.search.placeholder' | translate}}"
-                          (keyup)="MessageSearch()"
-                          id="searchMessage"
-                        />
+                          (keyup)="MessageSearch()" id="searchMessage" />
                       </div>
                     </div>
                   </div>
                 </li>
-              <!--   <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                <!--   <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
                   <button
                     type="button"
                     class="btn nav-btn"
@@ -512,30 +342,19 @@
                       <div class="container container-lg container-md container-sm container-xs">
                         <img
                           src="https://api.screenshotlayer.com/api/capture?access_key=3c7737bcc6852526ad08f776e80773e4&url={{urlPublicacion}}&viewport=1440x900&width=500"
-                          alt="Vista previa del sitio"
-                          style="max-width: 115%; height: 100%;"
-                        />
+                          alt="Vista previa del sitio" style="max-width: 115%; height: 100%;" />
                       </div>
                     </div>
                   </div>
                 </ng-template>
 
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button
-                    type="button"
-                    id="btnEnviarSeekop_{{idMensajeLeads}}"
-                    class="btn nav-btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#videocallModal"
-                    ngbTooltip="Enviar a Seekop"
-                    (click)="openVideoModal(videoContent)"
-                  >
+                  <button type="button" id="btnEnviarSeekop_{{idMensajeLeads}}" class="btn nav-btn"
+                    data-bs-toggle="modal" data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
+                    (click)="openVideoModal(videoContent)">
                     <i class="ri-send-plane-fill" id="btnenviarleads_{{idMensajeLeads}}"></i>
-                    <i
-                      class="ri-check-line"
-                      id="btnenviadoleads_{{idMensajeLeads}}"
-                      style="color:#14A44D;font-size: 1.2rem;display: none;"
-                    ></i>
+                    <i class="ri-check-line" id="btnenviadoleads_{{idMensajeLeads}}"
+                      style="color:#14A44D;font-size: 1.2rem;display: none;"></i>
                   </button>
                 </li>
 
@@ -543,43 +362,25 @@
                   <div class="modal-body">
                     <div class="text-left p-4">
                       <div class="avatar-lg mx-auto">
-                        <img
-                          src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png"
-                          alt="Seekop"
-                          class="img-thumbnail rounded-circle"
-                        />
+                        <img src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png" alt="Seekop"
+                          class="img-thumbnail rounded-circle" />
                       </div>
                       <form [formGroup]="interesadoForm" (ngSubmit)="validateForm()">
                         <div class="mb-3">
-                          <label class="form-label" for="nombre"
-                            >Id Prospecto:
+                          <label class="form-label" for="nombre">Id Prospecto:
                           </label>
-                          <input
-                            type="text"
-                            [value]="idMensajeLeads"
-                            class="form-control"
-                            readonly
-                          />
+                          <input type="text" [value]="idMensajeLeads" class="form-control" readonly />
                         </div>
                         <div class="mb-3">
                           <label class="form-label" for="nombre">Nombre *:</label>
-                          <input
-                            formControlName="nombre"
-                            [ngClass]="{'is-invalid': submitted && f.nombre.errors }"
-                            type="text"
-                            class="form-control"
-                            [(ngModel)]="newInteresadoForm.nombre"
-                            placeholder=""
-                            pattern="[A-Za-z\s]*"
-                          />
-                          <div
-                            *ngIf="
+                          <input formControlName="nombre" [ngClass]="{'is-invalid': submitted && f.nombre.errors }"
+                            type="text" class="form-control" [(ngModel)]="newInteresadoForm.nombre" placeholder=""
+                            pattern="[A-Za-z\s]*" />
+                          <div *ngIf="
                               interesadoForm.controls['nombre'].invalid &&
                               (interesadoForm.controls['nombre'].dirty ||
                                 interesadoForm.controls['nombre'].touched)
-                            "
-                            class="text-danger"
-                          >
+                            " class="text-danger">
                             <div *ngIf="f.nombre.errors.required">
                               EL campo es requerido!
                             </div>
@@ -595,26 +396,16 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="apellidoP"
-                            >Apellido paterno *:</label
-                          >
-                          <input
-                            formControlName="apellidoP"
-                            [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }"
-                            type="text"
-                            class="form-control"
-                            [(ngModel)]="newInteresadoForm.apellidop"
-                            placeholder=""
-                            pattern="[A-Za-z\s]*"
-                          />
-                          <div
-                            *ngIf="
+                          <label class="form-label" for="apellidoP">Apellido paterno *:</label>
+                          <input formControlName="apellidoP"
+                            [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text"
+                            class="form-control" [(ngModel)]="newInteresadoForm.apellidop" placeholder=""
+                            pattern="[A-Za-z\s]*" />
+                          <div *ngIf="
                               interesadoForm.controls['apellidoP'].invalid &&
                               (interesadoForm.controls['apellidoP'].dirty ||
                                 interesadoForm.controls['apellidoP'].touched)
-                            "
-                            class="text-danger"
-                          >
+                            " class="text-danger">
                             <div *ngIf="f.apellidoP.errors.required">
                               EL campo es requerido!
                             </div>
@@ -627,26 +418,16 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="apellidoM"
-                            >Apellido materno *:</label
-                          >
-                          <input
-                            formControlName="apellidoM"
-                            [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }"
-                            type="text"
-                            class="form-control"
-                            [(ngModel)]="newInteresadoForm.apellidom"
-                            placeholder=""
-                            pattern="[A-Za-z\s]*"
-                          />
-                          <div
-                            *ngIf="
+                          <label class="form-label" for="apellidoM">Apellido materno *:</label>
+                          <input formControlName="apellidoM"
+                            [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }" type="text"
+                            class="form-control" [(ngModel)]="newInteresadoForm.apellidom" placeholder=""
+                            pattern="[A-Za-z\s]*" />
+                          <div *ngIf="
                               interesadoForm.controls['apellidoM'].invalid &&
                               (interesadoForm.controls['apellidoM'].dirty ||
                                 interesadoForm.controls['apellidoM'].touched)
-                            "
-                            class="text-danger"
-                          >
+                            " class="text-danger">
                             <div *ngIf="f.apellidoM.errors.required">
                               EL campo es requerido!
                             </div>
@@ -659,41 +440,23 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="telefono"
-                            >Telefono *:</label
-                          >
+                          <label class="form-label" for="telefono">Telefono *:</label>
                           <div class="input-group">
-                            <input
-                              formControlName="telefono"
-                              [ngClass]="{'is-invalid': submitted && f.telefono.errors }"
-                              type="number"
-                              class="form-control"
-                              [(ngModel)]="newInteresadoForm.telefono"
-                              placeholder="5522123456"
-                              (input)="onInputChange($event)"
-                              pattern="[0-9\s]*"
-                            />
-                            <i
-                              _ngcontent-vco-c34=""
-                              id="btnVerificado_{{idMensajeLeads}}"
-                              class="ri-user-follow-fill"
-                              style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"
-                            ></i>
-                            <i
-                              _ngcontent-vco-c34=""
-                              id="btnNoVerificado_{{idMensajeLeads}}"
+                            <input formControlName="telefono"
+                              [ngClass]="{'is-invalid': submitted && f.telefono.errors }" type="number"
+                              class="form-control" [(ngModel)]="newInteresadoForm.telefono" placeholder="5522123456"
+                              (input)="onInputChange($event)" pattern="[0-9\s]*" />
+                            <i _ngcontent-vco-c34="" id="btnVerificado_{{idMensajeLeads}}" class="ri-user-follow-fill"
+                              style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"></i>
+                            <i _ngcontent-vco-c34="" id="btnNoVerificado_{{idMensajeLeads}}"
                               class="ri-user-unfollow-fill"
-                              style="color: #ff4444; font-size: 1.5rem; display: none;"
-                            ></i>
+                              style="color: #ff4444; font-size: 1.5rem; display: none;"></i>
                           </div>
-                          <div
-                            *ngIf="
+                          <div *ngIf="
                               interesadoForm.controls['telefono'].invalid &&
                               (interesadoForm.controls['telefono'].dirty ||
                                 interesadoForm.controls['telefono'].touched)
-                            "
-                            class="text-danger"
-                          >
+                            " class="text-danger">
                             <div *ngIf="f.telefono.errors.required">
                               EL campo es requerido!
                             </div>
@@ -707,22 +470,14 @@
                         </div>
                         <div class="mb-3">
                           <label class="form-label" for="email">Email *:</label>
-                          <input
-                            formControlName="email"
-                            [ngClass]="{'is-invalid': submitted && f.email.errors}"
-                            type="email"
-                            class="form-control"
-                            [(ngModel)]="newInteresadoForm.email"
-                            placeholder="prueba@gmail.com"
-                          />
-                          <div
-                            *ngIf="
+                          <input formControlName="email" [ngClass]="{'is-invalid': submitted && f.email.errors}"
+                            type="email" class="form-control" [(ngModel)]="newInteresadoForm.email"
+                            placeholder="prueba@gmail.com" />
+                          <div *ngIf="
                               interesadoForm.controls['email'].invalid &&
                               (interesadoForm.controls['email'].dirty ||
                                 interesadoForm.controls['email'].touched)
-                            "
-                            class="text-danger"
-                          >
+                            " class="text-danger">
                             <div *ngIf="f.email.errors.required">
                               EL campo es requerido!
                             </div>
@@ -732,46 +487,24 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="nombre"
-                            >Publicación/Auto de interés:
+                          <label class="form-label" for="nombre">Publicación/Auto de interés:
                           </label>
-                          <input
-                            type="text"
-                            [value]="AutoDeInteres"
-                            class="form-control"
-                            readonly
-                          />
+                          <input type="text" [value]="AutoDeInteres" class="form-control" readonly />
                         </div>
                         <div class="mb-3">
                           <label class="form-label" for="nombre">Distribuidor:</label>
-                          <input
-                            type="text"
-                            [value]="Distribuidor"
-                            class="form-control"
-                            readonly
-                          />
+                          <input type="text" [value]="Distribuidor" class="form-control" readonly />
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="comentarios"
-                            >Observaciones:
+                          <label class="form-label" for="comentarios">Observaciones:
                           </label>
-                          <textarea
-                            rows="3"
-                            cols="70"
-                            formControlName="comentarios"
-                            type="text"
-                            class="form-control"
+                          <textarea rows="3" cols="70" formControlName="comentarios" type="text" class="form-control"
                             [(ngModel)]="newInteresadoForm.comentarios"
                             style="background-color: #f9f9f9;text-align: left;"
-                            placeholder="Agrega un comentario..."
-                          ></textarea>
+                            placeholder="Agrega un comentario..."></textarea>
                         </div>
                         <div class="modal-footer">
-                          <button
-                            type="button"
-                            class="btn btn-link"
-                            (click)="modal.dismiss('Cross click')"
-                          >
+                          <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">
                             Cancelar
                           </button>
                           <button type="submit" class="btn btn-primary">
@@ -786,68 +519,40 @@
                 <ng-template #botContent let-modal>
                   <div class="modal-header">
                     <h5 class="modal-title">Seleccionar Bot para Mensajes Automáticos</h5>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      aria-label="Close"
-                      (click)="modal.dismiss('Cross click')"
-                    ></button>
+                    <button type="button" class="btn-close" aria-label="Close"
+                      (click)="modal.dismiss('Cross click')"></button>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
                       <label for="bot-select">Seleccionar Bot:</label>
-                      <select
-                        id="bot-select"
-                        class="form-control"
-                        [(ngModel)]="selectedBot"
-                      >
+                      <select id="bot-select" class="form-control" [(ngModel)]="selectedBot">
                         <option value="" disabled>Selecciona un Bot</option>
-                        <option
-                          *ngFor="let bot of bots"
-                          [value]="bot.value"
-                        >
+                        <option *ngFor="let bot of bots" [value]="bot.value">
                           {{ bot.name }}
                         </option>
                       </select>
                     </div>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      (click)="activateBot()"
-                    >
+                    <button type="button" class="btn btn-primary" (click)="activateBot()">
                       Activar Bot
                     </button>
                   </div>
                 </ng-template>
 
                 <li class="list-inline-item d-none d-lg-inline-block">
-                  <button
-                    type="button"
-                    class="btn nav-btn user-profile-show"
-                    (click)="onChatInfoClicked(userInfo)"
-                    ngbTooltip="Información del interesado"
-                  >
+                  <button type="button" class="btn nav-btn user-profile-show" (click)="onChatInfoClicked(userInfo)"
+                    ngbTooltip="Información del interesado">
                     <i class="ri-account-pin-circle-line"></i>
                   </button>
                 </li>
                 <li class="list-inline-item">
                   <div class="dropdown" ngbDropdown>
-                    <button
-                      class="btn nav-btn dropdown-toggle"
-                      ngbDropdownToggle
-                      type="button"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
+                    <button class="btn nav-btn dropdown-toggle" ngbDropdownToggle type="button" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
                       <i class="ri-more-fill"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-                      <a
-                        class="dropdown-item d-block d-lg-none user-profile-show"
-                        (click)="showUserProfile()"
-                        href="javascript: void(0);"
-                      >
+                      <a class="dropdown-item d-block d-lg-none user-profile-show" (click)="showUserProfile()"
+                        href="javascript: void(0);">
                         {{'chat.chatpanelheader.dropdown.viewprofile' | translate}}
                         <i class="ri-user-2-line float-end text-muted"></i>
                       </a>
@@ -859,11 +564,7 @@
                         {{'chat.chatpanelheader.dropdown.muted' | translate}}
                         <i class="ri-volume-mute-line float-end text-muted"></i>
                       </a>
-                      <a
-                        class="dropdown-item"
-                        href="javascript:void(0);"
-                        (click)="deleteAllMessage($event)"
-                      >
+                      <a class="dropdown-item" href="javascript:void(0);" (click)="deleteAllMessage($event)">
                         {{'chat.chatpanelheader.dropdown.delete' | translate}}
                         <i class="ri-delete-bin-line float-end text-muted"></i>
                       </a>
@@ -899,18 +600,11 @@
           <!-- start chat conversation -->
           <ngx-simplebar class="chat-conversation p-3 p-lg-4" #scrollRef>
             <ul class="list-unstyled mb-0" id="users-conversation">
-              <li
-                class="chats"
-                *ngFor="let data of message;let i =index;"
-                [ngClass]="{'right': data.align === 'right'}"
-              >
+              <li class="chats" *ngFor="let data of message;let i =index;"
+                [ngClass]="{'right': data.align === 'right'}">
                 <div class="conversation-list" *ngIf="!data.isToday">
                   <div class="chat-avatar" *ngIf="data.align !== 'right'">
-                    <img
-                      src="{{userProfile}}"
-                      alt=""
-                      *ngIf="userProfile"
-                    />
+                    <img src="{{userProfile}}" alt="" *ngIf="userProfile" />
                     <div class="avatar-xs" *ngIf="!userProfile">
                       <span class="avatar-title rounded-circle bg-soft-primary text-primary">
                         {{(userName | translate).charAt(0)}}
@@ -923,119 +617,68 @@
 
                   <div class="user-chat-content">
                     <div class="ctext-wrap">
-                      <div
-                        class="ctext-wrap-content"
-                        [ngClass]="{
+                      <div class="ctext-wrap-content" [ngClass]="{
                           'sentimiento-neutral': data.align === 'left' && data.sentimiento === 0,
                           'sentimiento-positive': data.align === 'left' && data.sentimiento === 1,
                           'sentimiento-negative': data.align === 'left' && data.sentimiento === 2
-                        }"
-                      >
-                        <div
-                          class="replymessage-block mb-0 d-flex align-items-start"
-                          *ngIf="data.replayName"
-                        >
+                        }">
+                        <div class="replymessage-block mb-0 d-flex align-items-start" *ngIf="data.replayName">
                           <div class="flex-grow-1">
                             <h5 class="conversation-name">{{data.replayName}}</h5>
                             <p class="mb-0">{{data.replaymsg | translate}}</p>
                           </div>
                           <div class="flex-shrink-0">
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-link mt-n2 me-n3 font-size-18"
-                            >
+                            <button type="button" class="btn btn-sm btn-link mt-n2 me-n3 font-size-18">
                             </button>
                           </div>
                         </div>
                         <p class="mb-0 messageText">
                           {{data.texto | translate}}
                         </p>
-                        <ul
-                          class="list-inline message-img mb-0"
-                          *ngIf="data.isimage"
-                        >
-                          <li
-                            class="list-inline-item message-img-list"
-                            *ngFor="let item of data.imageContent;let x=index;"
-                          >
+                        <ul class="list-inline message-img mb-0" *ngIf="data.isimage">
+                          <li class="list-inline-item message-img-list"
+                            *ngFor="let item of data.imageContent;let x=index;">
                             <div>
-                              <a
-                                class="popup-img d-inline-block m-1 p-0"
-                                href="javascript:void(0);"
-                                title="Project 1"
-                              >
-                                <img
-                                  :src="{{item.src}}"
-                                  alt=""
-                                  class="rounded border"
-                                  (click)="openImage(i,x)"
-                                />
+                              <a class="popup-img d-inline-block m-1 p-0" href="javascript:void(0);" title="Project 1">
+                                <img :src="{{item.src}}" alt="" class="rounded border" (click)="openImage(i,x)" />
                               </a>
                             </div>
                             <div class="message-img-link">
                               <ul class="list-inline mb-0">
                                 <li class="list-inline-item">
-                                  <a href="javascript:void(0);" >
+                                  <a href="javascript:void(0);">
                                     <i class="ri-download-2-line"></i>
                                   </a>
                                 </li>
                                 <li class="list-inline-item dropdown" ngbDropdown>
-                                  <a
-                                    class="dropdown-toggle"
-                                    href="javascript:void(0);"
-                                    role="button"
-                                    ngbDropdownToggle
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                  >
+                                  <a class="dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="ri-more-fill"></i>
                                   </a>
                                   <div class="dropdown-menu" ngbDropdownMenu>
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                    >
+                                    <a class="dropdown-item" href="javascript:void(0);">
                                       {{
-                                        'chat.messages.dropdown.copy' | translate
+                                      'chat.messages.dropdown.copy' | translate
                                       }}
-                                      <i
-                                        class="ri-file-copy-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-file-copy-line float-end text-muted"></i>
                                     </a>
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                    >
+                                    <a class="dropdown-item" href="javascript:void(0);">
                                       {{
-                                        'chat.messages.dropdown.save' | translate
+                                      'chat.messages.dropdown.save' | translate
                                       }}
-                                      <i
-                                        class="ri-save-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-save-line float-end text-muted"></i>
                                     </a>
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                    >
+                                    <a class="dropdown-item" href="javascript:void(0);">
                                       {{
-                                        'chat.messages.dropdown.forward' | translate
+                                      'chat.messages.dropdown.forward' | translate
                                       }}
-                                      <i
-                                        class="ri-chat-forward-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-chat-forward-line float-end text-muted"></i>
                                     </a>
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                      (click)="deleteMessage($event)"
-                                    >
+                                    <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMessage($event)">
                                       {{
-                                        'chat.messages.dropdown.delete' | translate
+                                      'chat.messages.dropdown.delete' | translate
                                       }}
-                                      <i
-                                        class="ri-delete-bin-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-delete-bin-line float-end text-muted"></i>
                                     </a>
                                   </div>
                                 </li>
@@ -1046,9 +689,7 @@
                         <div class="card p-2 mb-2" *ngIf="data.isfile">
                           <div class="d-flex align-items-center">
                             <div class="avatar-sm me-3 ms-0">
-                              <div
-                                class="avatar-title bg-soft-primary text-primary rounded font-size-20"
-                              >
+                              <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
                                 <i class="ri-file-text-fill"></i>
                               </div>
                             </div>
@@ -1070,45 +711,24 @@
                                   </a>
                                 </li>
                                 <li class="list-inline-item dropdown" ngbDropdown>
-                                  <a
-                                    class="dropdown-toggle text-muted"
-                                    href="javascript:void(0);"
-                                    ngbDropdownToggle
-                                    role="button"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                  >
+                                  <a class="dropdown-toggle text-muted" href="javascript:void(0);" ngbDropdownToggle
+                                    role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="ri-more-fill"></i>
                                   </a>
-                                  <div
-                                    class="dropdown-menu dropdown-menu-right"
-                                    ngbDropdownMenu
-                                  >
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                    >
+                                  <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+                                    <a class="dropdown-item" href="javascript:void(0);">
                                       {{
-                                        'chat.messages.filedropdown.share'
-                                          | translate
+                                      'chat.messages.filedropdown.share'
+                                      | translate
                                       }}
-                                      <i
-                                        class="ri-share-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-share-line float-end text-muted"></i>
                                     </a>
-                                    <a
-                                      class="dropdown-item"
-                                      href="javascript:void(0);"
-                                      (click)="deleteMessage($event)"
-                                    >
+                                    <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMessage($event)">
                                       {{
-                                        'chat.messages.filedropdown.delete'
-                                          | translate
+                                      'chat.messages.filedropdown.delete'
+                                      | translate
                                       }}
-                                      <i
-                                        class="ri-delete-bin-line float-end text-muted"
-                                      ></i>
+                                      <i class="ri-delete-bin-line float-end text-muted"></i>
                                     </a>
                                   </div>
                                 </li>
@@ -1116,47 +736,28 @@
                             </div>
                           </div>
                         </div>
-<p class="chat-time mb-0" *ngIf="!data.istyping">
-  <span class="align-middle" style="margin-right: 6px;">
-    {{ getHoraMensaje(data) }}
-  </span>
-  <ng-container *ngIf="data.align === 'right'">
-    <i class="ri-check-double-line align-middle" style="color: #bbb;"></i>
-  </ng-container>
-</p>
+                        <p class="chat-time mb-0" *ngIf="!data.istyping">
+                          <span class="align-middle" style="margin-right: 6px;">
+                            {{ getHoraMensaje(data) }}
+                          </span>
+                          <ng-container *ngIf="data.align === 'right'">
+                            <i class="ri-check-double-line align-middle" style="color: #bbb;"></i>
+                          </ng-container>
+                        </p>
 
                       </div>
 
-                      <div
-                        class="dropdown align-self-start"
-                        ngbDropdown
-                        *ngIf="data.message"
-                      >
-                        <a
-                          class="dropdown-toggle"
-                          href="javascript:void(0);"
-                          role="button"
-                          ngbDropdownToggle
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                        >
+                      <div class="dropdown align-self-start" ngbDropdown *ngIf="data.message">
+                        <a class="dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
+                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <i class="ri-more-2-fill"></i>
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="replyMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="replyMessage($event)">
                             {{'chat.messages.dropdown.reply' | translate}}
                             <i class="ri-reply-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="copyMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="copyMessage($event)">
                             {{'chat.messages.dropdown.copy' | translate}}
                             <i class="ri-file-copy-line float-end text-muted"></i>
                           </a>
@@ -1164,19 +765,11 @@
                             {{'chat.messages.dropdown.save' | translate}}
                             <i class="ri-save-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="centerModal(centerDataModal)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="centerModal(centerDataModal)">
                             {{'chat.messages.dropdown.forward' | translate}}
                             <i class="ri-chat-forward-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="deleteMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMessage($event)">
                             {{'chat.messages.dropdown.delete' | translate}}
                             <i class="ri-delete-bin-line float-end text-muted"></i>
                           </a>
@@ -1195,31 +788,16 @@
                         </p>
                       </div>
                       <div class="dropdown align-self-start" ngbDropdown>
-                        <a
-                          class="dropdown-toggle"
-                          href="javascript:void(0);"
-                          role="button"
-                          ngbDropdownToggle
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                        >
+                        <a class="dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
+                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <i class="ri-more-2-fill"></i>
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="replyMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="replyMessage($event)">
                             {{'chat.messages.dropdown.reply' | translate}}
                             <i class="ri-reply-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="copyMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="copyMessage($event)">
                             {{'chat.messages.dropdown.copy' | translate}}
                             <i class="ri-file-copy-line float-end text-muted"></i>
                           </a>
@@ -1227,19 +805,11 @@
                             {{'chat.messages.dropdown.save' | translate}}
                             <i class="ri-save-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="centerModal(centerDataModal)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="centerModal(centerDataModal)">
                             {{'chat.messages.dropdown.forward' | translate}}
                             <i class="ri-chat-forward-line float-end text-muted"></i>
                           </a>
-                          <a
-                            class="dropdown-item"
-                            href="javascript:void(0);"
-                            (click)="deleteMessage($event)"
-                          >
+                          <a class="dropdown-item" href="javascript:void(0);" (click)="deleteMessage($event)">
                             {{'chat.messages.dropdown.delete' | translate}}
                             <i class="ri-delete-bin-line float-end text-muted"></i>
                           </a>
@@ -1263,11 +833,8 @@
               </li>
             </ul>
           </ngx-simplebar>
-          <div
-            class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade"
-            id="copyClipBoard"
-            role="alert"
-          >
+          <div class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade" id="copyClipBoard"
+            role="alert">
             Message copied
           </div>
         </div>
@@ -1275,24 +842,13 @@
 
         <!-- start chat input section -->
         <div class="p-3 p-lg-4 border-top mb-0 send-msg">
-          <form
-            (ngSubmit)="messageSave()"
-            [formGroup]="formData"
-            id="chatinput-form"
-            enctype="multipart/form-data"
-          >
+          <form (ngSubmit)="messageSave()" [formGroup]="formData" id="chatinput-form" enctype="multipart/form-data">
             <div class="row no-gutters">
               <div class="col">
                 <div>
-                  <input
-                    type="text"
-                    class="form-control form-control-lg bg-light border-light"
-                    placeholder="Escribir mensaje..."
-                    formControlName="message"
-                    [(ngModel)]="emoji"
-                    (blur)="onBlur()"
-                    (focus)="onInputFocus()"
-                  />
+                  <input type="text" class="form-control form-control-lg bg-light border-light"
+                    placeholder="Escribir mensaje..." formControlName="message" [(ngModel)]="emoji" (blur)="onBlur()"
+                    (focus)="onInputFocus()" />
                 </div>
               </div>
               <div class="col-auto">
@@ -1314,10 +870,8 @@
                       </button>
                     </li> -->
                     <li class="list-inline-item">
-                      <button
-                        type="submit"
-                        class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light"
-                      >
+                      <button type="submit"
+                        class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light">
                         <i class="ri-send-plane-2-fill"></i>
                       </button>
                     </li>
@@ -1332,26 +886,15 @@
         <div _ngcontent-hes-c189="" class="replyCard">
           <div _ngcontent-hes-c189="" class="card mb-0">
             <div _ngcontent-hes-c189="" class="card-body py-3">
-              <div
-                _ngcontent-hes-c189=""
-                class="replymessage-block mb-0 d-flex align-items-start"
-              >
+              <div _ngcontent-hes-c189="" class="replymessage-block mb-0 d-flex align-items-start">
                 <div _ngcontent-hes-c189="" class="flex-grow-1">
                   <h5 _ngcontent-hes-c189="" class="conversation-name">You</h5>
                   <p _ngcontent-hes-c189="" class="mb-0">Wow that's great</p>
                 </div>
                 <div _ngcontent-hes-c189="" class="flex-shrink-0">
-                  <button
-                    _ngcontent-hes-c189=""
-                    type="button"
-                    id="close_toggle"
-                    class="btn btn-sm btn-link mt-n2 me-n3 fs-18 shadow-none"
-                    (click)="closeReplay()"
-                  >
-                    <i
-                      _ngcontent-xeu-c127=""
-                      class="ri-close-line float-end fs-5"
-                    ></i>
+                  <button _ngcontent-hes-c189="" type="button" id="close_toggle"
+                    class="btn btn-sm btn-link mt-n2 me-n3 fs-18 shadow-none" (click)="closeReplay()">
+                    <i _ngcontent-xeu-c127="" class="ri-close-line float-end fs-5"></i>
                   </button>
                 </div>
               </div>
@@ -1374,10 +917,8 @@
                       <p class="card-text">105</p>
                       <br />
                       <p class="small-detail">
-                        <i class="ri-arrow-right-fill icono-personalizado"></i
-                        >&nbsp;&nbsp;&nbsp;<small
-                          >Crecimiento: 5% este mes</small
-                        >
+                        <i class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Crecimiento: 5%
+                          este mes</small>
                       </p>
                     </div>
                   </div>
@@ -1390,10 +931,8 @@
                       <p class="card-text">300</p>
                       <br />
                       <p class="small-detail">
-                        <i class="ri-arrow-right-fill icono-personalizado"></i
-                        >&nbsp;&nbsp;&nbsp;<small
-                          >Incremento: 1% este mes</small
-                        >
+                        <i class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Incremento: 1%
+                          este mes</small>
                       </p>
                     </div>
                   </div>
@@ -1406,18 +945,14 @@
                       <p class="card-text">2.1</p>
                       <br />
                       <p class="small-detail">
-                        <i class="ri-arrow-right-fill icono-personalizado"></i
-                        >&nbsp;&nbsp;&nbsp;<small>Reducción: 2% este mes</small>
+                        <i class="ri-arrow-right-fill icono-personalizado"></i>&nbsp;&nbsp;&nbsp;<small>Reducción: 2%
+                          este mes</small>
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div
-                id="container"
-                class="row w-60 justify-content-center"
-                style="height: 30%;"
-              ></div>
+              <div id="container" class="row w-60 justify-content-center" style="height: 30%;"></div>
             </div>
           </div>
         </div>
@@ -1539,59 +1074,33 @@
 <!-- Chat Info Sidebar -->
 <ng-template #userInfo let-offcanvas>
   <div class="offcanvas-header">
-    <button
-      type="button"
-      class="btn-close"
-      aria-label="Close"
-      (click)="offcanvas.dismiss('Cross click')"
-    ></button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
 
   <div class="offcanvas-body profile-offcanvas p-0">
     <div class="text-center p-4 border-bottom">
       <div class="mb-4">
         <!-- Si idRedSocial es 12, muestra la imagen de Facebook -->
-        <img
-          *ngIf="idRedSocial === 12"
-          src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Facebook"
-        />
+        <img *ngIf="idRedSocial === 12" src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-0.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Facebook" />
         <!-- Si idRedSocial es 16, muestra la imagen de Mercado Libre, que es la default -->
-        <img
-          *ngIf="idRedSocial === 16"
+        <img *ngIf="idRedSocial === 16"
           src="https://www.eleconomista.com.mx/__export/1660698219457/sites/eleconomista/img/2022/08/16/mercado_libre_4.jpg_1276653675.jpg"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Mercado Libre"
-        />
+          class="rounded-circle avatar-lg img-thumbnail" alt="Mercado Libre" />
         <!-- Si idRedSocial es 16, muestra la imagen de Instagram -->
-        <img
-          *ngIf="idRedSocial === 17"
+        <img *ngIf="idRedSocial === 17"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Instagram"
-        />
+          class="rounded-circle avatar-lg img-thumbnail" alt="Instagram" />
         <!-- Si idRedSocial es 16, muestra la imagen de Tiktok -->
-        <img
-          *ngIf="idRedSocial === 18"
-          src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Tiktok"
-        />
+        <img *ngIf="idRedSocial === 18" src="https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_640.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Tiktok" />
         <!-- Si idRedSocial es 16, muestra la imagen de PInterest -->
-        <img
-          *ngIf="idRedSocial === 19"
-          src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Pinterest"
-        />
+        <img *ngIf="idRedSocial === 19" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png"
+          class="rounded-circle avatar-lg img-thumbnail" alt="Pinterest" />
         <!-- Si idRedSocial es 20, muestra la imagen de YOUTUBE -->
-        <img
-          *ngIf="idRedSocial === 20"
+        <img *ngIf="idRedSocial === 20"
           src="https://w7.pngwing.com/pngs/982/799/png-transparent-youtube-logo-youtube-logo-internet-marketing-subscribe-television-label-text.png"
-          class="rounded-circle avatar-lg img-thumbnail"
-          alt="Pinterest"
-        />
+          class="rounded-circle avatar-lg img-thumbnail" alt="Pinterest" />
         <!-- Si idRedSocial no es ni 12 ni 16, también muestra la imagen de Mercado Libre -->
       </div>
 
@@ -1599,10 +1108,8 @@
         {{RedSocial + ' - ' +Distribuidor}}
       </h5>
       <p class="text-muted text-truncate mb-1">
-        <i
-          class="ri-record-circle-fill font-size-10 me-1"
-          [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"
-        ></i>
+        <i class="ri-record-circle-fill font-size-10 me-1"
+          [ngClass]=" {'text-success': userStatus === 'En línea','text-warning': userStatus === 'away'}"></i>
         {{userStatu}}
       </p>
     </div>
@@ -1664,9 +1171,7 @@
               <div class="mt-4">
                 <p class="text-muted mb-1">Publicación</p>
                 <h5 class="font-size-14 mb-0">
-                  <a href="{{urlPublicacion}}" target="_blank"
-                    >{{urlPublicacion}}</a
-                  >
+                  <a href="{{urlPublicacion}}" target="_blank">{{urlPublicacion}}</a>
                 </h5>
               </div>
             </ng-template>
