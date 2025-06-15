@@ -1075,7 +1075,7 @@ export class IndexComponent implements OnInit {
       this.http
         .get<ApiResponse>(
           'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
-          { params: { usuario: userName } }
+          { params: { idDistribuidor: this.idDistribuidor } }
         )
         .subscribe(
           res => {
