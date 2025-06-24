@@ -69,6 +69,13 @@
             <perfect-scrollbar class="chat-message-list">
     <ul class="list-unstyled chat-list chat-user-list">
       <!-- Sólo agrupación por Red Social -->
+       <!-- skeleton placeholder -->
+<li *ngIf="showSkeleton">
+  <div *ngFor="let _ of skeletonRows" class="skeleton-item">
+    <div class="avatar shimmer"></div>
+    <div class="text shimmer"></div>
+  </div>
+</li>
 <ng-container *ngFor="let redSocial of chatByRedSocial | keyvalue">
   <div class="p-3 font-weight-bold text-primary d-flex align-items-center"
        style="cursor:pointer;"

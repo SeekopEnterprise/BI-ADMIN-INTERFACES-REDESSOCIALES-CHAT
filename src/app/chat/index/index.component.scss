@@ -126,7 +126,40 @@
   height: 100%; /
 } */
 
-
+/* ─── efecto shimmer ─────────────────────────────── */
+@keyframes shimmer {
+  0%  { background-position: -450px 0; }
+  100%{ background-position: 450px 0; }
+}
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #ececec;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.6),
+    transparent
+  );
+  background-size: 450px 100%;
+  animation: shimmer 1.2s infinite;
+}
+/* ─── layout de las filas fantasma ───────────────── */
+.skeleton-item    { display: flex; padding: 8px 12px; }
+.skeleton-item + .skeleton-item { margin-top: 8px; }
+.skeleton-item .avatar { width: 38px; height: 38px; border-radius: 50%; }
+.skeleton-item .text   {
+  flex: 1; height: 12px; border-radius: 4px;
+  margin-left: 12px; margin-top: 12px;
+}
+.skeleton-item .avatar,
+.skeleton-item .text { background:#d9d9d9; }   // gris algo más oscuro
 
 
 

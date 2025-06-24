@@ -85,7 +85,9 @@ export class IndexComponent implements OnInit {
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Variable para mostrar/ocultar el loader mientras se descargan mensajes
-  public isLoadingMensajesIniciales: boolean = false;
+  public isLoadingMensajesIniciales: boolean = false; // (ya lo tenías)
+  private mensajesWsRecibidos = 0;      // ⬅️ contador de notificaciones
+  private timeoutLoaderFallback: any;
   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   isLoading: boolean = false;
 
@@ -169,6 +171,10 @@ export class IndexComponent implements OnInit {
   // Control de contenedores para KPI
   public isContainerVisible: boolean = false;
   public isContainerVisibleKPIs: boolean = false;
+
+  // ====================== skeleton ======================
+  public showSkeleton = false;          // controla su visibilidad
+  public skeletonRows = Array(6);       // 6 filas fantasma
 
   // Variables y listado de Bots
   selectedBot: string = '';  // Bot seleccionado
@@ -296,6 +302,16 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  /** Muestra u oculta el skeleton según haya o no conversaciones */
+  private updateSkeletonVisibility(): void {
+    const shouldShow = this.chat.length === 0;
+    if (shouldShow !== this.showSkeleton) {
+      this.showSkeleton = shouldShow;
+      this.cdr.detectChanges();        // fuerza CD sólo si cambió
+    }
+  }
+
+
   /**
  * Conecta al WebSocket y:
  *  1) Espera la PRIMERA notificación con idDistribuidor.
@@ -326,6 +342,10 @@ export class IndexComponent implements OnInit {
               console.error('Fallo carga inicial:', e);
             } finally {
               this.isLoadingMensajesIniciales = false;
+              if (this.chat.length === 0) {
+                this.showSkeleton = true;
+                this.cdr.detectChanges();   // ← fuerza refresco de la vista
+              }
             }
           }
         })
@@ -452,8 +472,25 @@ export class IndexComponent implements OnInit {
       } catch (error) {
         console.log('Error cargando grupos o recuperando mensajes:', error);
       } finally {
+        if (!this.isLoadingMensajesIniciales && this.chat.length === 0) {
+          this.showSkeleton = true;
+          this.cdr.detectChanges();
+        } else {
+          this.showSkeleton = false;          // hay conversaciones ⇒ quítalo
+        }
         this.isLoadingMensajesIniciales = false;
+        if (this.chat.length === 0) {
+          this.showSkeleton = true;
+          this.cdr.detectChanges();   // ← fuerza refresco de la vista
+        }
         setTimeout(() => window.parent?.postMessage({ type: 'CONVERS_READY' }, '*'));
+        this.timeoutLoaderFallback = setTimeout(() => {
+          if (this.isLoadingMensajesIniciales) {
+            this.isLoadingMensajesIniciales = false;
+            this.cdr.detectChanges();
+            console.warn('Loader ocultado por timeout (no hubo notificaciones).');
+          }
+        }, 5_000);
       }
     }
     document.body.setAttribute('data-layout-mode', 'light');
@@ -476,6 +513,15 @@ export class IndexComponent implements OnInit {
    *  ▸ Si el prospecto aún no existe, lo genera “en caliente”
    */
   private async agregarMensajeSocket(data: any): Promise<void> {
+
+    /* ── loader: contar primeras notificaciones ───────────── */
+    if (this.isLoadingMensajesIniciales && this.primeraNotificacionRecibida) {
+      if (++this.mensajesWsRecibidos >= 2) {
+        clearTimeout(this.timeoutLoaderFallback);   // ya no hace falta el fallback
+        this.isLoadingMensajesIniciales = false;    // ⬅️ ocultar spinner
+        this.cdr.detectChanges();
+      }
+    }
 
     /* ------------------------------------------------------------
      * 1. Clave única y localización del prospecto
@@ -584,6 +630,7 @@ export class IndexComponent implements OnInit {
         || 0).getTime();
       return tb - ta;
     });
+    this.updateSkeletonVisibility();
     this.chat = [...this.chat];        // <- fuerza change-detection
     this.cdr.detectChanges();
   }
@@ -1275,7 +1322,7 @@ export class IndexComponent implements OnInit {
                 .find(p => p.claveUnica === this.activeConversationKey);
               if (abierta) abierta.unreadCount = 0;
             }
-
+            this.updateSkeletonVisibility();
             resolve();
           },
           err => {
