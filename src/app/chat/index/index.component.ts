@@ -373,6 +373,10 @@ export class IndexComponent implements OnInit {
     } finally {
       // Apagamos el loader al concluir o fallar la secuencia
       this.isLoadingMensajesIniciales = false;
+      // --- NOTIFICACIÓN AL PADRE ---
+      setTimeout(() => {
+        window.parent?.postMessage({ type: 'CONVERS_READY' }, '*');
+      });
     }
 
     document.body.setAttribute('data-layout-mode', 'light');
