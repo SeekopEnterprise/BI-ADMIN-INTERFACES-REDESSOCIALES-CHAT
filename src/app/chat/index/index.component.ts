@@ -332,16 +332,16 @@ export class IndexComponent implements OnInit {
       )
 
       /* ---- A partir de aquí TODAS las notificaciones ---- */
-        .subscribe(
-    data => {
-      if (data.idMensaje) {
-        // (opcional) sentimiento
-        this.detectarSentimiento(data.idMensaje).catch(console.error);
-      }
-      this.agregarMensajeSocket(data);
-    },
-    err => console.error('WS error:', err)
-  );
+      .subscribe(
+        data => {
+          if (data.idMensaje) {
+            // (opcional) sentimiento
+            this.detectarSentimiento(data.idMensaje).catch(console.error);
+          }
+          this.agregarMensajeSocket(data);
+        },
+        err => console.error('WS error:', err)
+      );
 
     /* Time-out de seguridad — opcional pero aconsejado */
     setTimeout(() => {
@@ -531,33 +531,31 @@ export class IndexComponent implements OnInit {
       grupo.prospects.push(prospect);
     }
 
-    /* ------------------------------------------------------------
-     * 4. Evitar duplicados
-     * ---------------------------------------------------------- */
-    if (prospect.Conversacion.some(m => m.id === data.idMensaje)) {
-      return; // ya está, nada que hacer
+    /* ---------- 4. Duplicados & contadores ------------------ */
+    const duplicado = prospect.Conversacion
+      .some(m => m.id === data.idMensaje);
+
+    /*  ➜  Si el mensaje NO existe lo insertamos;
+           si SÍ existe, solo actualizamos contador/orden       */
+    if (!duplicado) {
+      prospect.Conversacion.forEach(m => m.ultimoMensaje = false);
+
+      const nuevoMensaje: Conversacion = {
+        id: data.idMensaje,
+        texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
+        name: data.appNotificada || 'Cliente',
+        align: 'left',
+        ultimoMensaje: true,
+        isimage: false,
+        imageContent: []
+      };
+
+      prospect.Conversacion.push(nuevoMensaje);
+      prospect.ultimoMensaje = nuevoMensaje;
     }
 
     /* ------------------------------------------------------------
-     * 5. Insertamos el nuevo mensaje
-     * ---------------------------------------------------------- */
-    prospect.Conversacion.forEach(m => (m.ultimoMensaje = false));
-
-    const nuevoMensaje: Conversacion = {
-      id: data.idMensaje,
-      texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
-      name: data.appNotificada || 'Cliente',
-      align: 'left',
-      ultimoMensaje: true,
-      isimage: false,
-      imageContent: []
-    };
-
-    prospect.Conversacion.push(nuevoMensaje);
-    prospect.ultimoMensaje = nuevoMensaje;
-
-    /* ------------------------------------------------------------
-     * 6. Contadores / panel derecho
+     * 5. Contadores / panel derecho
      * ---------------------------------------------------------- */
     const abierta = this.activeConversationKey === claveUnicaWS;
 
@@ -566,21 +564,28 @@ export class IndexComponent implements OnInit {
     } else {
       this.message = [...prospect.Conversacion];
       prospect.unreadCount = 0;
-      this.activeChatId = nuevoMensaje.id;
-      this.selectedChatId = nuevoMensaje.id;
+      if (!duplicado) {
+        this.activeChatId = data.idMensaje;
+        this.selectedChatId = data.idMensaje;
+      }
       this.onListScroll();
     }
 
     /* ------------------------------------------------------------
-     * 7. Re-ordenar la lista izquierda (descendente por fecha)
+     * 6. Re-ordenar la lista izquierda (descendente por fecha)
      * ---------------------------------------------------------- */
+    /* ---------- 6. Re-ordenamos y forzamos CD --------------- */
     this.chat.sort((a, b) => {
-      const la = a.prospects[0].ultimoMensaje;
-      const lb = b.prospects[0].ultimoMensaje;
-      const ta = new Date(la?.fechaRespuesta || la?.fechaCreacion || 0).getTime();
-      const tb = new Date(lb?.fechaRespuesta || lb?.fechaCreacion || 0).getTime();
+      const ta = new Date(a.prospects[0].ultimoMensaje?.fechaRespuesta
+        || a.prospects[0].ultimoMensaje?.fechaCreacion
+        || 0).getTime();
+      const tb = new Date(b.prospects[0].ultimoMensaje?.fechaRespuesta
+        || b.prospects[0].ultimoMensaje?.fechaCreacion
+        || 0).getTime();
       return tb - ta;
     });
+    this.chat = [...this.chat];        // <- fuerza change-detection
+    this.cdr.detectChanges();
   }
 
 
