@@ -77,7 +77,7 @@ function getIdDistribuidor(prospect: any): string {
  * Chat-component
  */
 export class IndexComponent implements OnInit {
-  
+
   private primeraNotificacionRecibida = false;
   private readonly socketUrl = 'wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev';
 
@@ -151,7 +151,7 @@ export class IndexComponent implements OnInit {
   public hideMenu: boolean;
   public enviadoaseekop: boolean = false;
   public activeChatId: string | null = null;
-  public activeConversationKey: string | null = null; 
+  public activeConversationKey: string | null = null;
 
   // Variables para agrupar
   public chatByRedSocial: any = {};
@@ -283,8 +283,8 @@ export class IndexComponent implements OnInit {
   }
 
   toggleGroupCollapse(key: string): void {
-  this.collapsedGroups[key] = !this.collapsedGroups[key];
-}
+    this.collapsedGroups[key] = !this.collapsedGroups[key];
+  }
 
   /**
    * Abre la imagen en Lightbox
@@ -312,28 +312,36 @@ export class IndexComponent implements OnInit {
       /* -------- PRIMER mensaje con idDistribuidor -------- */
       .pipe(
         filter(m => !!m.idDistribuidor), // sólo los que traen idDistribuidor
-        take(1),                         // ¡el primero y basta!
-        tap(async primeraData => {
-          this.primeraNotificacionRecibida = true;
-          this.idDistribuidor = primeraData.idDistribuidor;
+        // ¡el primero y basta!
+        tap(async msg => {
+          if (!this.primeraNotificacionRecibida && msg.idDistribuidor) {
+            this.primeraNotificacionRecibida = true;
+            this.idDistribuidor = msg.idDistribuidor;
 
-          try {
-            await this.loadGrupos();
-            await this.descargarMensajesIniciales();   // ⬅️  quítalo si no lo necesitas
-            await this.loadRecuperacionMensajes();
-          } catch (e) {
-            console.error('Fallo carga inicial:', e);
-          } finally {
-            this.isLoadingMensajesIniciales = false;   // quita el spinner
+            try {
+              await this.loadGrupos();
+              await this.descargarMensajesIniciales();   // ← opcional
+              await this.loadRecuperacionMensajes();
+            } catch (e) {
+              console.error('Fallo carga inicial:', e);
+            } finally {
+              this.isLoadingMensajesIniciales = false;
+            }
           }
         })
       )
 
       /* ---- A partir de aquí TODAS las notificaciones ---- */
-      .subscribe(
-        data => this.agregarMensajeSocket(data),
-        err  => console.error('WS error:', err)
-      );
+        .subscribe(
+    data => {
+      if (data.idMensaje) {
+        // (opcional) sentimiento
+        this.detectarSentimiento(data.idMensaje).catch(console.error);
+      }
+      this.agregarMensajeSocket(data);
+    },
+    err => console.error('WS error:', err)
+  );
 
     /* Time-out de seguridad — opcional pero aconsejado */
     setTimeout(() => {
@@ -361,7 +369,6 @@ export class IndexComponent implements OnInit {
         // Si no hay distribuidor, muestra advertencia y no continúes:
         if (!this.idDistribuidor) {
           console.warn('[Chat hijo] No se recibió idDistribuidor, no se cargarán mensajes');
-          return;
         }
       } catch (error) {
         this.activetab = 2;
@@ -375,70 +382,83 @@ export class IndexComponent implements OnInit {
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     // 1. Abrimos el socket de inmediato, para que reciba notificaciones
-  /*   this.chatSubscription = this.notificacionService
-      .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
-      .subscribe((event: MessageEvent) => {
-        const data = JSON.parse(event.data);
-        console.log("WS data recibida:", data);
-
-        if (data.idMensaje) {
-          const promesaSentimiento = this.detectarSentimiento(data.idMensaje);
-          promesaSentimiento
-            .then(() => {
-              this.agregarMensajeSocket(data);
-              // Opcional: this.loadRecuperacionMensajes();
-            })
-            .catch(err => console.error('Error detectando sentimiento:', err));
-        } else {
-          console.log('Notificación WS sin idMensaje, data:', data);
-        }
-      });
- */
+    /*   this.chatSubscription = this.notificacionService
+        .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
+        .subscribe((event: MessageEvent) => {
+          const data = JSON.parse(event.data);
+          console.log("WS data recibida:", data);
+  
+          if (data.idMensaje) {
+            const promesaSentimiento = this.detectarSentimiento(data.idMensaje);
+            promesaSentimiento
+              .then(() => {
+                this.agregarMensajeSocket(data);
+                // Opcional: this.loadRecuperacionMensajes();
+              })
+              .catch(err => console.error('Error detectando sentimiento:', err));
+          } else {
+            console.log('Notificación WS sin idMensaje, data:', data);
+          }
+        });
+   */
     this.isLoadingMensajesIniciales = true;
 
-  /*   Sustituye la apertura antigua por esta línea */
-  this.iniciarWebSocket();
+    /*   Sustituye la apertura antigua por esta línea */
+    this.iniciarWebSocket();
 
-    try {
-      // 2. Recupera el usuario del servicio o del localStorage
-      let user = this.globalUserService.getCurrentUser();
-      if (!user) {
-        try {
-          user = JSON.parse(localStorage.getItem('currentUser'));
+    /*     try {
+          // 2. Recupera el usuario del servicio o del localStorage
+          let user = this.globalUserService.getCurrentUser();
+          if (!user) {
+            try {
+              user = JSON.parse(localStorage.getItem('currentUser'));
+            } catch (error) {
+              console.log('Error al acceder a localStorage nuevo:', error);
+            }
+          }
+    
+          if (user && user.token) {
+            this.senderName = user.username;
+            this.senderProfile = 'assets/images/users/' + user.profile;
+    
+            // 3. Cargar grupos primero
+            await this.loadGrupos();
+    
+            // 4. Primero se descarga (inserta en la BD) para que el socket notifique
+            await this.descargarMensajesIniciales();
+    
+            // 5. Luego cargamos lo que se haya guardado en base
+            await this.loadRecuperacionMensajes();
+          }
+    
         } catch (error) {
-          console.log('Error al acceder a localStorage nuevo:', error);
+          console.log('Error cargando grupos o recuperando mensajes:', error);
+          return;
+        } finally {
+          // Apagamos el loader al concluir o fallar la secuencia
+          this.isLoadingMensajesIniciales = false;
+          // --- NOTIFICACIÓN AL PADRE ---
+          setTimeout(() => {
+            window.parent?.postMessage({ type: 'CONVERS_READY' }, '*');
+          });
         }
-      }
+     */
 
-      if (user && user.token) {
-        this.senderName = user.username;
-        this.senderProfile = 'assets/images/users/' + user.profile;
-
-        // 3. Cargar grupos primero
+    if (this.idDistribuidor) {
+      try {
         await this.loadGrupos();
-
-        // 4. Primero se descarga (inserta en la BD) para que el socket notifique
         await this.descargarMensajesIniciales();
-
-        // 5. Luego cargamos lo que se haya guardado en base
         await this.loadRecuperacionMensajes();
+      } catch (error) {
+        console.log('Error cargando grupos o recuperando mensajes:', error);
+      } finally {
+        this.isLoadingMensajesIniciales = false;
+        setTimeout(() => window.parent?.postMessage({ type: 'CONVERS_READY' }, '*'));
       }
-
-    } catch (error) {
-      console.log('Error cargando grupos o recuperando mensajes:', error);
-      return;
-    } finally {
-      // Apagamos el loader al concluir o fallar la secuencia
-      this.isLoadingMensajesIniciales = false;
-      // --- NOTIFICACIÓN AL PADRE ---
-      setTimeout(() => {
-        window.parent?.postMessage({ type: 'CONVERS_READY' }, '*');
-      });
     }
-
     document.body.setAttribute('data-layout-mode', 'light');
     this.lang = this.translate.currentLang;
- document.body.setAttribute('data-layout-mode', 'light');
+    document.body.setAttribute('data-layout-mode', 'light');
     this.lang = this.translate.currentLang;
 
     /*  NOTA: la clave única solo puede calcularse cuando ya hay datos
@@ -449,119 +469,119 @@ export class IndexComponent implements OnInit {
   }
 
 
-/**
- * Inserta o crea la conversación que llega por WebSocket.
- *  ▸ Evita duplicados
- *  ▸ Mantiene contador/orden
- *  ▸ Si el prospecto aún no existe, lo genera “en caliente”
- */
-private async agregarMensajeSocket(data: any): Promise<void> {
+  /**
+   * Inserta o crea la conversación que llega por WebSocket.
+   *  ▸ Evita duplicados
+   *  ▸ Mantiene contador/orden
+   *  ▸ Si el prospecto aún no existe, lo genera “en caliente”
+   */
+  private async agregarMensajeSocket(data: any): Promise<void> {
 
-  /* ------------------------------------------------------------
-   * 1. Clave única y localización del prospecto
-   * ---------------------------------------------------------- */
-  const claveUnicaWS =
-        `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
+    /* ------------------------------------------------------------
+     * 1. Clave única y localización del prospecto
+     * ---------------------------------------------------------- */
+    const claveUnicaWS =
+      `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
 
-  const findProspect = () =>
-    this.chat.flatMap(g => g.prospects)
-             .find(p => String(p.claveUnica) === claveUnicaWS);
+    const findProspect = () =>
+      this.chat.flatMap(g => g.prospects)
+        .find(p => String(p.claveUnica) === claveUnicaWS);
 
-  let prospect = findProspect();
+    let prospect = findProspect();
 
-  /* ------------------------------------------------------------
-   * 2. ¿No existe?  Intentamos recargar y volvemos a buscar
-   * ---------------------------------------------------------- */
-  if (!prospect) {
-    await this.loadRecuperacionMensajes();
-    prospect = findProspect();
-  }
-
-  /* ------------------------------------------------------------
-   * 3. Si sigue sin existir, creamos un stub minimal
-   * ---------------------------------------------------------- */
-  if (!prospect) {
-
-    const grupoNombre  = this.groups.find(g => g.iddistribuidor === data.idDistribuidor)
-                         ?.nombredistribuidor || 'Sin Distribuidor';
-
-    prospect = {
-      /* ===== meta-datos ===== */
-      IdPublicacion : data.idPublicacion,
-      IdDistribuidor: data.idDistribuidor,
-      idRed         : data.idRedSocial,
-      redSocial     : data.idRedSocial,   // ← usa lo que tengas
-      NombreGrupo   : grupoNombre,
-      Nombre        : '(Nuevo prospecto)',
-      Apellido      : '',
-      Email         : '',
-      Telefono      : '',
-      /* ===== runtime ===== */
-      Conversacion  : [],
-      unreadCount   : 0,
-      claveUnica    : claveUnicaWS
-    } as any as ResponseItem;            // cast rápido
-
-    /* lo alojamos en el grupo correcto (creándolo si hace falta) */
-    let grupo = this.chat.find(c => c.key === grupoNombre);
-    if (!grupo) {
-      grupo = { key: grupoNombre, prospects: [] };
-      this.chat.push(grupo);
+    /* ------------------------------------------------------------
+     * 2. ¿No existe?  Intentamos recargar y volvemos a buscar
+     * ---------------------------------------------------------- */
+    if (!prospect) {
+      await this.loadRecuperacionMensajes();
+      prospect = findProspect();
     }
-    grupo.prospects.push(prospect);
+
+    /* ------------------------------------------------------------
+     * 3. Si sigue sin existir, creamos un stub minimal
+     * ---------------------------------------------------------- */
+    if (!prospect) {
+
+      const grupoNombre = this.groups.find(g => g.iddistribuidor === data.idDistribuidor)
+        ?.nombredistribuidor || 'Sin Distribuidor';
+
+      prospect = {
+        /* ===== meta-datos ===== */
+        IdPublicacion: data.idPublicacion,
+        IdDistribuidor: data.idDistribuidor,
+        idRed: data.idRedSocial,
+        redSocial: data.idRedSocial,   // ← usa lo que tengas
+        NombreGrupo: grupoNombre,
+        Nombre: '(Nuevo prospecto)',
+        Apellido: '',
+        Email: '',
+        Telefono: '',
+        /* ===== runtime ===== */
+        Conversacion: [],
+        unreadCount: 0,
+        claveUnica: claveUnicaWS
+      } as any as ResponseItem;            // cast rápido
+
+      /* lo alojamos en el grupo correcto (creándolo si hace falta) */
+      let grupo = this.chat.find(c => c.key === grupoNombre);
+      if (!grupo) {
+        grupo = { key: grupoNombre, prospects: [] };
+        this.chat.push(grupo);
+      }
+      grupo.prospects.push(prospect);
+    }
+
+    /* ------------------------------------------------------------
+     * 4. Evitar duplicados
+     * ---------------------------------------------------------- */
+    if (prospect.Conversacion.some(m => m.id === data.idMensaje)) {
+      return; // ya está, nada que hacer
+    }
+
+    /* ------------------------------------------------------------
+     * 5. Insertamos el nuevo mensaje
+     * ---------------------------------------------------------- */
+    prospect.Conversacion.forEach(m => (m.ultimoMensaje = false));
+
+    const nuevoMensaje: Conversacion = {
+      id: data.idMensaje,
+      texto: data.mensaje || data.mensajeDelSocket || '(Notificación)',
+      name: data.appNotificada || 'Cliente',
+      align: 'left',
+      ultimoMensaje: true,
+      isimage: false,
+      imageContent: []
+    };
+
+    prospect.Conversacion.push(nuevoMensaje);
+    prospect.ultimoMensaje = nuevoMensaje;
+
+    /* ------------------------------------------------------------
+     * 6. Contadores / panel derecho
+     * ---------------------------------------------------------- */
+    const abierta = this.activeConversationKey === claveUnicaWS;
+
+    if (!abierta) {
+      prospect.unreadCount = (prospect.unreadCount || 0) + 1;
+    } else {
+      this.message = [...prospect.Conversacion];
+      prospect.unreadCount = 0;
+      this.activeChatId = nuevoMensaje.id;
+      this.selectedChatId = nuevoMensaje.id;
+      this.onListScroll();
+    }
+
+    /* ------------------------------------------------------------
+     * 7. Re-ordenar la lista izquierda (descendente por fecha)
+     * ---------------------------------------------------------- */
+    this.chat.sort((a, b) => {
+      const la = a.prospects[0].ultimoMensaje;
+      const lb = b.prospects[0].ultimoMensaje;
+      const ta = new Date(la?.fechaRespuesta || la?.fechaCreacion || 0).getTime();
+      const tb = new Date(lb?.fechaRespuesta || lb?.fechaCreacion || 0).getTime();
+      return tb - ta;
+    });
   }
-
-  /* ------------------------------------------------------------
-   * 4. Evitar duplicados
-   * ---------------------------------------------------------- */
-  if (prospect.Conversacion.some(m => m.id === data.idMensaje)) {
-    return; // ya está, nada que hacer
-  }
-
-  /* ------------------------------------------------------------
-   * 5. Insertamos el nuevo mensaje
-   * ---------------------------------------------------------- */
-  prospect.Conversacion.forEach(m => (m.ultimoMensaje = false));
-
-  const nuevoMensaje: Conversacion = {
-    id            : data.idMensaje,
-    texto         : data.mensaje || data.mensajeDelSocket || '(Notificación)',
-    name          : data.appNotificada || 'Cliente',
-    align         : 'left',
-    ultimoMensaje : true,
-    isimage       : false,
-    imageContent  : []
-  };
-
-  prospect.Conversacion.push(nuevoMensaje);
-  prospect.ultimoMensaje = nuevoMensaje;
-
-  /* ------------------------------------------------------------
-   * 6. Contadores / panel derecho
-   * ---------------------------------------------------------- */
-  const abierta = this.activeConversationKey === claveUnicaWS;
-
-  if (!abierta) {
-    prospect.unreadCount = (prospect.unreadCount || 0) + 1;
-  } else {
-    this.message        = [...prospect.Conversacion];
-    prospect.unreadCount = 0;
-    this.activeChatId    = nuevoMensaje.id;
-    this.selectedChatId  = nuevoMensaje.id;
-    this.onListScroll();
-  }
-
-  /* ------------------------------------------------------------
-   * 7. Re-ordenar la lista izquierda (descendente por fecha)
-   * ---------------------------------------------------------- */
-  this.chat.sort((a, b) => {
-    const la = a.prospects[0].ultimoMensaje;
-    const lb = b.prospects[0].ultimoMensaje;
-    const ta = new Date(la?.fechaRespuesta || la?.fechaCreacion || 0).getTime();
-    const tb = new Date(lb?.fechaRespuesta || lb?.fechaCreacion || 0).getTime();
-    return tb - ta;
-  });
-}
 
 
 
@@ -764,7 +784,7 @@ private async agregarMensajeSocket(data: any): Promise<void> {
     this.message = data[0].Conversacion;
     this.selectedChatId = data[0].ultimoMensaje.id;
 
-     this.activeConversationKey =
+    this.activeConversationKey =
       `${this.IdPublicacionLead}-${this.idRedSocial}--${this.idDistribuidor}`;
 
     this.onListScroll();
@@ -913,70 +933,70 @@ private async agregarMensajeSocket(data: any): Promise<void> {
   }
 
 
-/**
- * Envía el mensaje que hay en el input y lo muestra
- * de manera optimista.  El refresco real llegará por
- * WebSocket; por eso NO volvemos a llamar a
- * loadRecuperacionMensajes().
- */
-async messageSave() {
-  const texto = this.formData.get('message')!.value?.trim();
-  if (!texto || texto === this.lastSentMessage) {
-    console.log('Mensaje vacío o duplicado; se ignora.');
-    return;
+  /**
+   * Envía el mensaje que hay en el input y lo muestra
+   * de manera optimista.  El refresco real llegará por
+   * WebSocket; por eso NO volvemos a llamar a
+   * loadRecuperacionMensajes().
+   */
+  async messageSave() {
+    const texto = this.formData.get('message')!.value?.trim();
+    if (!texto || texto === this.lastSentMessage) {
+      console.log('Mensaje vacío o duplicado; se ignora.');
+      return;
+    }
+
+    /* ---------- construimos el mensaje local --------------------- */
+    const nuevoMensaje: Conversacion = {
+      id: Date.now(),           // id temporal (se sobrescribirá)
+      texto: texto,
+      name: this.senderName,
+      profile: this.senderProfile,
+      time: null,
+      align: 'right',
+      isimage: false,
+      ultimoMensaje: true,
+      imageContent: [],
+      replayName: null,
+      replaymsg: null
+    };
+
+    /* ---------- lo insertamos en la conversación visible ---------- */
+    const prospecto = this.chat
+      .flatMap(g => g.prospects)
+      .find(p => p.ultimoMensaje.id === this.selectedChatId + '');
+
+    if (prospecto) {
+      prospecto.Conversacion.forEach(m => (m.ultimoMensaje = false));
+      prospecto.Conversacion.push(nuevoMensaje);
+      prospecto.ultimoMensaje = nuevoMensaje;      //  ← referencia actualizada
+      prospecto.unreadCount = 0;
+    }
+
+    /* ---------- panel derecho y scroll --------------------------- */
+    if (this.message !== prospecto?.Conversacion) {
+      this.message = prospecto!.Conversacion;
+    }
+    this.onListScroll();
+
+    /* ---------- POST al backend ---------------------------------- */
+    try {
+      await this.http.post(
+        'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
+        { IdPregunta: this.selectedChatId, Mensaje: texto },
+        { responseType: 'text' }
+      ).toPromise();
+
+      this.lastSentMessage = texto;
+      // 👇 YA NO recargamos la lista – esperamos al WebSocket
+    } catch (err) {
+      console.error('Fallo al enviar:', err);
+      // aquí podrías implementar un retry o marcar el mensaje como no enviado
+    }
+
+    /* ---------- limpiamos el input ------------------------------- */
+    this.formData.reset();
   }
-
-  /* ---------- construimos el mensaje local --------------------- */
-  const nuevoMensaje: Conversacion = {
-    id           : Date.now(),           // id temporal (se sobrescribirá)
-    texto        : texto,
-    name         : this.senderName,
-    profile      : this.senderProfile,
-    time         : null,
-    align        : 'right',
-    isimage      : false,
-    ultimoMensaje: true,
-    imageContent : [],
-    replayName   : null,
-    replaymsg    : null
-  };
-
-  /* ---------- lo insertamos en la conversación visible ---------- */
-  const prospecto = this.chat
-    .flatMap(g => g.prospects)
-    .find(p => p.ultimoMensaje.id === this.selectedChatId + '');
-
-  if (prospecto) {
-    prospecto.Conversacion.forEach(m => (m.ultimoMensaje = false));
-    prospecto.Conversacion.push(nuevoMensaje);
-    prospecto.ultimoMensaje = nuevoMensaje;      //  ← referencia actualizada
-    prospecto.unreadCount = 0;
-  }
-
-  /* ---------- panel derecho y scroll --------------------------- */
-  if (this.message !== prospecto?.Conversacion) {
-    this.message = prospecto!.Conversacion;
-  }
-  this.onListScroll();
-
-  /* ---------- POST al backend ---------------------------------- */
-  try {
-    await this.http.post(
-      'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
-      { IdPregunta: this.selectedChatId, Mensaje: texto },
-      { responseType: 'text' }
-    ).toPromise();
-
-    this.lastSentMessage = texto;
-    // 👇 YA NO recargamos la lista – esperamos al WebSocket
-  } catch (err) {
-    console.error('Fallo al enviar:', err);
-    // aquí podrías implementar un retry o marcar el mensaje como no enviado
-  }
-
-  /* ---------- limpiamos el input ------------------------------- */
-  this.formData.reset();
-}
 
 
   /**
@@ -1171,95 +1191,95 @@ async messageSave() {
     });
   }
 
-/**
- * Descarga las conversaciones y genera TODAS las
- * estructuras que la plantilla usa (chat, chatByRedSocial,
- * chatByDistributorThenRedSocial, collapsedGroups).
- */
-loadRecuperacionMensajes(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    this.http
-      .get<ApiResponse>(
-        'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
-        { params: { idDistribuidor: this.idDistribuidor } }
-      )
-      .subscribe(
-        res => {
-          const prospects = res.body;
+  /**
+   * Descarga las conversaciones y genera TODAS las
+   * estructuras que la plantilla usa (chat, chatByRedSocial,
+   * chatByDistributorThenRedSocial, collapsedGroups).
+   */
+  loadRecuperacionMensajes(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<ApiResponse>(
+          'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/recuperarmsjs',
+          { params: { idDistribuidor: this.idDistribuidor } }
+        )
+        .subscribe(
+          res => {
+            const prospects = res.body;
 
-          /* ---------- claveUnica en cada prospecto ---------------- */
-          prospects.forEach(p => {
-            p.claveUnica =
-              `${p.IdPublicacion}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
-          });
+            /* ---------- claveUnica en cada prospecto ---------------- */
+            prospects.forEach(p => {
+              p.claveUnica =
+                `${p.IdPublicacion}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
+            });
 
-          /* ---------- 1) Agrupación SOLO por red social ----------- */
-          this.chatByRedSocial = prospects.reduce((acc, p) => {
-            (acc[p.redSocial] = acc[p.redSocial] || []).push(p);
-            return acc;
-          }, {} as { [red: string]: ResponseItem[] });
+            /* ---------- 1) Agrupación SOLO por red social ----------- */
+            this.chatByRedSocial = prospects.reduce((acc, p) => {
+              (acc[p.redSocial] = acc[p.redSocial] || []).push(p);
+              return acc;
+            }, {} as { [red: string]: ResponseItem[] });
 
-          /* reiniciamos estado de colapsado */
-          Object.keys(this.chatByRedSocial).forEach(
-            red => (this.collapsedGroups[red] = false)
-          );
+            /* reiniciamos estado de colapsado */
+            Object.keys(this.chatByRedSocial).forEach(
+              red => (this.collapsedGroups[red] = false)
+            );
 
-          /* ---------- 2) Distribuidor → Red social ---------------- */
-          this.chatByDistributorThenRedSocial = prospects.reduce(
-            (acc, p) => {
+            /* ---------- 2) Distribuidor → Red social ---------------- */
+            this.chatByDistributorThenRedSocial = prospects.reduce(
+              (acc, p) => {
+                const dist = this.groups.find(
+                  g => g.iddistribuidor == p.IdDistribuidor
+                )?.nombredistribuidor || 'Sin Distribuidor';
+
+                acc[dist] = acc[dist] || {};
+                acc[dist][p.redSocial] = acc[dist][p.redSocial] || [];
+                acc[dist][p.redSocial].push(p);
+                return acc;
+              },
+              {} as { [dist: string]: { [red: string]: ResponseItem[] } }
+            );
+
+            /* ---------- 3) Agrupación FINAL (chat) ------------------ */
+            const groupedByDist = prospects.reduce((acc, p) => {
               const dist = this.groups.find(
                 g => g.iddistribuidor == p.IdDistribuidor
               )?.nombredistribuidor || 'Sin Distribuidor';
 
-              acc[dist] = acc[dist] || {};
-              acc[dist][p.redSocial] = acc[dist][p.redSocial] || [];
-              acc[dist][p.redSocial].push(p);
+              (acc[dist] = acc[dist] || []).push(p);
               return acc;
-            },
-            {} as { [dist: string]: { [red: string]: ResponseItem[] } }
-          );
+            }, {} as { [dist: string]: ResponseItem[] });
 
-          /* ---------- 3) Agrupación FINAL (chat) ------------------ */
-          const groupedByDist = prospects.reduce((acc, p) => {
-            const dist = this.groups.find(
-              g => g.iddistribuidor == p.IdDistribuidor
-            )?.nombredistribuidor || 'Sin Distribuidor';
+            this.chat = Object.keys(groupedByDist).map(key => ({
+              key,
+              prospects: groupedByDist[key]
+            }));
 
-            (acc[dist] = acc[dist] || []).push(p);
-            return acc;
-          }, {} as { [dist: string]: ResponseItem[] });
+            /* ---------- 4) Ordenar por último mensaje --------------- */
+            this.chat.sort((a, b) => {
+              const la = a.prospects[0].Conversacion.slice(-1)[0];
+              const lb = b.prospects[0].Conversacion.slice(-1)[0];
+              const ta = new Date(la.fechaRespuesta || la.fechaCreacion).getTime();
+              const tb = new Date(lb.fechaRespuesta || lb.fechaCreacion).getTime();
+              return tb - ta;
+            });
 
-          this.chat = Object.keys(groupedByDist).map(key => ({
-            key,
-            prospects: groupedByDist[key]
-          }));
+            /* ---------- 5) Reset unread de la conversación abierta -- */
+            if (this.activeConversationKey) {
+              const abierta = this.chat
+                .flatMap(g => g.prospects)
+                .find(p => p.claveUnica === this.activeConversationKey);
+              if (abierta) abierta.unreadCount = 0;
+            }
 
-          /* ---------- 4) Ordenar por último mensaje --------------- */
-          this.chat.sort((a, b) => {
-            const la = a.prospects[0].Conversacion.slice(-1)[0];
-            const lb = b.prospects[0].Conversacion.slice(-1)[0];
-            const ta = new Date(la.fechaRespuesta || la.fechaCreacion).getTime();
-            const tb = new Date(lb.fechaRespuesta || lb.fechaCreacion).getTime();
-            return tb - ta;
-          });
-
-          /* ---------- 5) Reset unread de la conversación abierta -- */
-          if (this.activeConversationKey) {
-            const abierta = this.chat
-              .flatMap(g => g.prospects)
-              .find(p => p.claveUnica === this.activeConversationKey);
-            if (abierta) abierta.unreadCount = 0;
+            resolve();
+          },
+          err => {
+            console.error(err);
+            reject(err);
           }
-
-          resolve();
-        },
-        err => {
-          console.error(err);
-          reject(err);
-        }
-      );
-  });
-}
+        );
+    });
+  }
 
 
   /**
