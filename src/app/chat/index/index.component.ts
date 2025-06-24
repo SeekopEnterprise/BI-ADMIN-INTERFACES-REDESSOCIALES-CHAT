@@ -11,6 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { map, filter, take, tap } from 'rxjs/operators';
 import {
   FormBuilder,
   Validators,
@@ -76,6 +77,9 @@ function getIdDistribuidor(prospect: any): string {
  * Chat-component
  */
 export class IndexComponent implements OnInit {
+  
+  private primeraNotificacionRecibida = false;
+  private readonly socketUrl = 'wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev';
 
   collapsedGroups: { [key: string]: boolean } = {};
 
@@ -293,6 +297,54 @@ export class IndexComponent implements OnInit {
   }
 
   /**
+ * Conecta al WebSocket y:
+ *  1) Espera la PRIMERA notificación con idDistribuidor.
+ *  2) Cuando llega, descarga todo, apaga el loader y
+ *     deja el flujo normal para las demás notificaciones.
+ */
+  private iniciarWebSocket(): void {
+    this.chatSubscription = this.notificacionService
+      .connect(this.socketUrl)
+
+      /* RxJS: parsea los mensajes entrantes */
+      .pipe(map((e: MessageEvent) => JSON.parse(e.data)))
+
+      /* -------- PRIMER mensaje con idDistribuidor -------- */
+      .pipe(
+        filter(m => !!m.idDistribuidor), // sólo los que traen idDistribuidor
+        take(1),                         // ¡el primero y basta!
+        tap(async primeraData => {
+          this.primeraNotificacionRecibida = true;
+          this.idDistribuidor = primeraData.idDistribuidor;
+
+          try {
+            await this.loadGrupos();
+            await this.descargarMensajesIniciales();   // ⬅️  quítalo si no lo necesitas
+            await this.loadRecuperacionMensajes();
+          } catch (e) {
+            console.error('Fallo carga inicial:', e);
+          } finally {
+            this.isLoadingMensajesIniciales = false;   // quita el spinner
+          }
+        })
+      )
+
+      /* ---- A partir de aquí TODAS las notificaciones ---- */
+      .subscribe(
+        data => this.agregarMensajeSocket(data),
+        err  => console.error('WS error:', err)
+      );
+
+    /* Time-out de seguridad — opcional pero aconsejado */
+    setTimeout(() => {
+      if (this.isLoadingMensajesIniciales && !this.primeraNotificacionRecibida) {
+        this.isLoadingMensajesIniciales = false;
+        console.warn('Timeout: no llegó ninguna notificación en 30 s');
+      }
+    }, 30_000);
+  }
+
+  /**
    * Inicialización del componente
    */
   async ngOnInit() {
@@ -323,7 +375,7 @@ export class IndexComponent implements OnInit {
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     // 1. Abrimos el socket de inmediato, para que reciba notificaciones
-    this.chatSubscription = this.notificacionService
+  /*   this.chatSubscription = this.notificacionService
       .connect('wss://namj4mlg8g.execute-api.us-west-1.amazonaws.com/dev')
       .subscribe((event: MessageEvent) => {
         const data = JSON.parse(event.data);
@@ -341,6 +393,11 @@ export class IndexComponent implements OnInit {
           console.log('Notificación WS sin idMensaje, data:', data);
         }
       });
+ */
+    this.isLoadingMensajesIniciales = true;
+
+  /*   Sustituye la apertura antigua por esta línea */
+  this.iniciarWebSocket();
 
     try {
       // 2. Recupera el usuario del servicio o del localStorage
