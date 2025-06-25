@@ -67,6 +67,22 @@ function getIdDistribuidor(prospect: any): string {
   return (prospect.IdDistribuidor ?? prospect.idDistribuidor ?? '').toString();
 }
 
+/** Devuelve la misma clave que usa el backend */
+function buildKey(p: any): string {
+
+  const usuario =
+    p.IdProspecto && p.IdProspecto !== 'FACE_'
+      ? p.IdProspecto                           // caso normal
+      : `PUB_${p.IdPublicacion ?? p.idPublicacion}`; // PSID oculto
+
+  const red = (p.idred ?? p.idRed ?? p.idRedSocial ?? p.idredsocial).toString();
+  const dist = (p.IdDistribuidor ?? p.idDistribuidor).toString();
+
+  return `${usuario}-${red}--${dist}`;
+}
+
+
+
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
@@ -526,8 +542,7 @@ export class IndexComponent implements OnInit {
     /* ------------------------------------------------------------
      * 1. Clave única y localización del prospecto
      * ---------------------------------------------------------- */
-    const claveUnicaWS =
-      `${data.idPublicacion}-${data.idRedSocial}--${data.idDistribuidor}`;
+    const claveUnicaWS = buildKey(data);
 
     const findProspect = () =>
       this.chat.flatMap(g => g.prospects)
@@ -1263,8 +1278,7 @@ export class IndexComponent implements OnInit {
 
             /* ---------- claveUnica en cada prospecto ---------------- */
             prospects.forEach(p => {
-              p.claveUnica =
-                `${p.IdPublicacion}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
+              p.claveUnica = buildKey(p);          // << antes concatenabas “a mano”
             });
 
             /* ---------- 1) Agrupación SOLO por red social ----------- */
