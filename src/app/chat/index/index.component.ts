@@ -176,9 +176,6 @@ export class IndexComponent implements OnInit {
   public vistaPorDistribuidor: boolean = true;
   public chatByDistributorThenRedSocial: any;
 
-  // Control del último mensaje enviado (para evitar duplicados)
-  public lastSentMessage = '';
-
   // Parámetros usados para la API
   public par_IdPublicacionLead: string;
   public par_idDistribuidor: string;
@@ -1003,22 +1000,24 @@ export class IndexComponent implements OnInit {
 
 
   /**
-   * Envía el mensaje que hay en el input y lo muestra
-   * de manera optimista.  El refresco real llegará por
-   * WebSocket; por eso NO volvemos a llamar a
-   * loadRecuperacionMensajes().
+   * Envía el mensaje escrito en el input.
+   * ▸ No hace ninguna comprobación de duplicados; permite enviar el mismo
+   *    texto tantas veces como el usuario desee.
+   * ▸ Inserta el mensaje localmente de forma optimista; la confirmación real
+   *    llegará luego por WebSocket.
    */
-  async messageSave() {
+  async messageSave(): Promise<void> {
+
     const texto = this.formData.get('message')!.value?.trim();
-    if (!texto || texto === this.lastSentMessage) {
-      console.log('Mensaje vacío o duplicado; se ignora.');
+    if (!texto) {                         // 1) vacío ⇒ no hacemos nada
+      console.log('Mensaje vacío; se ignora.');
       return;
     }
 
-    /* ---------- construimos el mensaje local --------------------- */
+    /* 2) Construimos el mensaje local */
     const nuevoMensaje: Conversacion = {
-      id: Date.now(),           // id temporal (se sobrescribirá)
-      texto: texto,
+      id: Date.now(),                     // id temporal
+      texto,
       name: this.senderName,
       profile: this.senderProfile,
       time: null,
@@ -1030,7 +1029,7 @@ export class IndexComponent implements OnInit {
       replaymsg: null
     };
 
-    /* ---------- lo insertamos en la conversación visible ---------- */
+    /* 3) Lo añadimos a la conversación activa (panel derecho) */
     const prospecto = this.chat
       .flatMap(g => g.prospects)
       .find(p => p.ultimoMensaje.id === this.selectedChatId + '');
@@ -1038,34 +1037,32 @@ export class IndexComponent implements OnInit {
     if (prospecto) {
       prospecto.Conversacion.forEach(m => (m.ultimoMensaje = false));
       prospecto.Conversacion.push(nuevoMensaje);
-      prospecto.ultimoMensaje = nuevoMensaje;      //  ← referencia actualizada
+      prospecto.ultimoMensaje = nuevoMensaje;
       prospecto.unreadCount = 0;
     }
 
-    /* ---------- panel derecho y scroll --------------------------- */
+    /* Refrescamos la vista y hacemos scroll */
     if (this.message !== prospecto?.Conversacion) {
       this.message = prospecto!.Conversacion;
     }
     this.onListScroll();
 
-    /* ---------- POST al backend ---------------------------------- */
+    /* 4) Llamada real al backend */
     try {
       await this.http.post(
         'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviamsjs',
         { IdPregunta: this.selectedChatId, Mensaje: texto },
         { responseType: 'text' }
       ).toPromise();
-
-      this.lastSentMessage = texto;
-      // 👇 YA NO recargamos la lista – esperamos al WebSocket
     } catch (err) {
       console.error('Fallo al enviar:', err);
-      // aquí podrías implementar un retry o marcar el mensaje como no enviado
+      // aquí podrías marcar el mensaje como no enviado o re-intentar
     }
 
-    /* ---------- limpiamos el input ------------------------------- */
+    /* 5) Limpiamos el input */
     this.formData.reset();
   }
+
 
 
   /**
