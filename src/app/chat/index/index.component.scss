@@ -95,6 +95,11 @@
   filter: brightness(1.2);
 }
 
+.chats .conversation-list {
+  max-width: 75%;
+  width: auto !important;
+  word-break: break-word;
+}
 
 /* cambios 29-08-2023
 .container {

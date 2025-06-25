@@ -833,7 +833,9 @@ export class IndexComponent implements OnInit {
     this.idRedSocial = data[0]['idred'];
     this.userStatus = 'En línea';
     this.userProfile = '';
-    this.message = data[0].Conversacion;
+    this.message = [];
+    this.cdr.detectChanges();
+    this.message = data[0].Conversacion.map(m => ({ ...m }));
     this.selectedChatId = data[0].ultimoMensaje.id;
 
     this.activeConversationKey =
@@ -1747,6 +1749,18 @@ export class IndexComponent implements OnInit {
       });
     });
   }
+
+  /* ──────────────────────────────────────────────────────────────
+ *  NUEVO MÉTODO  –  coloca dentro de la clase IndexComponent
+ * ──────────────────────────────────────────────────────────── */
+  trackByMsg(_index: number, msg: Conversacion): string {
+    /*  
+       Combina la clave única de la conversación con el id del mensaje
+       para que Angular sepa que cada nodo es distinto a nivel global.
+    */
+    return `${this.activeConversationKey || 'sinClave'}-${msg.id}`;
+  }
+
 
   getHoraMensaje(msg: Conversacion): string {
     if (msg.time) return msg.time;
