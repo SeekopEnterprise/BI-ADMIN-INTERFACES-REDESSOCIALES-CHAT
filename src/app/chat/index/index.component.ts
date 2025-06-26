@@ -69,16 +69,7 @@ function getIdDistribuidor(prospect: any): string {
 
 /** Devuelve la misma clave que usa el backend */
 function buildKey(p: any): string {
-
-  const usuario =
-    p.IdProspecto && p.IdProspecto !== 'FACE_'
-      ? p.IdProspecto                           // caso normal
-      : `PUB_${p.IdPublicacion ?? p.idPublicacion}`; // PSID oculto
-
-  const red = (p.idred ?? p.idRed ?? p.idRedSocial ?? p.idredsocial).toString();
-  const dist = (p.IdDistribuidor ?? p.idDistribuidor).toString();
-
-  return `${usuario}-${red}--${dist}`;
+  return `${p.IdHilo}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
 }
 
 
