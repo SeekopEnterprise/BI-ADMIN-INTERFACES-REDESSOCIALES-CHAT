@@ -11,7 +11,7 @@ export interface Conversacion {
   replayName?: any,
   replaymsg?: any,
   fechaCreacion?: any,
-  fechaRespuesta?:any,
+  fechaRespuesta?: any,
 }
 
 export interface GroupedResponseItem {
@@ -35,6 +35,7 @@ export interface ResponseItem {
   Telefono: string;
   Conversacion: Conversacion[];
   unreadCount?: number;
+  IdHilo?: string;
   ultimoMensaje?: UltimoMensaje;
   claveUnica?: any;
 }
@@ -87,7 +88,7 @@ export interface UltimoMensaje {
   replayName?: any,
   replaymsg?: any,
   fechaCreacion?: any,
-  fechaRespuesta?:any,
+  fechaRespuesta?: any,
 }
 
 export interface Interesado {

@@ -67,12 +67,11 @@ function getIdDistribuidor(prospect: any): string {
   return (prospect.IdDistribuidor ?? prospect.idDistribuidor ?? '').toString();
 }
 
-/** Devuelve la misma clave que usa el backend */
+/** Devuelve la misma clave que usa el backend  */
 function buildKey(p: any): string {
-  return `${p.IdHilo}-${getIdRed(p)}--${getIdDistribuidor(p)}`;
+  const hilo = p.IdHilo ?? p.idHilo ?? p.IdPregunta ?? '';
+  return `${hilo}-${getIdRed(p)}-${getIdDistribuidor(p)}`;
 }
-
-
 
 @Component({
   selector: 'app-index',
@@ -557,6 +556,7 @@ export class IndexComponent implements OnInit {
       prospect = {
         /* ===== meta-datos ===== */
         IdPublicacion: data.idPublicacion,
+        IdHilo: data.IdHilo ?? data.idHilo ?? data.IdPregunta ?? '',
         IdDistribuidor: data.idDistribuidor,
         idRed: data.idRedSocial,
         redSocial: data.idRedSocial,   // ← usa lo que tengas
@@ -842,7 +842,8 @@ export class IndexComponent implements OnInit {
     this.selectedChatId = data[0].ultimoMensaje.id;
 
     this.activeConversationKey =
-      `${this.IdPublicacionLead}-${this.idRedSocial}--${this.idDistribuidor}`;
+      `${data[0].IdHilo}-${this.idRedSocial}-${this.idDistribuidor}`;
+
 
     this.onListScroll();
 
@@ -1756,13 +1757,8 @@ export class IndexComponent implements OnInit {
  *  NUEVO MÉTODO  –  coloca dentro de la clase IndexComponent
  * ──────────────────────────────────────────────────────────── */
   trackByMsg(_index: number, msg: Conversacion): string {
-    /*  
-       Combina la clave única de la conversación con el id del mensaje
-       para que Angular sepa que cada nodo es distinto a nivel global.
-    */
-    return `${this.activeConversationKey || 'sinClave'}-${msg.id}`;
+    return `${this.activeConversationKey}-${msg.id}`;   // usa la nueva clave unificada
   }
-
 
   getHoraMensaje(msg: Conversacion): string {
     if (msg.time) return msg.time;
