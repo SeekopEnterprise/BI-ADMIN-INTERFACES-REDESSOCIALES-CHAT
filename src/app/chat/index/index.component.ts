@@ -69,7 +69,10 @@ function getIdDistribuidor(prospect: any): string {
 
 /** Devuelve la misma clave que usa el backend  */
 function buildKey(p: any): string {
-  const hilo = p.IdHilo ?? p.idHilo ?? p.IdPregunta ?? '';
+  const hilo =
+    p.IdHilo ?? p.idHilo ??
+    p.IdPregunta ?? p.idPregunta ??
+    p.idMensaje ?? '';                 // 👈 NUEVO
   return `${hilo}-${getIdRed(p)}-${getIdDistribuidor(p)}`;
 }
 
