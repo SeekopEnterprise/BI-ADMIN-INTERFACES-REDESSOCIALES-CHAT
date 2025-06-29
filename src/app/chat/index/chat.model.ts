@@ -20,6 +20,7 @@ export interface GroupedResponseItem {
 }
 
 export interface ResponseItem {
+  profilePicture: string;
   IdPublicacion: string;
   idPregunta: string;
   fechaRespuestaUltimoMensaje?: string;
@@ -28,6 +29,7 @@ export interface ResponseItem {
   idRed: string;
   redSocial: string;
   IdProspecto: string;
+  FotoPerfilUrl: string;
   Nombre: string;
   Apellido: string;
   Email: string;

@@ -565,6 +565,8 @@ export class IndexComponent implements OnInit {
         redSocial: data.idRedSocial,   // ← usa lo que tengas
         NombreGrupo: grupoNombre,
         Nombre: '(Nuevo prospecto)',
+        FotoPerfilUrl: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEVO
+        profilePicture: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEV
         Apellido: '',
         Email: '',
         Telefono: '',
@@ -1270,7 +1272,8 @@ export class IndexComponent implements OnInit {
 
             /* ---------- claveUnica en cada prospecto ---------------- */
             prospects.forEach(p => {
-              p.claveUnica = buildKey(p);          // << antes concatenabas “a mano”
+              p.claveUnica = buildKey(p);      
+              p.profilePicture = p.FotoPerfilUrl || null;
             });
 
             /* ---------- 1) Agrupación SOLO por red social ----------- */
