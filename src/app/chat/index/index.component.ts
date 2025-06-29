@@ -1735,7 +1735,7 @@ export class IndexComponent implements OnInit {
       console.warn('No hay idDistribuidor definido. No se descargan mensajes.');
       return;
     }
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=${this.idDistribuidor}&plataforma=both&days=10`;
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=${this.idDistribuidor}&plataforma=both&days=1`;
 
     this.isLoading = true;
 
