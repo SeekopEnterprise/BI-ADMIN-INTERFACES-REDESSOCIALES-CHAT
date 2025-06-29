@@ -840,7 +840,7 @@ export class IndexComponent implements OnInit {
     this.nombreDistribuidor = data[0].NombreGrupo;
     this.idRedSocial = data[0]['idred'];
     this.userStatus = 'En línea';
-    this.userProfile = '';
+    this.userProfile = data[0].profilePicture || data[0].FotoPerfilUrl || '';
     this.message = [];
     this.cdr.detectChanges();
     this.message = data[0].Conversacion.map(m => ({ ...m }));
