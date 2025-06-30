@@ -40,6 +40,7 @@ export interface ResponseItem {
   IdHilo?: string;
   ultimoMensaje?: UltimoMensaje;
   claveUnica?: any;
+  fotoPaginaUrl?: any;
 }
 
 export interface ApiResponse {

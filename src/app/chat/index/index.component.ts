@@ -661,7 +661,7 @@ export class IndexComponent implements OnInit {
         this.usuarioCorreo = event.data.username;
         if (this.usuarioCorreo) {
           this.senderName = this.usuarioCorreo;
-          this.senderProfile = 'assets/images/users/' + event.data.profile;
+          this.senderProfile = 'assets/images/users/' + event.data.fotoPaginaUrl;
           await this.loadGrupos();
           await this.loadRecuperacionMensajes();
         }
@@ -821,6 +821,7 @@ export class IndexComponent implements OnInit {
     this.apellidoPaterno = data[0].Apellido;
     this.Telefono = data[0].Telefono;
     this.Email = data[0].Email;
+    this.senderProfile = data[0].fotoPaginaUrl;
 
     // Precarga del formulario con datos
     this.newInteresadoForm = {
