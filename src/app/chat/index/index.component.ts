@@ -567,7 +567,7 @@ export class IndexComponent implements OnInit {
         Nombre: '(Nuevo prospecto)',
         FotoPerfilUrl: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEVO
         profilePicture: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEV
-        Apellido:  data.Apellido || '',
+        Apellido: data.Apellido || '',
         Email: '',
         Telefono: '',
         /* ===== runtime ===== */
@@ -1004,14 +1004,21 @@ export class IndexComponent implements OnInit {
    * ▸ Inserta el mensaje localmente de forma optimista; la confirmación real
    *    llegará luego por WebSocket.
    */
-  async messageSave(): Promise<void> {
+  private lastSent = { text: '', ts: 0 };   // ⏱️ registro del último envío
+
+  async messageSave(ev?: Event): Promise<void> {
+    // --- evita que la tecla Enter propague el submit---
+    if (ev) { ev.preventDefault(); ev.stopPropagation(); }
 
     const texto = this.formData.get('message')!.value?.trim();
-    if (!texto) {                         // 1) vacío ⇒ no hacemos nada
-      console.log('Mensaje vacío; se ignora.');
-      return;
-    }
+    if (!texto) { return; }                 // vacío ⇒ salir
 
+    /*  🛑  Anti-doble-click / Anti-enter-rápido  (1 seg.)  */
+    const ahora = Date.now();
+    if (texto === this.lastSent.text && ahora - this.lastSent.ts < 1000) {
+      return;                               // ignorar duplicado
+    }
+    this.lastSent = { text: texto, ts: ahora };
     /* 2) Construimos el mensaje local */
     const nuevoMensaje: Conversacion = {
       id: Date.now(),                     // id temporal
@@ -1020,6 +1027,7 @@ export class IndexComponent implements OnInit {
       profile: this.senderProfile,
       time: null,
       align: 'right',
+      fechaCreacion: ahora,
       isimage: false,
       ultimoMensaje: true,
       imageContent: [],
@@ -1273,7 +1281,7 @@ export class IndexComponent implements OnInit {
 
             /* ---------- claveUnica en cada prospecto ---------------- */
             prospects.forEach(p => {
-              p.claveUnica = buildKey(p);      
+              p.claveUnica = buildKey(p);
               p.profilePicture = p.FotoPerfilUrl || null;
             });
 
