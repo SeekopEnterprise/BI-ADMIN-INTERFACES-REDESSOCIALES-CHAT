@@ -117,14 +117,14 @@
                               class="rounded-circle avatar-xs" alt="" />
                             <div class="avatar-xs" *ngIf="!user.profilePicture">
                               <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                {{(user.Nombre | translate).charAt(0)}}
+                                {{(user.Nombre + " " + user.Apellido | translate).charAt(0)}}
                               </span>
                             </div>
                             <span *ngIf="user" class="user-status"></span>
                           </div>
                           <div class="flex-grow-1 overflow-hidden">
                             <h5 class="text-truncate font-size-15 mb-1">
-                              {{user.Nombre | translate}}
+                              {{user.Nombre + " " + user.Apellido | translate}}
                             </h5>
                             <p *ngIf="user.isTyping" class="chat-user-message text-truncate mb-0">
                               typing
@@ -214,7 +214,7 @@
                   <h5 class="font-size-16 mb-0 text-truncate">
                     <a href="javascript:void(0);" class="text-reset user-profile-show username"
                       (click)="onChatInfoClicked(userInfo)">
-                      {{userName}}
+                      {{userName + " " + apellidoPaterno}}
                     </a>
                   </h5>
                   <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"

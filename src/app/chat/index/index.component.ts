@@ -567,7 +567,7 @@ export class IndexComponent implements OnInit {
         Nombre: '(Nuevo prospecto)',
         FotoPerfilUrl: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEVO
         profilePicture: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEV
-        Apellido: '',
+        Apellido:  data.Apellido || '',
         Email: '',
         Telefono: '',
         /* ===== runtime ===== */
