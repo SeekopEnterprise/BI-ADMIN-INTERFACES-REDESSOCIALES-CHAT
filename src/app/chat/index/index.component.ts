@@ -513,24 +513,24 @@ export class IndexComponent implements OnInit {
 
 
   /**
-   * Inserta o crea la conversación que llega por WebSocket.
-   *  ▸ Evita duplicados
-   *  ▸ Mantiene contador/orden
-   *  ▸ Si el prospecto aún no existe, lo genera “en caliente”
-   */
+  * Inserta o actualiza la conversación que llega por WebSocket.
+  *  ▸ Evita duplicados
+  *  ▸ Mantiene contador/orden
+  *  ▸ Actualiza la foto de perfil en caliente
+  */
   private async agregarMensajeSocket(data: any): Promise<void> {
 
     /* ── loader: contar primeras notificaciones ───────────── */
     if (this.isLoadingMensajesIniciales && this.primeraNotificacionRecibida) {
       if (++this.mensajesWsRecibidos >= 2) {
-        clearTimeout(this.timeoutLoaderFallback);   // ya no hace falta el fallback
-        this.isLoadingMensajesIniciales = false;    // ⬅️ ocultar spinner
+        clearTimeout(this.timeoutLoaderFallback);
+        this.isLoadingMensajesIniciales = false;
         this.cdr.detectChanges();
       }
     }
 
     /* ------------------------------------------------------------
-     * 1. Clave única y localización del prospecto
+     * 1. Localizamos el prospecto que corresponde a la notificación
      * ---------------------------------------------------------- */
     const claveUnicaWS = buildKey(data);
 
@@ -540,43 +540,51 @@ export class IndexComponent implements OnInit {
 
     let prospect = findProspect();
 
+    /* ──────────────────────────────────────────────────────────
+     * 🔄  BLOQUE NUEVO – Actualiza la foto si llegó corregida
+     * ──────────────────────────────────────────────────────────*/
+    if (prospect && data.FotoPerfilUrl &&
+      data.FotoPerfilUrl.trim() !== '' &&
+      data.FotoPerfilUrl !== prospect.FotoPerfilUrl) {
+
+      prospect.FotoPerfilUrl = data.FotoPerfilUrl;
+      prospect.profilePicture = data.FotoPerfilUrl;   // la que usa tu template
+    }
+
     /* ------------------------------------------------------------
-     * 2. ¿No existe?  Intentamos recargar y volvemos a buscar
+     * 2. Si no existe el prospecto lo recargamos / creamos
      * ---------------------------------------------------------- */
     if (!prospect) {
       await this.loadRecuperacionMensajes();
       prospect = findProspect();
     }
 
-    /* ------------------------------------------------------------
-     * 3. Si sigue sin existir, creamos un stub minimal
-     * ---------------------------------------------------------- */
     if (!prospect) {
-
-      const grupoNombre = this.groups.find(g => g.iddistribuidor === data.idDistribuidor)
-        ?.nombredistribuidor || 'Sin Distribuidor';
+      const grupoNombre = this.groups.find(
+        g => g.iddistribuidor === data.idDistribuidor)?.nombredistribuidor
+        || 'Sin Distribuidor';
 
       prospect = {
-        /* ===== meta-datos ===== */
+        /* meta-datos mínimos                         */
         IdPublicacion: data.idPublicacion,
         IdHilo: data.IdHilo ?? data.idHilo ?? data.IdPregunta ?? '',
         IdDistribuidor: data.idDistribuidor,
         idRed: data.idRedSocial,
-        redSocial: data.idRedSocial,   // ← usa lo que tengas
+        redSocial: data.idRedSocial,
         NombreGrupo: grupoNombre,
         Nombre: '(Nuevo prospecto)',
-        FotoPerfilUrl: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEVO
-        profilePicture: data.FotoPerfilUrl || data.fotoPerfilUrl || null, // NUEV
+        FotoPerfilUrl: data.FotoPerfilUrl || null,
+        profilePicture: data.FotoPerfilUrl || null,
         Apellido: data.Apellido || '',
         Email: '',
         Telefono: '',
-        /* ===== runtime ===== */
+        /* runtime                                     */
         Conversacion: [],
         unreadCount: 0,
         claveUnica: claveUnicaWS
-      } as any as ResponseItem;            // cast rápido
+      } as any;
 
-      /* lo alojamos en el grupo correcto (creándolo si hace falta) */
+      /* lo metemos en su grupo                       */
       let grupo = this.chat.find(c => c.key === grupoNombre);
       if (!grupo) {
         grupo = { key: grupoNombre, prospects: [] };
@@ -585,12 +593,12 @@ export class IndexComponent implements OnInit {
       grupo.prospects.push(prospect);
     }
 
-    /* ---------- 4. Duplicados & contadores ------------------ */
+    /* ------------------------------------------------------------
+     * 3. Duplicados & conteo
+     * ---------------------------------------------------------- */
     const duplicado = prospect.Conversacion
       .some(m => m.id === data.idMensaje);
 
-    /*  ➜  Si el mensaje NO existe lo insertamos;
-           si SÍ existe, solo actualizamos contador/orden       */
     if (!duplicado) {
       prospect.Conversacion.forEach(m => m.ultimoMensaje = false);
 
@@ -601,7 +609,8 @@ export class IndexComponent implements OnInit {
         align: 'left',
         ultimoMensaje: true,
         isimage: false,
-        imageContent: []
+        imageContent: [],
+        fechaCreacion: Date.now()
       };
 
       prospect.Conversacion.push(nuevoMensaje);
@@ -609,12 +618,12 @@ export class IndexComponent implements OnInit {
     }
 
     /* ------------------------------------------------------------
-     * 5. Contadores / panel derecho
+     * 4. Contadores / panel derecho
      * ---------------------------------------------------------- */
     const abierta = this.activeConversationKey === claveUnicaWS;
 
     if (!abierta) {
-      prospect.unreadCount = (prospect.unreadCount || 0) + 1;
+      prospect.unreadCount = (prospect.unreadCount || 0) + (duplicado ? 0 : 1);
     } else {
       this.message = [...prospect.Conversacion];
       prospect.unreadCount = 0;
@@ -626,22 +635,21 @@ export class IndexComponent implements OnInit {
     }
 
     /* ------------------------------------------------------------
-     * 6. Re-ordenar la lista izquierda (descendente por fecha)
+     * 5. Re-ordenamos la lista y refrescamos vista
      * ---------------------------------------------------------- */
-    /* ---------- 6. Re-ordenamos y forzamos CD --------------- */
     this.chat.sort((a, b) => {
       const ta = new Date(a.prospects[0].ultimoMensaje?.fechaRespuesta
-        || a.prospects[0].ultimoMensaje?.fechaCreacion
-        || 0).getTime();
+        || a.prospects[0].ultimoMensaje?.fechaCreacion || 0).getTime();
       const tb = new Date(b.prospects[0].ultimoMensaje?.fechaRespuesta
-        || b.prospects[0].ultimoMensaje?.fechaCreacion
-        || 0).getTime();
+        || b.prospects[0].ultimoMensaje?.fechaCreacion || 0).getTime();
       return tb - ta;
     });
+
     this.updateSkeletonVisibility();
-    this.chat = [...this.chat];        // <- fuerza change-detection
+    this.chat = [...this.chat];           // fuerza Change Detection
     this.cdr.detectChanges();
   }
+
 
 
 
