@@ -294,14 +294,14 @@ export class IndexComponent implements OnInit {
     // Form para interesado
     this.interesadoForm = this.formBuilder.group({
       nombre: ['', [Validators.required, Validators.maxLength(20)]],
-      apellidoP: ['', [Validators.required, Validators.maxLength(20)]],
-      apellidoM: ['', [Validators.required, Validators.maxLength(20)]],
+      apellidoP: ['', [Validators.maxLength(20)]],
+      apellidoM: ['', [Validators.maxLength(20)]],
       telefono: [
         '',
-        [Validators.required, Validators.minLength(10), Validators.maxLength(10)]
+        [ Validators.minLength(10), Validators.maxLength(10)]
       ],
-      email: ['', [Validators.required, Validators.email]],
-      comentarios: ['', [Validators.required, Validators.maxLength(20)]]
+      email: ['', [Validators.email]],
+      comentarios: ['', [ Validators.maxLength(20)]]
     });
   }
 
@@ -1299,6 +1299,8 @@ this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
     });
   }
 
+  
+
   /**
    * Descarga las conversaciones y genera TODAS las
    * estructuras que la plantilla usa (chat, chatByRedSocial,
@@ -1783,7 +1785,7 @@ this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
       console.warn('No hay idDistribuidor definido. No se descargan mensajes.');
       return;
     }
-    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=${this.idDistribuidor}&plataforma=both&days=10`;
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/descargamensajes?idDistribuidor=${this.idDistribuidor}&plataforma=both&days=20`;
 
     this.isLoading = true;
 

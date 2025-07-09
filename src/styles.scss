@@ -70,11 +70,55 @@ i.ri-delete-bin-6-fill{
   border-radius: 20px;
   opacity: 1;
   color: black;
+      height: 98vh !important
 }
 
-.layout-wrapper{
-  background: white;
+.layout-wrapper {
+  height: 100vh;             /* pantalla completa */
+  overflow: hidden;          /* nada sale de aquí */
+  display: flex;             /* mantiene distribuciones flex */
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;          /* 🔑 oculta la barra global */
+}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.chat-leftsidebar{
+  height: 98vh !important;
+}
+.user-chat {                 /* o la clase que uses para la derecha */
+  //height: 100%;              /* hereda 100 vh */
+  overflow: hidden;          /* NO scroll externo */
+}
+
+/* 4️⃣  Solo estas zonas internas podrán desplazarse */
+.chat-message-list,
+.chat-conversation {
+  height: calc(100vh - 160px); /* 160 px ≈ header+input   ajusta a tu layout */
+  overflow-y: auto;            /* scroll SOLO aquí        */
+  -ms-overflow-style: none;    /* IE / Edge */
+  scrollbar-width: none;       /* Firefox */
+}
+.chat-message-list::-webkit-scrollbar,
+.chat-conversation::-webkit-scrollbar {
+  display: none;               /* Chrome */
+}
+
+/* 5️⃣  El iframe de la vista previa se adapta y nunca crea scroll */
+#iframePub, .iframe-wrapper {  /* wrapper opcional */
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
+}
+
+
+.offcanvas-backdrop {
+    border-radius: 15px !important
+}
+
+.modal-backdrop {
+  border-radius: 15px !important
+}

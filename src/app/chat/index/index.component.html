@@ -273,12 +273,15 @@
                 </ng-template>
 
                 <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                  <button type="button" id="btnEnviarSeekop_{{idMensajeLeads}}" class="btn nav-btn"
-                    data-bs-toggle="modal" data-bs-target="#videocallModal" ngbTooltip="Enviar a Seekop"
-                    (click)="openVideoModal(videoContent)">
-                    <i class="ri-send-plane-fill" id="btnenviarleads_{{idMensajeLeads}}"></i>
-                    <i class="ri-check-line" id="btnenviadoleads_{{idMensajeLeads}}"
-                      style="color:#14A44D;font-size: 1.2rem;display: none;"></i>
+                  <button type="button" id="btnEnviarSeekop_{{ idMensajeLeads }}" class="btn nav-btn"
+                    data-bs-toggle="modal" data-bs-target="#videocallModal" [ngbTooltip]="
+      enviadoSeekop
+        ? 'Lead enviado a Seekop ¿ver información?'
+        : 'Enviar a Seekop'
+  " (click)="openVideoModal(videoContent)">
+                    <!-- Ícono cambia según el estado -->
+                    <i *ngIf="!enviadoSeekop" class="ri-send-plane-fill"></i>
+                    <i *ngIf="enviadoSeekop" class="ri-check-line" style="color:#14A44D;font-size:1.2rem"></i>
                   </button>
                 </li>
 
@@ -326,8 +329,12 @@
                           <span class="readonly-display">{{ IdPublicacionLead }}</span>
                         </div> -->
 
-                        <div class="mb-3 mt-3">
+                        <div class="mb-3 mt-3" *ngIf="nombreSubcampana != ''">
                           <span class="readonly-display "><strong>Subcampaña: {{ nombreSubcampana }}</strong></span>
+                        </div>
+
+                          <div class="mb-3 mt-3" *ngIf="nombreSubcampana === ''">
+                          <span class="readonly-display "><strong style="color: #ff4444;">Publicación no gestionada por Community Manager</strong></span>
                         </div>
 
                         <div class="mb-3">
@@ -348,8 +355,8 @@
                           <label class="form-label" for="nombre"><strong>Nombre *:</strong></label>
                           <input formControlName="nombre" [ngClass]="{'is-invalid': submitted && f.nombre.errors }"
                             type="text" class="form-control" [(ngModel)]="newInteresadoForm.nombre" placeholder=""
-                            pattern="[A-Za-z\s]*" />
-                          <div *ngIf="
+                            pattern="[A-Za-z\s]*" [readonly]="enviadoSeekop" />
+                          <div *ngIf=" !enviadoSeekop &&
                               interesadoForm.controls['nombre'].invalid &&
                               (interesadoForm.controls['nombre'].dirty ||
                                 interesadoForm.controls['nombre'].touched)
@@ -369,12 +376,12 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="apellidoP"><strong>Apellido *:</strong></label>
+                          <label class="form-label" for="apellidoP"><strong>Apellido :</strong></label>
                           <input formControlName="apellidoP"
                             [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text"
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidop" placeholder=""
-                            pattern="[A-Za-z\s]*" />
-                          <div *ngIf="
+                            pattern="[A-Za-z\s]*" [readonly]="enviadoSeekop"/>
+                          <div *ngIf=" !enviadoSeekop &&
                               interesadoForm.controls['apellidoP'].invalid &&
                               (interesadoForm.controls['apellidoP'].dirty ||
                                 interesadoForm.controls['apellidoP'].touched)
@@ -391,19 +398,19 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="telefono"><strong>Telefono *:</strong></label>
+                          <label class="form-label" for="telefono"><strong>Telefono :</strong></label>
                           <div class="input-group">
                             <input formControlName="telefono"
                               [ngClass]="{'is-invalid': submitted && f.telefono.errors }" type="number"
                               class="form-control" [(ngModel)]="newInteresadoForm.telefono" placeholder="5522123456"
-                              (input)="onInputChange($event)" pattern="[0-9\s]*" />
+                              (input)="onInputChange($event)" pattern="[0-9\s]*" [disabled]="enviadoSeekop" />
                             <i _ngcontent-vco-c34="" id="btnVerificado_{{idMensajeLeads}}" class="ri-user-follow-fill"
                               style="color: rgb(20, 164, 77); font-size: 1.5rem; display: none;"></i>
                             <i _ngcontent-vco-c34="" id="btnNoVerificado_{{idMensajeLeads}}"
                               class="ri-user-unfollow-fill"
                               style="color: #ff4444; font-size: 1.5rem; display: none;"></i>
                           </div>
-                          <div *ngIf="
+                          <div *ngIf="  !enviadoSeekop &&
                               interesadoForm.controls['telefono'].invalid &&
                               (interesadoForm.controls['telefono'].dirty ||
                                 interesadoForm.controls['telefono'].touched)
@@ -420,11 +427,11 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="email"> <strong>Email *:</strong> </label>
+                          <label class="form-label" for="email"> <strong>Email :</strong> </label>
                           <input formControlName="email" [ngClass]="{'is-invalid': submitted && f.email.errors}"
                             type="email" class="form-control" [(ngModel)]="newInteresadoForm.email"
-                            placeholder="prueba@gmail.com" />
-                          <div *ngIf="
+                            placeholder="prueba@gmail.com" [readonly]="enviadoSeekop"/>
+                          <div *ngIf=" !enviadoSeekop &&
                               interesadoForm.controls['email'].invalid &&
                               (interesadoForm.controls['email'].dirty ||
                                 interesadoForm.controls['email'].touched)
@@ -437,7 +444,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer" *ngIf="!enviadoSeekop">
                           <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">
                             Cancelar
                           </button>
