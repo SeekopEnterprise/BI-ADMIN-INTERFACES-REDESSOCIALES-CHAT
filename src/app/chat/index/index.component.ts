@@ -128,7 +128,7 @@ export class IndexComponent implements OnInit {
 
   public screenshotUrl = '';
 
-  public baseUrlPublicacion  = '';
+  public baseUrlPublicacion = '';
 
   // Referencia para el scroll
   @ViewChild('scrollRef') scrollRef: any;
@@ -298,10 +298,10 @@ export class IndexComponent implements OnInit {
       apellidoM: ['', [Validators.maxLength(20)]],
       telefono: [
         '',
-        [ Validators.minLength(10), Validators.maxLength(10)]
+        [Validators.minLength(10), Validators.maxLength(10)]
       ],
       email: ['', [Validators.email]],
-      comentarios: ['', [ Validators.maxLength(20)]]
+      comentarios: ['', [Validators.maxLength(20)]]
     });
   }
 
@@ -310,14 +310,14 @@ export class IndexComponent implements OnInit {
   }
 
   buildScreenshotUrl(postUrl: string): string {
-  const encoded = encodeURIComponent(postUrl);
-  /* viewport y width los puedes ajustar a tu gusto */
-  return `https://api.screenshotlayer.com/api/capture` +
-         `?access_key=${this.SHOT_KEY}` +
-         `&url=${encoded}` +
-         `&viewport=1280x800` +
-         `&width=600`;
-}
+    const encoded = encodeURIComponent(postUrl);
+    /* viewport y width los puedes ajustar a tu gusto */
+    return `https://api.screenshotlayer.com/api/capture` +
+      `?access_key=${this.SHOT_KEY}` +
+      `&url=${encoded}` +
+      `&viewport=1280x800` +
+      `&width=600`;
+  }
 
   /**
    * Abre la imagen en Lightbox
@@ -867,7 +867,7 @@ export class IndexComponent implements OnInit {
     };
 
     this.baseUrlPublicacion = (this.urlPublicacion || '').split('?')[0];  // sin comment_id
-this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
+    this.screenshotUrl = this.buildScreenshotUrl(this.baseUrlPublicacion);
 
     // Asignación de datos para la vista
     this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl(
@@ -1299,7 +1299,7 @@ this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
     });
   }
 
-  
+
 
   /**
    * Descarga las conversaciones y genera TODAS las
@@ -1422,145 +1422,93 @@ this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
     // Implementar si se requiere
   }
 
-  /**
-   * Confirmación de envío de datos a Seekop
-   */
-  confirmSend() {
-    this.userName = JSON.stringify(this.interesadoForm.value.nombre);
-    this.apellidoPaterno = JSON.stringify(this.interesadoForm.value.apellidoP);
-    this.apellidoMaterno = JSON.stringify(this.interesadoForm.value.apellidoM);
-    this.Telefono = JSON.stringify(this.interesadoForm.value.telefono);
-    this.Email = JSON.stringify(this.interesadoForm.value.email);
-    const comentarios = JSON.stringify(this.interesadoForm.value.comentarios);
+  /** -----------------------------------------------------------------
+   *  CONFIRMAR ENVÍO DE LEAD A SEEKOP  (nuevo flujo con Lambda)
+   *  ▸ Construye el body con campos obligatorios + opcionales
+   *  ▸ Llama a  https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviaraseekop
+   *  ▸ Maneja respuestas:
+   *      - 200 → éxito, se marca `enviadoSeekop = true`
+   *      - 400 → el lead ya fue enviado anteriormente
+   *      - otro → error genérico
+   * ----------------------------------------------------------------*/
+  confirmSend(): void {
+    /* 1. Valida el formulario */
+    this.submitted = true;
+    if (this.interesadoForm.invalid) { return; }
 
-    console.log('Esto es lo que vas enviar: ' + this.Telefono);
-
-    const headers = {
-      Authorization: 'Bearer ODc5MGZiZTI0ZGJkYmY4NGU4YzNkYWNhNzI1MTQ4YmQ=',
-      accept: 'application/json'
+    /* 2. Construye el payload */
+    const payload: any = {
+      idDistribuidor: this.idDistribuidor,
+      idmensajee: this.idMensajeLeads            //  == IdPregunta
     };
+    const f = this.interesadoForm.value;
+    if (f.nombre) payload.Nombre = f.nombre.trim();
+    if (f.apellidoP) payload.Apellido = f.apellidoP.trim();
+    if (f.email) payload.Email = f.email.trim();
+    if (f.telefono) payload.Telefono = f.telefono.toString().trim();
 
-    const data = {
-      prospect: {
-        status: 'new',
-        id: this.idMensajeLeads,
-        requestdate: '2023-06-13 16:00:00',
-        vehicle: {
-          interest: 'buy',
-          status: 'new',
-          make: 'Nissan',
-          year: '2023',
-          model: this.AutoDeInteres
+    /* 3. Diálogo de confirmación */
+    Swal.fire({
+      title: '¿Enviar lead a Seekop?',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (!result.isConfirmed) { return; }
+
+      const url = 'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviaraseekop';
+      this.isLoading = true;  
+      /* 4. Llamada a la Lambda */
+      this.http.post(url, payload, { observe: 'response' }).subscribe({
+        next: resp => {
+          /* ---- HTTP 200  → Éxito ---- */
+          if (resp.status === 200) {
+            this.isLoading = false;    
+            this.enviadoSeekop = true;                   // cambia icono ✔
+            Swal.fire('¡Éxito!', 'Lead enviado a Seekop', 'success');
+            this.modalDatos.close('Close click');
+          }
         },
-        customer: {
-          contact: {
-            name: [
-              {
-                part: 'first',
-                value: this.userName
-              },
-              {
-                part: 'middle',
-                value: this.apellidoPaterno
-              },
-              {
-                part: 'last',
-                value: this.apellidoMaterno
-              }
-            ],
-            email: this.Email,
-            phone: [this.Telefono]
-          },
-          comments: comentarios
-        },
-        vendor: {
-          source: this.RedSocial,
-          id: this.idDistribuidor,
-          name: this.nombreDistribuidor
-        }
-      },
-      provider: {
-        name: this.RedSocial.replace(/\s/g, '')
-      }
-    };
-
-    if (this.enviadoaseekop == false) {
-      Swal.fire({
-        title: '¿Desea enviar los datos hacia Seekop?',
-        showDenyButton: true,
-        confirmButtonText: `Enviar`,
-        denyButtonText: `Cancelar`
-      }).then(result => {
-        if (result.isConfirmed) {
-          const url = 'https://www.answerspip.com/apidms/dms/v1/rest/leads/adfv2';
-
-          this.http.post<any>(url, data, { headers }).subscribe(
-            response => {
-              if (response == null) {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                  confirmButtonText: 'Ok'
-                });
-                this.modalDatos.close('Close click');
-              } else {
-                this.addNewProspecto();
-                Swal.fire({
-                  icon: 'success',
-                  title: '¡Éxito!',
-                  text: 'Se enviaron correctamente los datos a Seekop',
-                  confirmButtonText: 'Ok'
-                });
-                this.newInteresadoForm = {
-                  nombre: '',
-                  apellidop: '',
-                  apellidom: '',
-                  telefono: '',
-                  email: '',
-                  comentarios: ''
-                };
-                this.modalDatos.close('Close click');
-                this.modalService.dismissAll();
-              }
-            },
-            error => {
-              console.error(error);
-              this.addNewProspecto();
-              if (error == 'El Lead ya existe') {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'El leads ya existe en Seekop ...',
-                  confirmButtonText: 'Entendido'
-                });
-                this.modalDatos.close('Close click');
-                this.modalService.dismissAll();
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un problema al enviar los datos hacia Seekop. Por favor, inténtalo más tarde.',
-                  confirmButtonText: 'Entendido'
-                });
-                this.modalDatos.close('Close click');
-                this.modalService.dismissAll();
-              }
-            }
-          );
+        error: err => {
+          /* ---- HTTP 400  → Lead ya enviado ---- */
+          this.isLoading = false;    
+          if (err.status === 400) {
+            Swal.fire({
+              icon: 'info',
+              title: 'Aviso',
+              text: 'El lead ya fue enviado previamente a Seekop'
+            });
+          } else {
+            /* ---- Otros códigos  → Error genérico ---- */
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un problema al enviar el lead. Intenta nuevamente.'
+            });
+          }
         }
       });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El leads ya existe en Seekop...',
-        confirmButtonText: 'Entendido'
-      });
-      this.modalDatos.close('Close click');
-      this.modalService.dismissAll();
-    }
+    });
   }
+
+  /* ──────────────────────────────────────────────────────────────
+ *  Refrescar lista de conversaciones manualmente
+ * ────────────────────────────────────────────────────────────*/
+  refreshConversations(): void {
+    this.isLoadingMensajesIniciales = true;
+
+    Promise.resolve()
+      /* 1) Vuelve a descargar desde el motor de conversaciones */
+      .then(() => this.descargarMensajesIniciales())
+      /* 2) Recarga lo guardado en BD y refresca la UI            */
+      .then(() => this.loadRecuperacionMensajes())
+      .catch(err => console.error('Error al refrescar:', err))
+      .finally(() => {
+        this.isLoadingMensajesIniciales = false;
+        this.cdr.detectChanges();          // fuerza actualización de la vista
+      });
+  }
+
 
   /**
    * Llama al endpoint para guardar prospecto como enviado
