@@ -285,18 +285,67 @@
                 <ng-template #videoContent let-modal>
                   <div class="modal-body">
                     <div class="text-left p-4">
-                      <div class="avatar-lg mx-auto">
-                        <img src="https://www.sicopweb.com/8.0/workspace/styles/images/logos/sicop.png" alt="Seekop"
-                          class="img-thumbnail rounded-circle" />
+                      <div class="avatar-lg mx-auto seekop-wrapper">
+                        <!-- Logo detrás si YA se envió -->
+                        <img *ngIf="enviadoSeekop"
+                          src="https://scontent.fpcm1-2.fna.fbcdn.net/v/t1.6435-9/60467818_391891674733009_6973529813428469760_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=89q1BxWNYXwQ7kNvwE0Ap1V&_nc_oc=AdltbPogp50b_UdGpgJGadD7qKs46ALMyekAVAjqUdqp6gQ-LODbnf66EiLrpm3WRWtAIo--leMiyTBoR8TXKsst&_nc_zt=23&_nc_ht=scontent.fpcm1-2.fna&_nc_gid=1Sb4y5Z5MHthSL_ESY6QQg&oh=00_AfRqzpmnI-Dl-wGcYY97rzjscIcdpdkVK9esBFkya-TziQ&oe=6895947F"
+                          alt="Seekop" class="seekop-overlay" />
+
+                        <!-- Foto principal -->
+                        <img *ngIf="FotoPerfilUrl; else defaultLogo" [src]="FotoPerfilUrl" alt="Foto del prospecto"
+                          class="img-thumbnail rounded-circle seekop-avatar" />
+                        <ng-template #defaultLogo>
+                          <!-- logo habitual cuando no hay foto -->
+                          <img
+                            src="https://scontent.fpcm1-2.fna.fbcdn.net/v/t1.6435-9/60467818_391891674733009_6973529813428469760_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=89q1BxWNYXwQ7kNvwE0Ap1V&_nc_oc=AdltbPogp50b_UdGpgJGadD7qKs46ALMyekAVAjqUdqp6gQ-LODbnf66EiLrpm3WRWtAIo--leMiyTBoR8TXKsst&_nc_zt=23&_nc_ht=scontent.fpcm1-2.fna&_nc_gid=1Sb4y5Z5MHthSL_ESY6QQg&oh=00_AfRqzpmnI-Dl-wGcYY97rzjscIcdpdkVK9esBFkya-TziQ&oe=6895947F"
+                            alt="Seekop" class="img-thumbnail rounded-circle seekop-avatar" />
+                        </ng-template>
                       </div>
+
+                      <!-- Leyenda -->
+                      <div *ngIf="enviadoSeekop" class="legend-enviado  mt-2">
+                        <i class="ri-check-line"></i> Lead enviado a Seekop con éxito
+                      </div>
+
+
+                      <!-- Vista previa estática -->
+                      <!--  <a [href]="baseUrlPublicacion" target="_blank" class="d-block mb-3">
+                        <img [src]="screenshotUrl" class="img-fluid rounded shadow-sm"
+                          alt="Vista previa de la publicación">
+                      </a>
+
+ -->
+
                       <form [formGroup]="interesadoForm" (ngSubmit)="validateForm()">
-                        <div class="mb-3">
-                          <label class="form-label" for="nombre">Id Prospecto:
-                          </label>
-                          <input type="text" [value]="idMensajeLeads" class="form-control" readonly />
+
+
+                        <!-- ======= CAMPOS SOLO LECTURA (texto plano) ======= -->
+
+                        <!-- <div class="mb-3">
+                          <label class="form-label">Id Publicación: </label>
+                          <span class="readonly-display">{{ IdPublicacionLead }}</span>
+                        </div> -->
+
+                        <div class="mb-3 mt-3">
+                          <span class="readonly-display "><strong>Subcampaña: {{ nombreSubcampana }}</strong></span>
                         </div>
+
                         <div class="mb-3">
-                          <label class="form-label" for="nombre">Nombre *:</label>
+                          <span class="readonly-display"><strong>{{ RedSocial }}/{{ Distribuidor }} </strong></span>
+                        </div>
+
+
+
+                        <div class="mb-3">
+                          <a [href]="urlPublicacion" target="_blank" class="readonly-display text-decoration-none">
+                            Ver publicación
+                          </a>
+                        </div>
+                        <!-- ================================================ -->
+
+
+                        <div class="mb-3">
+                          <label class="form-label" for="nombre"><strong>Nombre *:</strong></label>
                           <input formControlName="nombre" [ngClass]="{'is-invalid': submitted && f.nombre.errors }"
                             type="text" class="form-control" [(ngModel)]="newInteresadoForm.nombre" placeholder=""
                             pattern="[A-Za-z\s]*" />
@@ -320,7 +369,7 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="apellidoP">Apellido paterno *:</label>
+                          <label class="form-label" for="apellidoP"><strong>Apellido *:</strong></label>
                           <input formControlName="apellidoP"
                             [ngClass]="{'is-invalid': submitted && f.apellidoP.errors }" type="text"
                             class="form-control" [(ngModel)]="newInteresadoForm.apellidop" placeholder=""
@@ -342,29 +391,7 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="apellidoM">Apellido materno *:</label>
-                          <input formControlName="apellidoM"
-                            [ngClass]="{'is-invalid': submitted && f.apellidoM.errors }" type="text"
-                            class="form-control" [(ngModel)]="newInteresadoForm.apellidom" placeholder=""
-                            pattern="[A-Za-z\s]*" />
-                          <div *ngIf="
-                              interesadoForm.controls['apellidoM'].invalid &&
-                              (interesadoForm.controls['apellidoM'].dirty ||
-                                interesadoForm.controls['apellidoM'].touched)
-                            " class="text-danger">
-                            <div *ngIf="f.apellidoM.errors.required">
-                              EL campo es requerido!
-                            </div>
-                            <div *ngIf="f.apellidoM.errors.pattern">
-                              Ingresa un apellido válido (solo letras y sin espacios).
-                            </div>
-                            <div *ngIf="f.apellidoM.errors.maxlength">
-                              Ingresa un valor con una longitud menor o igual a 20 carácteres!
-                            </div>
-                          </div>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label" for="telefono">Telefono *:</label>
+                          <label class="form-label" for="telefono"><strong>Telefono *:</strong></label>
                           <div class="input-group">
                             <input formControlName="telefono"
                               [ngClass]="{'is-invalid': submitted && f.telefono.errors }" type="number"
@@ -393,7 +420,7 @@
                           </div>
                         </div>
                         <div class="mb-3">
-                          <label class="form-label" for="email">Email *:</label>
+                          <label class="form-label" for="email"> <strong>Email *:</strong> </label>
                           <input formControlName="email" [ngClass]="{'is-invalid': submitted && f.email.errors}"
                             type="email" class="form-control" [(ngModel)]="newInteresadoForm.email"
                             placeholder="prueba@gmail.com" />
@@ -409,23 +436,6 @@
                               Por favor, introduce un correo electrónico válido.
                             </div>
                           </div>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label" for="nombre">Publicación/Auto de interés:
-                          </label>
-                          <input type="text" [value]="AutoDeInteres" class="form-control" readonly />
-                        </div>
-                        <!-- <div class="mb-3">
-                          <label class="form-label" for="nombre">Distribuidor:</label>
-                          <input type="text" [value]="Distribuidor" class="form-control" readonly />
-                        </div> -->
-                        <div class="mb-3">
-                          <label class="form-label" for="comentarios">Observaciones:
-                          </label>
-                          <textarea rows="3" cols="70" formControlName="comentarios" type="text" class="form-control"
-                            [(ngModel)]="newInteresadoForm.comentarios"
-                            style="background-color: #f9f9f9;text-align: left;"
-                            placeholder="Agrega un comentario..."></textarea>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-link" (click)="modal.dismiss('Cross click')">
@@ -1024,7 +1034,7 @@
         <p class="mb-4"> Información del interesado</p>
       </div>
       <div id="profile-user-accordion" class="custom-accordion">
-        <ngb-accordion #acc="ngbAccordion" activeIds="about" [closeOthers]="true">
+        <ngb-accordion #acc="ngbAccordion" activeIds="file" [closeOthers]="true">
           <ngb-panel cardClass="card shadow-none border mb-2" id="about">
             <ng-template ngbPanelTitle>
               <h5 class="font-size-14 m-0">
@@ -1039,7 +1049,7 @@
               </div>
               <div class="mt-4">
                 <p class="text-muted mb-1">Apellido</p>
-                <h5 class="font-size-14">{{LastName}}</h5>
+                <h5 class="font-size-14">{{apellidoPaterno}}</h5>
               </div>
               <div class="mt-4">
                 <p class="text-muted mb-1">Email</p>
@@ -1074,7 +1084,9 @@
               <div class="mt-4">
                 <p class="text-muted mb-1">Publicación</p>
                 <h5 class="font-size-14 mb-0">
-                  <a href="{{urlPublicacion}}" target="_blank">{{urlPublicacion}}</a>
+                  <a [href]="urlPublicacion" target="_blank" class="readonly-display text-decoration-none">
+                    Ver publicación
+                  </a>
                 </h5>
               </div>
             </ng-template>

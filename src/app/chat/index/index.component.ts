@@ -100,6 +100,8 @@ export class IndexComponent implements OnInit {
   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   isLoading: boolean = false;
 
+  private readonly SHOT_KEY = '3c7737bcc6852526ad08f776e80773e4';
+
   // Suscripción para WebSocket
   private chatSubscription: Subscription;
 
@@ -123,6 +125,10 @@ export class IndexComponent implements OnInit {
     default: "Este es un mensaje automático del bot.",
     custom: "Aquí va una sugerencia personalizada."
   };
+
+  public screenshotUrl = '';
+
+  public baseUrlPublicacion  = '';
 
   // Referencia para el scroll
   @ViewChild('scrollRef') scrollRef: any;
@@ -161,8 +167,13 @@ export class IndexComponent implements OnInit {
   public idMensaje: string;
   public hideMenu: boolean;
   public enviadoaseekop: boolean = false;
+  public enviadoSeekop: boolean = false;
   public activeChatId: string | null = null;
   public activeConversationKey: string | null = null;
+
+  public nombreFuente: string;
+  public nombreSubcampana: string;
+  public FotoPerfilUrl: string;
 
   // Variables para agrupar
   public chatByRedSocial: any = {};
@@ -297,6 +308,16 @@ export class IndexComponent implements OnInit {
   toggleGroupCollapse(key: string): void {
     this.collapsedGroups[key] = !this.collapsedGroups[key];
   }
+
+  buildScreenshotUrl(postUrl: string): string {
+  const encoded = encodeURIComponent(postUrl);
+  /* viewport y width los puedes ajustar a tu gusto */
+  return `https://api.screenshotlayer.com/api/capture` +
+         `?access_key=${this.SHOT_KEY}` +
+         `&url=${encoded}` +
+         `&viewport=1280x800` +
+         `&width=600`;
+}
 
   /**
    * Abre la imagen en Lightbox
@@ -821,11 +842,15 @@ export class IndexComponent implements OnInit {
 
     data[0].unreadCount = 0; // Marcamos la conversación como leída
     this.userName = data[0].Nombre;
-    this.Distribuidor = data[0].NombreGrupo;
+    this.Distribuidor = data[0].NombreDistribuidor;
     this.RedSocial = data[0].redSocial;
     this.Email = data[0].Email;
     this.IdPublicacionLead = data[0].IdPublicacion;
     this.urlPublicacion = data[0].urlpublicacion;
+    this.nombreFuente = data[0].nombreFuente || '';
+    this.nombreSubcampana = data[0].nombreSubcampana || '';
+    this.enviadoSeekop = data[0].enviadoSeekop || false;
+    this.FotoPerfilUrl = data[0].FotoPerfilUrl || '';
     this.apellidoPaterno = data[0].Apellido;
     this.Telefono = data[0].Telefono;
     this.Email = data[0].Email;
@@ -841,12 +866,15 @@ export class IndexComponent implements OnInit {
       comentarios: ''
     };
 
+    this.baseUrlPublicacion = (this.urlPublicacion || '').split('?')[0];  // sin comment_id
+this.screenshotUrl      = this.buildScreenshotUrl(this.baseUrlPublicacion);
+
     // Asignación de datos para la vista
     this.LinkPublicacion = this.sanitizer.bypassSecurityTrustResourceUrl(
       'https://auto.mercadolibre.com.mx/MLM-1946997981-tiguan-comfortline-2023-_JM'
     );
     this.idDistribuidor = data[0].IdDistribuidor;
-    this.nombreDistribuidor = data[0].NombreGrupo;
+    this.nombreDistribuidor = data[0].NombreDistribuidor;
     this.idRedSocial = data[0]['idred'];
     this.userStatus = 'En línea';
     this.userProfile = data[0].profilePicture || data[0].FotoPerfilUrl || '';

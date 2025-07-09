@@ -36,8 +36,12 @@ $chatvia-theme: mat.define-light-theme((
 /* You can add global styles to this file, and also import other style files */
 
 /* Importing Bootstrap SCSS file. */
-// @import '~bootstrap/scss/bootstrap';
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+/* body, * {
+  font-family: 'Montserrat', sans-serif !important; 
+  letter-spacing: 0px;
+  font-weight: 300;
+} */
 
 i.ri-ball-pen-fill,
 i.ri-delete-bin-6-fill{

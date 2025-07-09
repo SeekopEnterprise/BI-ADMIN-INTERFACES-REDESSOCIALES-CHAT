@@ -25,7 +25,7 @@ export interface ResponseItem {
   idPregunta: string;
   fechaRespuestaUltimoMensaje?: string;
   IdDistribuidor: string;
-  NombreGrupo: string;
+  NombreDistribuidor: string;
   idRed: string;
   redSocial: string;
   IdProspecto: string;
@@ -34,6 +34,8 @@ export interface ResponseItem {
   Apellido: string;
   Email: string;
   urlpublicacion: string;
+  nombreFuente: string;
+  nombreSubcampana: string;
   Telefono: string;
   Conversacion: Conversacion[];
   unreadCount?: number;
@@ -41,6 +43,7 @@ export interface ResponseItem {
   ultimoMensaje?: UltimoMensaje;
   claveUnica?: any;
   fotoPaginaUrl?: any;
+  enviadoSeekop?: boolean;
 }
 
 export interface ApiResponse {
