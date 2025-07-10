@@ -886,6 +886,8 @@ export class IndexComponent implements OnInit {
     this.activeConversationKey =
       `${data[0].IdHilo}-${this.idRedSocial}-${this.idDistribuidor}`;
 
+     // Disposición 68 – mensajesLeídosSinProspect 
+    this.sendDisposition(68, this.idMensajeLeads as string); 
 
     this.onListScroll();
 
@@ -1096,6 +1098,8 @@ export class IndexComponent implements OnInit {
         { IdPregunta: this.selectedChatId, Mensaje: texto },
         { responseType: 'text' }
       ).toPromise();
+      /* ▶ Disposición 67 – mensaje ENVIADO sin prospecto */
+      this.sendDisposition(67, this.selectedChatId as string);
     } catch (err) {
       console.error('Fallo al enviar:', err);
       // aquí podrías marcar el mensaje como no enviado o re-intentar
@@ -1457,13 +1461,13 @@ export class IndexComponent implements OnInit {
       if (!result.isConfirmed) { return; }
 
       const url = 'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviaraseekop';
-      this.isLoading = true;  
+      this.isLoading = true;
       /* 4. Llamada a la Lambda */
       this.http.post(url, payload, { observe: 'response' }).subscribe({
         next: resp => {
           /* ---- HTTP 200  → Éxito ---- */
           if (resp.status === 200) {
-            this.isLoading = false;    
+            this.isLoading = false;
             this.enviadoSeekop = true;                   // cambia icono ✔
             Swal.fire('¡Éxito!', 'Lead enviado a Seekop', 'success');
             this.modalDatos.close('Close click');
@@ -1471,7 +1475,7 @@ export class IndexComponent implements OnInit {
         },
         error: err => {
           /* ---- HTTP 400  → Lead ya enviado ---- */
-          this.isLoading = false;    
+          this.isLoading = false;
           if (err.status === 400) {
             Swal.fire({
               icon: 'info',
@@ -1769,6 +1773,26 @@ export class IndexComponent implements OnInit {
     if (isNaN(fechaObj.getTime())) return '';
     return fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
   }
+
+
+  /* ──────────────────────────────────────────────────────────────
+ *  ENVÍO DEMO DE DISPOSICIONES 67 (enviados sin prospecto)
+ *                        y 68 (leídos sin prospecto)
+ *  · Imprime en consola el payload y la respuesta del backend
+ *  · Cambia la URL si tu API Gateway usa otro stage
+ * ────────────────────────────────────────────────────────────*/
+  private sendDisposition(disposition: number, referencia: string): void {
+    const url = `https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/enviardisposition`;
+    const body = { disposition, referencia };
+
+    console.log('[Disposition] → Enviando ', body);
+
+    this.http.post(url, body).subscribe({
+      next: resp => console.log('[Disposition] ✔︎ Respuesta:', resp),
+      error: err => console.error('[Disposition] ✖︎ Error:', err)
+    });
+  }
+
 
 
 }
