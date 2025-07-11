@@ -617,6 +617,7 @@ export class IndexComponent implements OnInit {
     /* ------------------------------------------------------------
      * 3. Duplicados & conteo
      * ---------------------------------------------------------- */
+    let esPropio = false;
     const duplicado = prospect.Conversacion
       .some(m => m.id === data.idMensaje);
 
@@ -636,15 +637,25 @@ export class IndexComponent implements OnInit {
 
       prospect.Conversacion.push(nuevoMensaje);
       prospect.ultimoMensaje = nuevoMensaje;
+
+      esPropio = nuevoMensaje.align === 'right';   // <-- asignación
+    } else {
+      // si era duplicado, tomamos el último mensaje ya existente
+      esPropio = prospect?.ultimoMensaje?.align === 'right';
     }
 
     /* ------------------------------------------------------------
-     * 4. Contadores / panel derecho
-     * ---------------------------------------------------------- */
+  * 4. Contadores / panel derecho
+  *    – Si el último mensaje lo manda el ejecutivo (right),
+  *      nunca se incrementa unreadCount
+  * ---------------------------------------------------------- */
     const abierta = this.activeConversationKey === claveUnicaWS;
 
     if (!abierta) {
-      prospect.unreadCount = (prospect.unreadCount || 0) + (duplicado ? 0 : 1);
+      // solo suma si el mensaje NO es propio
+      if (!duplicado && !esPropio) {
+        prospect.unreadCount = (prospect.unreadCount || 0) + 1;
+      }
     } else {
       this.message = [...prospect.Conversacion];
       prospect.unreadCount = 0;
@@ -654,6 +665,7 @@ export class IndexComponent implements OnInit {
       }
       this.onListScroll();
     }
+
 
     /* ------------------------------------------------------------
      * 5. Re-ordenamos la lista y refrescamos vista
@@ -840,6 +852,8 @@ export class IndexComponent implements OnInit {
       }
     }
 
+    const teniaNoLeidos = (data[0].unreadCount ?? 0) > 0;
+
     data[0].unreadCount = 0; // Marcamos la conversación como leída
     this.userName = data[0].Nombre;
     this.Distribuidor = data[0].NombreDistribuidor;
@@ -886,8 +900,20 @@ export class IndexComponent implements OnInit {
     this.activeConversationKey =
       `${data[0].IdHilo}-${this.idRedSocial}-${this.idDistribuidor}`;
 
-     // Disposición 68 – mensajesLeídosSinProspect 
-    this.sendDisposition(68, this.idMensajeLeads as string); 
+    // ------------- MARCAR COMO LEÍDO -----------------
+    if (teniaNoLeidos) {
+      this.markThreadRead(this.idDistribuidor, data[0].IdHilo)
+        .subscribe({
+          next: resp => {
+            console.log('[marcarleidos] OK', resp);
+
+            // ✅ Disposición 68 – mensajesLeídosSinProspect
+            this.sendDisposition(68, this.idMensajeLeads as string);
+          },
+          error: err => console.error('[marcarleidos] ERROR', err)
+        });
+    }
+
 
     this.onListScroll();
 
@@ -1761,8 +1787,9 @@ export class IndexComponent implements OnInit {
   /* ──────────────────────────────────────────────────────────────
  *  NUEVO MÉTODO  –  coloca dentro de la clase IndexComponent
  * ──────────────────────────────────────────────────────────── */
-  trackByMsg(_index: number, msg: Conversacion): string {
-    return `${this.activeConversationKey}-${msg.id}`;   // usa la nueva clave unificada
+  trackByMsg(_idx: number, msg: Conversacion): string {
+    // Si el hilo cambió, Angular recicla correctamente los elementos
+    return `${this.activeConversationKey}-${msg.id}-${msg.align}`;
   }
 
   getHoraMensaje(msg: Conversacion): string {
@@ -1793,6 +1820,17 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  /* ============================================================
+ *  ✅  NUEVO  – marca un hilo como leído en el backend
+ * ========================================================== */
+  private markThreadRead(idDistribuidor: string, idHilo: string) {
+    const url = 'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/marcarleidos';
+    return this.http.post(
+      url,
+      { idDistribuidor, idHilo },
+      { responseType: 'text' }
+    )
+  }
 
 
 }
