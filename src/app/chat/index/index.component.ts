@@ -900,21 +900,22 @@ export class IndexComponent implements OnInit {
     this.activeConversationKey =
       `${data[0].IdHilo}-${this.idRedSocial}-${this.idDistribuidor}`;
 
-/* ---------- MARCAR COMO LEÍDO ---------- */
-const idHilo = data[0].IdHilo;      // ✅ ahora siempre viene del backend
+    /* ---------- MARCAR COMO LEÍDO ---------- */
+    const idHilo = data[0].IdHilo;      // ✅ ahora siempre viene del backend
 
-this.markThreadRead(this.idDistribuidor, idHilo)
-  .subscribe({
-    next: resp => {
-      console.log('[marcarleidos] OK', resp);
+    if (teniaNoLeidos) {
+      this.markThreadRead(this.idDistribuidor, idHilo)
+        .subscribe({
+          next: resp => {
+            console.log('[marcarleidos] OK', resp);
 
-      /* Disposición 68 – mensajesLeídosSinProspecto */
-      this.sendDisposition(68, this.idMensajeLeads as string);
-    },
-    error: err => console.error('[marcarleidos] ERROR', err)
-  });
+            /* Disposición 68 – mensajesLeídosSinProspecto */
+            this.sendDisposition(68, this.idMensajeLeads as string);
+          },
+          error: err => console.error('[marcarleidos] ERROR', err)
+        });
 
-
+    }
 
     this.onListScroll();
 
