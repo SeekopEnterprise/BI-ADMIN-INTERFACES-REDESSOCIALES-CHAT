@@ -900,19 +900,20 @@ export class IndexComponent implements OnInit {
     this.activeConversationKey =
       `${data[0].IdHilo}-${this.idRedSocial}-${this.idDistribuidor}`;
 
-    // ------------- MARCAR COMO LEÍDO -----------------
-    if (teniaNoLeidos) {
-      this.markThreadRead(this.idDistribuidor, data[0].IdHilo)
-        .subscribe({
-          next: resp => {
-            console.log('[marcarleidos] OK', resp);
+/* ---------- MARCAR COMO LEÍDO ---------- */
+const idHilo = data[0].IdHilo;      // ✅ ahora siempre viene del backend
 
-            // ✅ Disposición 68 – mensajesLeídosSinProspect
-            this.sendDisposition(68, this.idMensajeLeads as string);
-          },
-          error: err => console.error('[marcarleidos] ERROR', err)
-        });
-    }
+this.markThreadRead(this.idDistribuidor, idHilo)
+  .subscribe({
+    next: resp => {
+      console.log('[marcarleidos] OK', resp);
+
+      /* Disposición 68 – mensajesLeídosSinProspecto */
+      this.sendDisposition(68, this.idMensajeLeads as string);
+    },
+    error: err => console.error('[marcarleidos] ERROR', err)
+  });
+
 
 
     this.onListScroll();
@@ -1824,7 +1825,7 @@ export class IndexComponent implements OnInit {
  *  ✅  NUEVO  – marca un hilo como leído en el backend
  * ========================================================== */
   private markThreadRead(idDistribuidor: string, idHilo: string) {
-    const url = 'https://uje1rg6d36.execute-api.us-west-1.amazonaws.com/dev/marcarleidos';
+    const url = 'https://fhfl0x34wa.execute-api.us-west-1.amazonaws.com/dev/marcarleidos';
     return this.http.post(
       url,
       { idDistribuidor, idHilo },
